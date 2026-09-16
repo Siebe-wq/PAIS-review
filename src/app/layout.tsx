@@ -56,8 +56,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               can be wrong.
             </p>
             <p>
-              Something here is mistaken or unfair? <Link href="/about">Get in touch</Link> and it
-              will be corrected or withdrawn.
+              Think a review is wrong? Say so in the comments under it — that is where it gets
+              argued out.
             </p>
           </div>
         </footer>

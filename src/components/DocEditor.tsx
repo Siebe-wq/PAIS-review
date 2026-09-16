@@ -18,13 +18,16 @@ interface Result {
   error?: string;
 }
 
-/** "0.3" -> "0.4". Only a suggestion; the field is editable. */
-function nextMinor(version: string | null): string {
+/**
+ * Suggests the next version. A wording change is a patch: "0.3" -> "0.3.1",
+ * "0.3.1" -> "0.3.2". Edit the field for a change that could move a grade.
+ */
+function nextPatch(version: string | null): string {
   if (!version) return '';
-  const parts = version.split('.');
-  const last = Number(parts[parts.length - 1]);
-  if (!Number.isFinite(last)) return '';
-  parts[parts.length - 1] = String(last + 1);
+  const parts = version.split('.').map((part) => part.trim());
+  if (parts.some((part) => !/^\d+$/.test(part))) return '';
+  if (parts.length < 3) return `${parts.join('.')}.1`;
+  parts[parts.length - 1] = String(Number(parts[parts.length - 1]) + 1);
   return parts.join('.');
 }
 
@@ -57,7 +60,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
             setContent(json.content);
             setVersioned(Boolean(json.versioned));
             setCurrentVersion(json.guideVersion ?? null);
-            setVersion(nextMinor(json.guideVersion ?? null));
+            setVersion(nextPatch(json.guideVersion ?? null));
           } else {
             setResult({ error: json.error ?? 'Could not load the current page content.' });
           }
@@ -151,10 +154,13 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
             type="text"
             value={version}
             onChange={(event) => setVersion(event.target.value)}
-            placeholder={nextMinor(currentVersion)}
+            placeholder={nextPatch(currentVersion)}
             required
           />
-          <p className="hint">Written into the guide&rsquo;s frontmatter alongside this save.</p>
+          <p className="hint">
+            Suggested: a patch bump for wording. Use the middle number for a change that could
+            move a grade. Written into the guide&rsquo;s frontmatter with this save.
+          </p>
         </div>
       )}
 

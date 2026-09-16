@@ -12,9 +12,9 @@ conclusion.
 
 ## How a review is made
 
-Each paper is read by Claude against the [review guide](/guide), which is published here
-in full and versioned. Every review records which version of the guide produced it.
-Siebe Rozendal reads the result before it goes up. Nothing is published automatically.
+Each paper is read by Claude against the [guide](/methods), which is published in full
+and versioned. Every review records which version it was written under. Siebe Rozendal
+reads the result before it goes up. Nothing is published automatically.
 
 ## About the score
 
@@ -35,9 +35,10 @@ a consensus position, and they are not medical advice. They are one careful read
 published openly so it can be argued with. Claude can be confidently wrong, and so can
 the guide.
 
-## Corrections
+## If you disagree
 
-If a review misreads a paper, misses something in a supplement, or is unfair to the
-people who wrote it, it will be corrected or taken down. Authors of reviewed papers get
-first call on that. Corrections are made openly, and the edit history of every review is
+Every review has a comment section, and so does the guide. If a review misreads a paper,
+misses something in a supplement, or is unfair, say so there — that is where it gets
+argued out first, in the open, where the people who wrote the paper and the people who
+read it can both see it. Reviews do get corrected; when they do, the edit history is
 public in the site's repository.

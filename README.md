@@ -132,9 +132,9 @@ Edit it from the "Edit a page" tab in `/admin`, or edit `content/guide.md` direc
 `version` in its frontmatter. Saving from `/admin` is refused if the version is unchanged,
 because forgetting is the normal failure mode and it makes older reviews look current.
 
-Bump the minor version (0.2 → 0.3) for clarifications and additions that would not move a
-grade. Bump the major version (0.x → 1.0) for a new required criterion or a changed scoring
-rule — anything that could change a verdict on a paper already reviewed.
+Wording and small clarifications are a patch bump (0.3 → 0.3.1), which the editor suggests by
+default. A change that could move a grade — a new criterion, a changed rule — bumps the middle
+number (0.3 → 0.4). The first number is for a rewrite.
 
 A review that does not state its own `guideVersion` is stamped with whatever the guide is at
 publish time. A review that does state one keeps it, so importing older work does not
@@ -165,6 +165,7 @@ first four if you want the `/admin` publishing page:
 | `NEXT_PUBLIC_SITE_URL` | Only needed if the site moves off `pais-review.vercel.app`. Used for the sitemap and link previews. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Shown on the About page as the corrections address. Left unset, no address is shown. |
 | `ANTHROPIC_API_KEY` | Only for the "Tidy up with Claude" button in `/admin`. Without it, that button reports it is not configured and everything else works as normal. |
+| `DATABASE_URL` | Postgres, for comments and ratings. In Vercel: Storage → Create Database → Postgres (Neon), connect it to the project, and this is set for you. Tables are created on first use. Without it, the comment and rating sections do not appear. |
 | `NORMALISER_MODEL` | Which model the tidy-up button uses. Defaults to `claude-sonnet-5`. `claude-haiku-4-5` halves the cost per review; see the note in `src/lib/normalise.ts` before switching. |
 
 Until `ADMIN_PASSWORD`, `GITHUB_TOKEN` and `GITHUB_REPO` are all set, `/admin` loads but
@@ -179,13 +180,22 @@ publishing returns a clear "not configured" error rather than failing quietly.
 - A contents list on long reviews: collapsed bar on phones, sticky sidebar on wide screens.
 - "Discuss this review with an AI" under each review: opens Claude or ChatGPT with a prompt
   pointing at the raw markdown and asking it to argue with the review rather than summarise it.
+- Comments under every review and under the guide: threaded, with a self-chosen username and
+  no account. Two vote axes — karma (is this a good comment) and agree/disagree — open to
+  anyone, one vote per browser. Each comment records the method version it was written
+  against. Spam defences: honeypot field, per-browser and per-network rate limits, a link cap,
+  duplicate rejection. When signed in, `/admin` sessions see a Hide button on each comment;
+  hidden comments keep their place in a thread so replies are not orphaned.
+- Star ratings, 1–5, one per browser, under each review.
+- The `.md` endpoint for a review appends its comment thread, so a model reading the review
+  sees the discussion too.
 
 Things not built yet, and what each would take, are in `docs/roadmap.md`.
 
 ## Editorial notes
 
 Reviews name real researchers. The About page states plainly that these are one careful reading
-rather than a journal decision, and that corrections and withdrawals are available on request.
-Keep that promise — it is what makes publishing critical reviews of named people defensible.
+rather than a journal decision, and that disagreement goes to the comments first, in the open.
+Reviews do get corrected; the edit history is public.
 
 Papers themselves are never stored in this repository. Only the reviews.

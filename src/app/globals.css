@@ -199,7 +199,11 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
  */
 .review-body { display: block; }
 
-.toc { margin: 0 0 26px; }
+/* Sticky on phones so the bar is always one tap away; the open list caps its own height. */
+.toc {
+  position: sticky; top: 0; z-index: 5; margin: 0 0 26px; padding: 8px 0;
+  background: var(--bg);
+}
 .toc-label { display: none; }
 
 .toc-toggle {
@@ -225,7 +229,7 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .toc[data-open='false'] .toc-list { display: none; }
 .toc[data-open='true'] .toc-list {
   margin-top: 6px; border: 1px solid var(--border); border-radius: var(--radius);
-  overflow: hidden; background: var(--surface);
+  overflow: auto; max-height: 60vh; background: var(--surface);
 }
 .toc-list li + li { border-top: 1px solid var(--border); }
 .toc-list a {
@@ -244,7 +248,8 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
   .review-body .prose { grid-column: 1; min-width: 0; }
 
   .toc {
-    grid-column: 2; grid-row: 1; position: sticky; top: 28px; margin: 0;
+    grid-column: 2; grid-row: 1; position: sticky; top: 28px; margin: 0; padding: 0;
+    z-index: auto; background: none;
     max-height: calc(100vh - 56px); overflow-y: auto;
     font-size: 0.82rem; line-height: 1.4;
   }
@@ -256,7 +261,7 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
   .toc[data-open='false'] .toc-list,
   .toc[data-open='true'] .toc-list {
     display: block; margin: 0; border: 0; border-left: 1px solid var(--border);
-    border-radius: 0; background: none;
+    border-radius: 0; background: none; max-height: none; overflow: visible;
   }
   .toc-list li + li { border-top: 0; }
   .toc-list a {
@@ -270,7 +275,8 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 }
 
 /* Anchors must not land beneath the top of the viewport. */
-.prose h2 { scroll-margin-top: 20px; }
+.prose h2 { scroll-margin-top: 72px; }
+@media (min-width: 1020px) { .prose h2 { scroll-margin-top: 20px; } }
 
 /* Discuss with an AI */
 .discuss {
@@ -299,8 +305,82 @@ button.linkish.inline { font-size: inherit; color: var(--accent); }
 .guide-notes p { margin: 0 0 8px; font-size: 0.85rem; color: var(--muted); }
 .guide-notes ul { margin: 0; padding-left: 18px; font-size: 0.92rem; }
 
+/* ---------- methods ---------- */
+
+.prompt-details { margin: 8px 0 28px; max-width: 42rem; }
+.prompt-details summary {
+  cursor: pointer; font-weight: 550; font-size: 0.95rem; padding: 10px 0; list-style: none;
+  display: flex; align-items: center; gap: 8px;
+}
+.prompt-details summary::-webkit-details-marker { display: none; }
+.prompt-details summary::before {
+  content: ''; width: 7px; height: 7px; border-right: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted); transform: rotate(-45deg); transition: transform 120ms;
+}
+.prompt-details[open] summary::before { transform: rotate(45deg); }
+.prompt-details .hint { font-size: 0.8rem; color: var(--muted); margin: 8px 0 0; }
+.guide-section { margin-top: 12px; }
+.guide-title {
+  font-size: 1.4rem; letter-spacing: -0.02em; line-height: 1.25; margin: 0 0 4px;
+  padding-top: 22px; border-top: 1px solid var(--border);
+}
+
+/* ---------- rating ---------- */
+
+.rating {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px;
+  margin: 32px 0 0; max-width: 42rem;
+}
+.rating-label { font-size: 0.85rem; color: var(--muted); }
+.stars { display: inline-flex; }
+.star {
+  font: inherit; font-size: 1.45rem; line-height: 1; cursor: pointer;
+  background: none; border: 0; padding: 4px 3px; color: var(--border-strong);
+}
+.star.on { color: var(--borderline-fg); }
+.star:disabled { cursor: default; }
+.rating-summary { font-size: 0.85rem; color: var(--muted); }
+
+/* ---------- comments ---------- */
+
+.comments { margin: 44px 0 0; max-width: 42rem; }
+.comments h2 { font-size: 1.15rem; margin: 0 0 6px; letter-spacing: -0.01em; }
+.comments-intro { font-size: 0.88rem; color: var(--muted); margin: 0 0 18px; }
+
+.comment-form { margin: 0 0 22px; }
+.comment-form.reply { margin: 12px 0 8px; padding-left: 14px; border-left: 2px solid var(--border); }
+.comment-form textarea { display: block; width: 100%; margin: 8px 0; }
+.comment-form input[type='text'] { width: 100%; max-width: 18rem; }
+.comment-form-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.comment-form .notice { margin-top: 10px; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.thread { list-style: none; margin: 0; padding: 0; }
+.thread .thread { margin-top: 6px; }
+.comment { padding: 12px 0 4px; border-top: 1px solid var(--border); }
+.comment.hidden > .comment-head, .comment.hidden > .comment-body { opacity: 0.55; }
+.comment-hidden { font-size: 0.82rem; color: var(--muted); margin: 0 0 6px; font-style: italic; }
+.comment-head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 0.82rem; margin-bottom: 4px; }
+.comment-user { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+.comment-version, .comment-time { color: var(--muted); }
+.comment-version { font-size: 0.75rem; padding: 1px 7px; border: 1px solid var(--border); border-radius: 999px; }
+.comment-body { font-size: 0.95rem; line-height: 1.55; }
+.comment-body p { margin: 0 0 8px; white-space: pre-wrap; word-break: break-word; }
+.comment-actions { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin: 2px 0 8px; }
+.vote-group { display: inline-flex; align-items: center; gap: 2px; }
+.vote {
+  font: inherit; font-size: 0.8rem; line-height: 1; cursor: pointer;
+  background: none; border: 1px solid transparent; border-radius: 6px;
+  color: var(--muted); padding: 6px 7px; min-height: 30px;
+}
+.vote:hover { color: var(--text); border-color: var(--border); }
+.vote.on { color: var(--text); background: var(--surface-2); border-color: var(--border-strong); }
+.vote.agree { font-size: 0.78rem; }
+.vote-count { font-size: 0.82rem; min-width: 1.4em; text-align: center; color: var(--text); font-variant-numeric: tabular-nums; }
+.comment-actions .linkish { font-size: 0.8rem; }
+
 /* Context beyond the paper */
-.context-panel { margin: 26px 0 0; }
+.context-panel { margin: 40px 0 0; max-width: 42rem; }
 .context-panel h3 {
   font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em;
   color: var(--muted); margin: 0 0 9px; font-weight: 600;

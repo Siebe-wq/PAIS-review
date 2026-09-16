@@ -1,0 +1,330 @@
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import type { CommentNode, TargetType } from '@/lib/comments';
+
+const USERNAME_KEY = 'pais_username';
+const MAX_INDENT = 4;
+
+interface Loaded {
+  configured: boolean;
+  admin: boolean;
+  comments: CommentNode[];
+  version: string | null;
+}
+
+function timeAgo(iso: string): string {
+  const seconds = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = seconds / 60;
+  if (minutes < 60) return `${Math.floor(minutes)} min ago`;
+  const hours = minutes / 60;
+  if (hours < 24) return `${Math.floor(hours)} h ago`;
+  const days = hours / 24;
+  if (days < 30) return `${Math.floor(days)} d ago`;
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+/**
+ * Threaded comments with two vote axes: karma (is this a good comment?) and
+ * agree/disagree (do you think it is right?). Anyone can post with a self-chosen
+ * username; no account. Each comment records the guide version it was written against.
+ */
+export function Comments({ type, slug }: { type: TargetType; slug: string }) {
+  const [data, setData] = useState<Loaded | null>(null);
+  const [username, setUsername] = useState('');
+  const [replyTo, setReplyTo] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/comments?type=${type}&slug=${encodeURIComponent(slug)}`);
+      setData((await response.json()) as Loaded);
+    } catch {
+      setData({ configured: false, admin: false, comments: [], version: null });
+    }
+  }, [type, slug]);
+
+  useEffect(() => {
+    load();
+    try {
+      setUsername(localStorage.getItem(USERNAME_KEY) ?? '');
+    } catch {
+      // Storage blocked: the name just is not remembered.
+    }
+  }, [load]);
+
+  if (!data || !data.configured) return null;
+
+  async function castVote(commentId: number, axis: 'karma' | 'agree', value: -1 | 0 | 1) {
+    setError(null);
+    const response = await fetch('/api/comments/vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commentId, axis, value }),
+    });
+    if (!response.ok) {
+      const json = (await response.json().catch(() => ({}))) as { error?: string };
+      setError(json.error ?? 'Could not vote.');
+      return;
+    }
+    load();
+  }
+
+  async function moderate(commentId: number, hidden: boolean) {
+    await fetch('/api/comments/moderate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commentId, hidden }),
+    });
+    load();
+  }
+
+  const count = countVisible(data.comments);
+
+  return (
+    <section className="comments" id="comments">
+      <h2>
+        {count === 0 ? 'Comments' : `${count} comment${count === 1 ? '' : 's'}`}
+      </h2>
+      <p className="comments-intro">
+        Think the review is wrong, or missed something? Say so here. Votes are open to anyone;
+        each comment shows which version of the method it was written against.
+      </p>
+
+      {replyTo === null && (
+        <CommentForm
+          type={type}
+          slug={slug}
+          parentId={null}
+          username={username}
+          onUsername={setUsername}
+          onPosted={() => load()}
+        />
+      )}
+
+      {error && <div className="notice err">{error}</div>}
+
+      <ul className="thread">
+        {data.comments.map((node) => (
+          <CommentItem
+            key={node.id}
+            node={node}
+            depth={0}
+            admin={data.admin}
+            replyTo={replyTo}
+            onReply={setReplyTo}
+            onVote={castVote}
+            onModerate={moderate}
+            form={(parentId) => (
+              <CommentForm
+                type={type}
+                slug={slug}
+                parentId={parentId}
+                username={username}
+                onUsername={setUsername}
+                onPosted={() => {
+                  setReplyTo(null);
+                  load();
+                }}
+                onCancel={() => setReplyTo(null)}
+              />
+            )}
+          />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function countVisible(nodes: CommentNode[]): number {
+  return nodes.reduce((n, node) => n + (node.hidden ? 0 : 1) + countVisible(node.replies), 0);
+}
+
+function CommentItem({
+  node,
+  depth,
+  admin,
+  replyTo,
+  onReply,
+  onVote,
+  onModerate,
+  form,
+}: {
+  node: CommentNode;
+  depth: number;
+  admin: boolean;
+  replyTo: number | null;
+  onReply: (id: number | null) => void;
+  onVote: (id: number, axis: 'karma' | 'agree', value: -1 | 0 | 1) => void;
+  onModerate: (id: number, hidden: boolean) => void;
+  form: (parentId: number) => React.ReactNode;
+}) {
+  const indent = Math.min(depth, MAX_INDENT);
+  const toggle = (axis: 'karma' | 'agree', value: 1 | -1) =>
+    onVote(node.id, axis, node.mine[axis] === value ? 0 : value);
+
+  return (
+    <li className={`comment${node.hidden ? ' hidden' : ''}`} style={{ marginLeft: indent ? `${indent * 18}px` : 0 }}>
+      {node.hidden && !admin ? (
+        <p className="comment-hidden">Comment hidden by the editor.</p>
+      ) : (
+        <>
+          <div className="comment-head">
+            <span className="comment-user">{node.username}</span>
+            {node.version && <span className="comment-version">on v{node.version}</span>}
+            <span className="comment-time">{timeAgo(node.createdAt)}</span>
+            {node.hidden && <span className="comment-version">hidden</span>}
+          </div>
+          <div className="comment-body">
+            {node.body.split(/\n{2,}/).map((para, index) => (
+              <p key={index}>{para}</p>
+            ))}
+          </div>
+          <div className="comment-actions">
+            <span className="vote-group" title="Is this a good comment?">
+              <button type="button" className={`vote${node.mine.karma === 1 ? ' on' : ''}`} onClick={() => toggle('karma', 1)} aria-label="Upvote">▲</button>
+              <span className="vote-count">{node.karma}</span>
+              <button type="button" className={`vote${node.mine.karma === -1 ? ' on' : ''}`} onClick={() => toggle('karma', -1)} aria-label="Downvote">▼</button>
+            </span>
+            <span className="vote-group" title="Do you think it is right?">
+              <button type="button" className={`vote agree${node.mine.agree === 1 ? ' on' : ''}`} onClick={() => toggle('agree', 1)}>
+                Agree {node.agree > 0 ? node.agree : ''}
+              </button>
+              <button type="button" className={`vote agree${node.mine.agree === -1 ? ' on' : ''}`} onClick={() => toggle('agree', -1)}>
+                Disagree {node.disagree > 0 ? node.disagree : ''}
+              </button>
+            </span>
+            <button type="button" className="linkish" onClick={() => onReply(replyTo === node.id ? null : node.id)}>
+              Reply
+            </button>
+            {admin && (
+              <button type="button" className="linkish" onClick={() => onModerate(node.id, !node.hidden)}>
+                {node.hidden ? 'Unhide' : 'Hide'}
+              </button>
+            )}
+          </div>
+        </>
+      )}
+
+      {replyTo === node.id && form(node.id)}
+
+      {node.replies.length > 0 && (
+        <ul className="thread">
+          {node.replies.map((child) => (
+            <CommentItem
+              key={child.id}
+              node={child}
+              depth={depth + 1}
+              admin={admin}
+              replyTo={replyTo}
+              onReply={onReply}
+              onVote={onVote}
+              onModerate={onModerate}
+              form={form}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+}
+
+function CommentForm({
+  type,
+  slug,
+  parentId,
+  username,
+  onUsername,
+  onPosted,
+  onCancel,
+}: {
+  type: TargetType;
+  slug: string;
+  parentId: number | null;
+  username: string;
+  onUsername: (name: string) => void;
+  onPosted: () => void;
+  onCancel?: () => void;
+}) {
+  const [body, setBody] = useState('');
+  const [website, setWebsite] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, slug, parentId, username, body, website }),
+      });
+      const json = (await response.json()) as { ok?: boolean; error?: string };
+      if (json.ok) {
+        try {
+          localStorage.setItem(USERNAME_KEY, username.trim());
+        } catch {
+          // fine
+        }
+        setBody('');
+        onPosted();
+      } else {
+        setError(json.error ?? 'Could not post the comment.');
+      }
+    } catch {
+      setError('Could not reach the server.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form className={`comment-form${parentId !== null ? ' reply' : ''}`} onSubmit={submit}>
+      <div className="comment-form-row">
+        <input
+          type="text"
+          placeholder="Your name"
+          aria-label="Your name"
+          value={username}
+          onChange={(event) => onUsername(event.target.value)}
+          maxLength={32}
+          required
+        />
+      </div>
+      <textarea
+        placeholder={parentId === null ? 'Write a comment' : 'Write a reply'}
+        aria-label={parentId === null ? 'Comment' : 'Reply'}
+        rows={4}
+        value={body}
+        onChange={(event) => setBody(event.target.value)}
+        maxLength={4000}
+        required
+      />
+      {/* Honeypot: hidden from people, filled by bots. */}
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        value={website}
+        onChange={(event) => setWebsite(event.target.value)}
+        className="hp"
+        aria-hidden="true"
+      />
+      <div className="comment-form-row">
+        <button className="primary" type="submit" disabled={busy}>
+          {busy ? 'Posting…' : parentId === null ? 'Post comment' : 'Post reply'}
+        </button>
+        {onCancel && (
+          <button type="button" className="linkish" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
+      </div>
+      {error && <div className="notice err">{error}</div>}
+    </form>
+  );
+}

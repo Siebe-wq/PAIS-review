@@ -7,6 +7,8 @@ import { extractToc } from '@/lib/toc';
 import { TableOfContents } from '@/components/TableOfContents';
 import { Authors } from '@/components/Authors';
 import { DiscussWithAI } from '@/components/DiscussWithAI';
+import { Rating } from '@/components/Rating';
+import { Comments } from '@/components/Comments';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { Markdown } from '@/components/Markdown';
 import { site } from '@/lib/site';
@@ -136,30 +138,6 @@ export default async function ReviewPage({ params }: Params) {
           </div>
         )}
 
-        {review.context && review.context.length > 0 && (
-          <section className="context-panel">
-            <h3>Context beyond the paper</h3>
-            <ul>
-              {review.context.map((item) => (
-                <li key={item.note}>
-                  {item.note}{' '}
-                  {item.source ? (
-                    <a href={item.source} target="_blank" rel="noreferrer">
-                      Source
-                    </a>
-                  ) : (
-                    <span className="unsourced">(no source given)</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-            <p className="context-note">
-              These are facts about the circumstances around the work, not part of the
-              assessment of its methods. They are listed so readers can weigh them
-              themselves, not as a claim that the findings are wrong.
-            </p>
-          </section>
-        )}
       </header>
 
       <div className="review-body">
@@ -167,11 +145,36 @@ export default async function ReviewPage({ params }: Params) {
         <Markdown>{review.body}</Markdown>
       </div>
 
+      {review.context && review.context.length > 0 && (
+        <section className="context-panel">
+          <h3>Context beyond the paper</h3>
+          <ul>
+            {review.context.map((item) => (
+              <li key={item.note}>
+                {item.note}{' '}
+                {item.source ? (
+                  <a href={item.source} target="_blank" rel="noreferrer">
+                    Source
+                  </a>
+                ) : (
+                  <span className="unsourced">(no source given)</span>
+                )}
+              </li>
+            ))}
+          </ul>
+          <p className="context-note">
+            These are facts about the circumstances around the work, not part of the
+            assessment of its methods. They are listed so readers can weigh them
+            themselves, not as a claim that the findings are wrong.
+          </p>
+        </section>
+      )}
+
       {review.guideNotes && review.guideNotes.length > 0 && (
         <aside className="guide-notes">
           <h3>Notes for the guide</h3>
           <p>
-            Points this paper raised that the <Link href="/guide">guide</Link> does not yet cover.
+            Points this paper raised that the <Link href="/methods">guide</Link> does not yet cover.
             They are not applied to this review; the editor decides what goes into the next version.
           </p>
           <ul>
@@ -182,12 +185,16 @@ export default async function ReviewPage({ params }: Params) {
         </aside>
       )}
 
+      <Rating slug={review.slug} />
+
       <DiscussWithAI rawUrl={`${site.url}/reviews/${review.slug}.md`} title={review.title} doi={review.doi} />
+
+      <Comments type="review" slug={review.slug} />
 
       <aside className="provenance">
         <p>
           Written by {review.model ?? 'an unrecorded Claude model'} against{' '}
-          <Link href="/guide">the review guide</Link>
+          <Link href="/methods">the guide</Link>
           {review.guideVersion ? ` (v${review.guideVersion})` : ''}, then read and published by{' '}
           {site.editor}. The grade is a judgement about this paper&rsquo;s evidence, not a
           statement about the researchers.

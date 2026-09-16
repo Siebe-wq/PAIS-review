@@ -6,61 +6,28 @@ point is. Things already built are in the README, not here.
 
 ## Near term
 
-### Reader ratings (1–5 stars on each review)
+### Comments and ratings — built
 
-**What it takes.** A place to store votes (Vercel Postgres, Supabase, or Cloudflare D1 —
-all have free tiers), one API route to record a vote, one to read the average, and a
-widget under each review. Half a day.
+Both exist now. What they still lack, and what it would take:
 
-**The problem is the data, not the build.** Anonymous stars are trivially gamed and say
-more about who turned up than about the review: a review that annoys a researcher's
-followers will get one-starred, one that pleases a patient community will get five. Your
-note already says the long-term fix is weighting by expertise and down-weighting people
-who rate everything five — and both need users, so this is really the same project as
-accounts (below). Until then, a rating is a number that looks like information and isn't.
-
-**What I'd do instead first.** A one-question reaction that produces a usable signal
-without accounts: "Did this review help you understand the paper?" Yes / No, plus an
-optional free-text "what's wrong with it?". The free text is the useful part — it feeds
-the corrections process — and yes/no is hard to weaponise because it isn't a judgement of
-the paper.
+- **Weighting by expertise, down-weighting people who rate everything five.** Needs users.
+  ORCID login is the honest route for "verified researcher" and is free; a magic-link email
+  account is enough for everyone else. Not worth building until there are enough votes for
+  the weighting to matter.
+- **A real spam filter.** The current defences (honeypot, rate limits, link cap, duplicate
+  rejection) stop bots and repeats, not a person. Akismet is cheap if it becomes a problem.
+- **Notifications.** Nobody is told when someone replies to them. Needs an email on the
+  comment, which is a small privacy decision.
 
 ### Request a review
 
-**What it takes.** A form (DOI or link, optional note, optional email), a table to hold
-requests, and a "Requests" section in `/admin` with approve / decline. If friends should
-skip the queue, an invite link that sets a cookie marking their requests pre-approved.
-Same storage decision as ratings; about a day including the admin side.
+**What it takes.** A form (DOI or link, optional note), a table, and a "Requests" section in
+`/admin` with approve / decline. If friends should skip the queue, an invite link that sets a
+cookie marking their requests pre-approved. The database now exists, so this is half a day.
 
-**Decisions.** Do requesters upload a PDF? If yes, files must be private and deleted
-after review — a paywalled paper sitting in your storage is a copyright problem the review
-itself is not. Do you show a public "requested, not yet reviewed" list? That sets
-expectations you may not want to be held to at four hours a week.
-
-### Comments, with votes, nesting and agree/disagree
-
-**What it takes.** This is the largest item and it changes what the site is. You need
-identity (even lightweight — email magic link), storage, a moderation queue, a spam filter
-(Akismet is cheap and works; or require a signed-in account, which kills most spam by
-itself), nested rendering, two vote axes, and an abuse path. Two to three days to do
-properly, and then it costs you time every week for as long as it exists.
-
-**The parts that are cheap once the rest exists.** Auto-stamping the guide or review
-version on every comment is one field written at post time — trivial. Making comments
-readable to a model is just including them in the `.md` endpoint under a `## Comments`
-heading — also trivial.
-
-**The real question.** Moderation. These reviews criticise named researchers. Comments
-under them will attract the researchers, their students, patients with strong views, and
-people who want a fight. Someone has to read every comment before or shortly after it
-goes up, and that someone has four hours a week. The EA Forum model you cite works
-because the forum has full-time moderators.
-
-**A middle path worth considering.** No comments on the site. Instead, a "Discuss" link per
-review to a thread somewhere that already has moderation and identity — a GitHub
-Discussion on this repo, or a Bluesky/Mastodon post — and pull the thread's URL back onto
-the review page. You get discussion, provenance and version-stamping (the thread is
-created with the version in its title) for zero build and zero moderation burden.
+**Decisions.** Do requesters upload a PDF? If yes, files must be private and deleted after
+review. Do you show a public "requested, not yet reviewed" list? That sets expectations you
+may not want to be held to at four hours a week.
 
 ### Bulk import of two years of reviews
 
