@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { buildReviewFile, passwordMatches, type PublishInput } from '@/lib/publish';
+import { buildReviewFile, passwordMatches } from '@/lib/publish';
 import { GithubError, getFileSha, getGithubConfig, putFile } from '@/lib/github';
 
 export const runtime = 'nodejs';
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let input: PublishInput & { password?: string; overwrite?: boolean };
+  let input: { body?: string; slug?: string; password?: string; overwrite?: boolean };
   try {
     input = await request.json();
   } catch {
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
   let built;
   try {
-    built = buildReviewFile(input);
+    built = buildReviewFile(input.body ?? '', input.slug);
   } catch (error) {
     return fail(error instanceof Error ? error.message : 'Could not build the review.', 400);
   }
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     if (sha && !input.overwrite) {
       return NextResponse.json(
         {
-          error: `A review already exists at ${path}. Tick "replace" to overwrite it.`,
+          error: `A review already exists at ${built.slug}.md. Tick "replace" to overwrite it.`,
           exists: true,
         },
         { status: 409 },
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       github,
       path,
       built.markdown,
-      `${sha ? 'Update' : 'Publish'} review: ${built.title}`,
+      `${sha ? 'Update' : 'Publish'} review: ${built.review.title}`,
       sha,
     );
 

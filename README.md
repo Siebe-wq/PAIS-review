@@ -16,15 +16,17 @@ Two routes, both of which end up as a commit to `content/reviews/`.
 file, and builds the site to check the frontmatter parses. Review what it wrote, then commit
 and push. Vercel redeploys.
 
-**From the browser.** Go to `/admin`, enter the admin password, paste the review, and publish.
-That commits the file through the GitHub API, which triggers the same redeploy. If you paste a
-whole review file including its frontmatter, the frontmatter wins and you can leave the form
-fields empty.
+**From the browser.** Go to `/admin`, enter the admin password, and paste the whole review file
+into the box — frontmatter and all, exactly as Claude wrote it. Everything is read from that
+frontmatter, so there are no fields to fill in by hand. A preview appears underneath showing the
+review exactly as it will look on the index; if the frontmatter is missing something, you get a
+named error instead. Publishing commits the file through the GitHub API, which triggers the same
+redeploy.
 
-`/admin` also has an "Edit a page" section below the review form, for the About page and the
-guide. It loads the page's current markdown into a text box — frontmatter included — and
-publishes edits the same way. That's the friendliest way to change site copy without touching
-code; there's no rich-text editor, just plain markdown headings and paragraphs.
+The filename is derived from the title. Override it only if you want something shorter.
+
+The "Edit a page" tab does the same thing for the About page and the guide: it loads the page's
+current markdown, you edit it, and publishing commits it. Plain markdown, no rich-text editor.
 
 ## Review file format
 

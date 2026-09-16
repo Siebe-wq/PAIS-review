@@ -1,14 +1,8 @@
 import type { Metadata } from 'next';
-import { AdminForm } from '@/components/AdminForm';
-import { DocEditor } from '@/components/DocEditor';
+import { AdminPanel } from '@/components/AdminPanel';
 
-export const metadata: Metadata = { title: 'Publish a review', robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: 'Admin', robots: { index: false, follow: false } };
 
 export default function AdminPage() {
-  return (
-    <>
-      <AdminForm />
-      <DocEditor />
-    </>
-  );
+  return <AdminPanel />;
 }

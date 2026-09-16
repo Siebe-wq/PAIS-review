@@ -1,17 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
 import type { Review } from '@/lib/types';
-import { ScoreBadge } from './ScoreBadge';
+import { ReviewCard } from './ReviewCard';
 
 export type ReviewSummary = Omit<Review, 'body'>;
 
 type Sort = 'newest' | 'oldest' | 'score-desc' | 'score-asc';
-
-function citation(r: ReviewSummary): string {
-  return [r.authors, r.journal, r.year].filter(Boolean).join(' · ');
-}
 
 export function ReviewIndex({
   reviews,
@@ -87,28 +82,7 @@ export function ReviewIndex({
         <ul className="review-list">
           {shown.map((review) => (
             <li key={review.slug}>
-              <article className="card">
-                <ScoreBadge score={review.score} />
-                <div className="card-main">
-                  <h2>
-                    <Link href={`/reviews/${review.slug}`}>{review.title}</Link>
-                  </h2>
-                  <p className="cite">{citation(review)}</p>
-                  <p className="verdict">{review.verdict}</p>
-                  <div className="chip-row">
-                    {review.weaknesses?.slice(0, 3).map((w) => (
-                      <span className="chip weakness" key={w}>
-                        {w}
-                      </span>
-                    ))}
-                    {review.strengths?.slice(0, 2).map((s) => (
-                      <span className="chip strength" key={s}>
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </article>
+              <ReviewCard review={review} href={`/reviews/${review.slug}`} />
             </li>
           ))}
         </ul>

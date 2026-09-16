@@ -14,11 +14,10 @@ interface Result {
   error?: string;
 }
 
-export function DocEditor() {
+export function DocEditor({ password }: { password: string }) {
   const [name, setName] = useState('about');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
-  const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
 
@@ -65,58 +64,41 @@ export function DocEditor() {
   }
 
   return (
-    <div className="admin">
-      <h1>Edit a page</h1>
-      <p>
-        Edits the About page or the review guide directly, frontmatter and all. If you change the
-        guide, bump its <code>version</code> field at the top — reviews record which version they
-        were written under, so this is how a reader can tell whether a review used the current
-        standard.
-      </p>
+    <form onSubmit={onSubmit}>
+      <div className="field">
+        <label htmlFor="doc-name">Page</label>
+        <select id="doc-name" value={name} onChange={(event) => setName(event.target.value)}>
+          {PAGES.map((page) => (
+            <option key={page.value} value={page.value}>
+              {page.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <form onSubmit={onSubmit}>
-        <div className="field">
-          <label htmlFor="doc-name">Page</label>
-          <select id="doc-name" value={name} onChange={(e) => setName(e.target.value)}>
-            {PAGES.map((page) => (
-              <option key={page.value} value={page.value}>
-                {page.label}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="field">
+        <label htmlFor="doc-content">Content</label>
+        <textarea
+          id="doc-content"
+          rows={22}
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          disabled={loading}
+          required
+        />
+        <p className="hint">
+          {loading
+            ? 'Loading the current content…'
+            : name === 'guide'
+              ? 'Markdown. Bump the version field at the top whenever the standard itself changes — reviews record which version they were written under.'
+              : 'Markdown, including the frontmatter block at the top.'}
+        </p>
+      </div>
 
-        <div className="field">
-          <label htmlFor="doc-content">Content</label>
-          <textarea
-            id="doc-content"
-            rows={20}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            disabled={loading}
-            required
-          />
-          <p className="hint">
-            {loading ? 'Loading the current content…' : 'Markdown, including the frontmatter block at the top.'}
-          </p>
-        </div>
-
-        <div className="field">
-          <label htmlFor="doc-password">Password</label>
-          <input
-            id="doc-password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <button className="primary" type="submit" disabled={busy || loading}>
-          {busy ? 'Publishing…' : 'Publish'}
-        </button>
-      </form>
+      <button className="primary" type="submit" disabled={busy || loading || !password}>
+        {busy ? 'Publishing…' : 'Publish'}
+      </button>
+      {!password && <p className="hint">Enter the admin password above to publish.</p>}
 
       {result?.ok && (
         <div className="notice ok">
@@ -134,6 +116,6 @@ export function DocEditor() {
         </div>
       )}
       {result?.error && <div className="notice err">{result.error}</div>}
-    </div>
+    </form>
   );
 }

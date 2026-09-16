@@ -1,27 +1,6 @@
 import matter from 'gray-matter';
 import { createHash, timingSafeEqual } from 'node:crypto';
-
-export interface PublishInput {
-  slug?: string;
-  title?: string;
-  authors?: string;
-  journal?: string;
-  year?: string | number;
-  doi?: string;
-  url?: string;
-  conditions?: string;
-  studyType?: string;
-  score?: string | number;
-  verdict?: string;
-  confidence?: string;
-  importance?: string;
-  strengths?: string;
-  weaknesses?: string;
-  reviewedOn?: string;
-  guideVersion?: string;
-  model?: string;
-  body?: string;
-}
+import type { ReviewFrontmatter } from './types';
 
 export function slugify(value: string): string {
   return value
@@ -39,100 +18,114 @@ export function passwordMatches(supplied: string, expected: string): boolean {
   return timingSafeEqual(digest(supplied), digest(expected));
 }
 
-const splitLines = (value?: string): string[] =>
-  (value ?? '')
-    .split('\n')
-    .map((line) => line.replace(/^\s*[-*]\s*/, '').trim())
-    .filter(Boolean);
-
-const splitCommas = (value?: string): string[] =>
-  (value ?? '')
-    .split(',')
-    .map((part) => part.trim())
-    .filter(Boolean);
-
 export interface BuiltReview {
   slug: string;
   markdown: string;
-  title: string;
+  /** Normalised frontmatter, for previewing the card before publishing. */
+  review: ReviewFrontmatter;
 }
 
+const strings = (value: unknown): string[] =>
+  Array.isArray(value) ? value.map((v) => String(v).trim()).filter(Boolean) : [];
+
+const text = (value: unknown): string | undefined => {
+  const out = typeof value === 'string' ? value.trim() : value != null ? String(value).trim() : '';
+  return out || undefined;
+};
+
+const level = (value: unknown): 'high' | 'moderate' | 'low' | undefined => {
+  const out = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  return out === 'high' || out === 'moderate' || out === 'low' ? out : undefined;
+};
+
 /**
- * Builds the review file. If `body` already carries YAML frontmatter — which is
- * what Claude produces when it writes a whole review file — that frontmatter wins
- * and the form fields only fill the gaps.
+ * Parses a complete review file — the whole thing Claude writes, frontmatter and all —
+ * and normalises it into the file that gets committed. There are no separate form
+ * fields: everything comes from the pasted frontmatter, so what you publish is exactly
+ * what you reviewed.
+ *
+ * `slugOverride` only renames the file; it never changes the content.
  */
-export function buildReviewFile(input: PublishInput): BuiltReview {
-  const raw = (input.body ?? '').trim();
-  const pasted = raw.startsWith('---') ? matter(raw) : { data: {}, content: raw };
-  const pastedData = pasted.data as Record<string, unknown>;
+export function buildReviewFile(raw: string, slugOverride?: string): BuiltReview {
+  const source = (raw ?? '').trim();
+  if (!source) throw new Error('Nothing pasted yet.');
 
-  const pick = <T,>(fromPaste: unknown, fromForm: T | undefined): T | undefined =>
-    fromPaste !== undefined && fromPaste !== null && fromPaste !== ''
-      ? (fromPaste as T)
-      : fromForm;
+  if (!source.startsWith('---')) {
+    throw new Error(
+      'No frontmatter found. The review needs to start with a --- block carrying at least title, score and verdict.',
+    );
+  }
 
-  const title = String(pick(pastedData.title, input.title) ?? '').trim();
-  if (!title) throw new Error('Title is required.');
+  let parsed;
+  try {
+    parsed = matter(source);
+  } catch (error) {
+    throw new Error(
+      `The frontmatter is not valid YAML: ${error instanceof Error ? error.message.split('\n')[0] : 'unknown error'}`,
+    );
+  }
 
-  const scoreRaw = pick(pastedData.score, input.score);
-  const score = typeof scoreRaw === 'number' ? scoreRaw : Number(scoreRaw);
+  const data = parsed.data as Record<string, unknown>;
+
+  const title = text(data.title);
+  if (!title) throw new Error('Frontmatter is missing "title".');
+
+  const score = typeof data.score === 'number' ? data.score : Number(data.score);
   if (!Number.isFinite(score) || score < 0 || score > 10) {
-    throw new Error('Score must be a number from 0 to 10.');
+    throw new Error(
+      data.score == null
+        ? 'Frontmatter is missing "score".'
+        : `"score" must be a number from 0 to 10, got ${String(data.score)}.`,
+    );
   }
 
-  const verdict = String(pick(pastedData.verdict, input.verdict) ?? '').trim();
-  if (!verdict) throw new Error('Verdict is required — one sentence a reader can act on.');
+  const verdict = text(data.verdict);
+  if (!verdict) {
+    throw new Error('Frontmatter is missing "verdict" — one sentence for the index page.');
+  }
 
-  const content = pasted.content.trim();
-  if (!content) throw new Error('The review body is empty.');
+  const content = parsed.content.trim();
+  if (!content) throw new Error('The review body is empty — only frontmatter was pasted.');
 
-  const reviewedOnRaw: unknown = pick(pastedData.reviewedOn, input.reviewedOn);
+  // gray-matter turns an unquoted YAML date into a Date object.
   const reviewedOn =
-    reviewedOnRaw instanceof Date
-      ? reviewedOnRaw.toISOString().slice(0, 10)
-      : String(reviewedOnRaw ?? '').slice(0, 10) || new Date().toISOString().slice(0, 10);
+    data.reviewedOn instanceof Date
+      ? data.reviewedOn.toISOString().slice(0, 10)
+      : String(data.reviewedOn ?? '').slice(0, 10) || new Date().toISOString().slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(reviewedOn)) {
-    throw new Error('Reviewed date must be YYYY-MM-DD.');
+    throw new Error(`"reviewedOn" must be a YYYY-MM-DD date, got ${String(data.reviewedOn)}.`);
   }
 
-  const yearRaw = pick(pastedData.year, input.year);
-  const year = Number(yearRaw);
+  const year = Number(data.year);
 
-  const list = (fromPaste: unknown, fromForm: string | undefined, mode: 'lines' | 'commas') =>
-    Array.isArray(fromPaste)
-      ? fromPaste.map((v) => String(v).trim()).filter(Boolean)
-      : mode === 'lines'
-        ? splitLines(fromForm)
-        : splitCommas(fromForm);
-
-  const data: Record<string, unknown> = {
+  const review: ReviewFrontmatter = {
     title,
-    authors: pick(pastedData.authors, input.authors) || undefined,
-    journal: pick(pastedData.journal, input.journal) || undefined,
+    authors: text(data.authors),
+    journal: text(data.journal),
     year: Number.isFinite(year) && year > 0 ? year : undefined,
-    doi: pick(pastedData.doi, input.doi) || undefined,
-    url: pick(pastedData.url, input.url) || undefined,
-    conditions: list(pastedData.conditions, input.conditions, 'commas'),
-    studyType: pick(pastedData.studyType, input.studyType) || undefined,
+    doi: text(data.doi),
+    url: text(data.url),
+    conditions: strings(data.conditions),
+    studyType: text(data.studyType),
     score,
     verdict,
-    confidence: pick(pastedData.confidence, input.confidence) || undefined,
-    importance: pick(pastedData.importance, input.importance) || undefined,
-    strengths: list(pastedData.strengths, input.strengths, 'lines'),
-    weaknesses: list(pastedData.weaknesses, input.weaknesses, 'lines'),
+    confidence: level(data.confidence),
+    importance: level(data.importance),
+    strengths: strings(data.strengths),
+    weaknesses: strings(data.weaknesses),
     reviewedOn,
-    guideVersion: pick(pastedData.guideVersion, input.guideVersion) || undefined,
-    model: pick(pastedData.model, input.model) || 'Claude',
+    guideVersion: text(data.guideVersion),
+    model: text(data.model) ?? 'Claude',
   };
 
-  for (const key of Object.keys(data)) {
-    const value = data[key];
-    if (value === undefined || (Array.isArray(value) && value.length === 0)) delete data[key];
+  const out: Record<string, unknown> = { ...review };
+  for (const key of Object.keys(out)) {
+    const value = out[key];
+    if (value === undefined || (Array.isArray(value) && value.length === 0)) delete out[key];
   }
 
-  const slug = slugify(input.slug || String(pastedData.slug ?? '') || title);
-  if (!slug) throw new Error('Could not derive a slug — give the review a filename.');
+  const slug = slugify(slugOverride || text(data.slug) || title);
+  if (!slug) throw new Error('Could not work out a filename. Set one below.');
 
-  return { slug, title, markdown: matter.stringify(content, data) };
+  return { slug, review, markdown: matter.stringify(content, out) };
 }
