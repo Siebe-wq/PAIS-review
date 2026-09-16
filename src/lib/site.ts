@@ -5,6 +5,10 @@ export const site = {
   description:
     'Rigorous, openly published reviews of papers on ME/CFS, Long Covid and related infection-associated chronic illnesses. Each review is written by Claude against a published guide and checked before publication.',
   editor: 'Siebe Rozendal',
-  /** Set NEXT_PUBLIC_SITE_URL in Vercel once you have a domain. */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  /**
+   * Set NEXT_PUBLIC_SITE_URL in Vercel once you have a domain. Falls back on an empty
+   * string too, not just unset — Vercel's env-var autodetect from .env.example creates
+   * blank entries rather than leaving the variable absent.
+   */
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
 };
