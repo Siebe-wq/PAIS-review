@@ -1,14 +1,10 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.3"
+version: "0.3.1"
 updated: 2026-09-16
-authors: Siebe Rozendal, Claude
-source: https://docs.google.com/document/d/1ByGQkEYnSkp0MEMCJXaKENt7NcaUicQKcutMfZKq71w/edit
----
+authors: Siebe Rozendal (main), Claude
 
-This is the standard every review on this site is written against. It is deliberately
-specific to post-acute infection syndromes, because the usual generic appraisal
-checklists miss most of what goes wrong in this field.
+---
 
 ## Sample selection
 
@@ -86,10 +82,7 @@ getting to the testing site, so the delta HR is often lower because the resting 
 somewhat elevated. Blood levels vary across the day. Images need to be interpreted.
 
 The reverse also holds: subjective, patient-reported outcomes are not automatically
-disqualifying. They can be acceptable when the trial is properly blinded — participants and
-assessors cannot tell who received the intervention — and the instrument has been validated in
-this population. The problem with subjective outcomes is expectation, and blinding is what
-removes it. Unblinded plus subjective is the combination that cannot carry a claim.
+disqualifying. They can be acceptable when the trial is properly blinded and the instrument has been validated in this population.
 
 Fatigue scales are not always very valid. The same goes for depression scales that include
 items like "I have trouble getting out of bed", or anxiety scales that include "I worry about
@@ -179,6 +172,7 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
+- **0.3.1** (2026-09-16) - Edited out some AI additions to this guide.
 - **0.3** (2026-09-16) — Outcome measures: subjective, patient-reported outcomes are acceptable
   when the trial is properly blinded and the instrument is validated in this population. The
   reviewing instructions and the project prompt now carry the same version number as the guide
