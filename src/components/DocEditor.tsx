@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 const PAGES = [
   { value: 'about', label: 'About page' },
   { value: 'guide', label: 'Review guide' },
+  { value: 'instructions', label: 'Reviewing instructions' },
 ];
 
 interface Result {
@@ -95,7 +96,9 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
             ? 'Loading the current content…'
             : name === 'guide'
               ? 'Markdown. Bump the version field at the top whenever the standard itself changes — reviews record which version they were written under.'
-              : 'Markdown, including the frontmatter block at the top.'}
+              : name === 'instructions'
+                ? 'Served at /instructions.md. {{GUIDE_VERSION}} and {{SITE_URL}} are filled in when it is served, so never hard-code them.'
+                : 'Markdown, including the frontmatter block at the top.'}
         </p>
       </div>
 

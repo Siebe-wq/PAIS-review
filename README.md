@@ -32,8 +32,8 @@ invents a grade, never softens a judgement, and never appends a section summaris
 changed. If the source states no overall grade, it leaves the score unset for you to fill in
 rather than guessing one. Needs `ANTHROPIC_API_KEY`; see the deployment table below.
 
-For reviews written in a claude.ai project, `docs/project-instructions.md` holds a block to
-paste into that project's custom instructions, so its output already matches this format.
+For reviews written in a claude.ai project, point that project at
+`https://pais-review.vercel.app/instructions.md` — see "One source of truth" below.
 
 The "Edit a page" tab does the same thing for the About page and the guide: it loads the page's
 current markdown, you edit it, and publishing commits it. Plain markdown, no rich-text editor.
@@ -93,15 +93,36 @@ each note should carry a `source` URL; the site marks unsourced notes as unsourc
 warns before publishing one. They render in their own panel, labelled as circumstance rather
 than as part of the methodological assessment.
 
+## One source of truth
+
+The guide lives in exactly one place, `content/guide.md`, and everything else reads it from
+there. Two URLs serve it as plain markdown:
+
+| URL | What it is |
+|---|---|
+| `/guide.md` | The guide itself, raw. |
+| `/instructions.md` | The reviewing instructions, with the guide's current version and the site URL substituted in. |
+
+So a claude.ai project needs only a one-line custom instruction telling it to fetch
+`/instructions.md` before reviewing. Update the guide here and the project follows, with
+nothing to re-upload to Drive, GitHub or the project itself.
+
+Never hard-code a version number in `content/instructions.md`. Write `{{GUIDE_VERSION}}` and
+`{{SITE_URL}}`; both are filled in when the file is served.
+
 ## Updating the guide
 
-Edit the guide from the "Edit a page" tab in `/admin`, or edit `content/guide.md` directly, and
-bump `version` in its frontmatter. Saving from `/admin` is refused if the version is unchanged,
+Edit it from the "Edit a page" tab in `/admin`, or edit `content/guide.md` directly, and bump
+`version` in its frontmatter. Saving from `/admin` is refused if the version is unchanged,
 because forgetting is the normal failure mode and it makes older reviews look current.
 
 Bump the minor version (0.2 → 0.3) for clarifications and additions that would not move a
 grade. Bump the major version (0.x → 1.0) for a new required criterion or a changed scoring
 rule — anything that could change a verdict on a paper already reviewed.
+
+A review that does not state its own `guideVersion` is stamped with whatever the guide is at
+publish time. A review that does state one keeps it, so importing older work does not
+retroactively claim it met the current standard.
 
 ## Running it locally
 

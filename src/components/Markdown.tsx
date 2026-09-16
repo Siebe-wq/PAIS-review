@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { Element, ElementContent } from 'hast';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { headingId } from '@/lib/toc';
 
 /**
  * A paragraph whose whole content is one bold run is being used as a sub-heading —
@@ -21,6 +22,19 @@ function isStandaloneBold(node: Element | undefined): boolean {
   );
 }
 
+/** Plain text of a heading node, for building an anchor id that matches the contents list. */
+function textOf(node: Element | undefined): string {
+  const walk = (children: ElementContent[]): string =>
+    children
+      .map((child) => {
+        if (child.type === 'text') return child.value;
+        if (child.type === 'element') return walk(child.children);
+        return '';
+      })
+      .join('');
+  return walk(node?.children ?? []).trim();
+}
+
 /**
  * Reviews are trusted content, but raw HTML stays disabled anyway — react-markdown
  * ignores it unless rehype-raw is added, and it should not be.
@@ -38,6 +52,9 @@ export function Markdown({ children }: { children: string }) {
           ),
           p: ({ node, children: inner }: { node?: Element; children?: ReactNode }) =>
             isStandaloneBold(node) ? <h3 className="run-in">{inner}</h3> : <p>{inner}</p>,
+          h2: ({ node, children: inner }: { node?: Element; children?: ReactNode }) => (
+            <h2 id={headingId(textOf(node))}>{inner}</h2>
+          ),
         }}
       >
         {children}

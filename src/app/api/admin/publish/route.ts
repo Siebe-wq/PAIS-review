@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { buildReviewFile } from '@/lib/publish';
+import { currentGuideVersion } from '@/lib/doc';
 import { isSignedIn } from '@/lib/session';
 import { GithubError, getFileSha, getGithubConfig, putFile } from '@/lib/github';
 
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
 
   let built;
   try {
-    built = buildReviewFile(input.body ?? '', input.slug);
+    built = buildReviewFile(input.body ?? '', input.slug, currentGuideVersion());
   } catch (error) {
     return fail(error instanceof Error ? error.message : 'Could not build the review.', 400);
   }

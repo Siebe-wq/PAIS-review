@@ -36,3 +36,20 @@ export function getDocSource(name: string): string | undefined {
   if (!fs.existsSync(file)) return undefined;
   return fs.readFileSync(file, 'utf8');
 }
+
+/**
+ * Fills {{GUIDE_VERSION}} and {{SITE_URL}} so a served document never carries a
+ * hand-maintained copy of the version number. There is one place the version lives —
+ * content/guide.md — and everything else reads it from there.
+ */
+export function renderTemplate(body: string, siteUrl: string): string {
+  const guideVersion = getDoc('guide')?.version ?? 'unversioned';
+  return body
+    .replaceAll('{{GUIDE_VERSION}}', guideVersion)
+    .replaceAll('{{SITE_URL}}', siteUrl.replace(/\/$/, ''));
+}
+
+/** The version of the guide as currently deployed. */
+export function currentGuideVersion(): string | undefined {
+  return getDoc('guide')?.version;
+}

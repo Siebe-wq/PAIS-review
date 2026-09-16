@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { buildReviewFile } from '@/lib/publish';
+import { currentGuideVersion } from '@/lib/doc';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { slug, review } = buildReviewFile(input.body ?? '', input.slug);
+    const { slug, review } = buildReviewFile(input.body ?? '', input.slug, currentGuideVersion());
     return NextResponse.json({ ok: true, slug, review });
   } catch (error) {
     return NextResponse.json(

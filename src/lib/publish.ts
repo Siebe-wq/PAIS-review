@@ -90,8 +90,14 @@ const contextOf = (value: unknown): ContextNote[] => {
  * what you reviewed.
  *
  * `slugOverride` only renames the file; it never changes the content.
+ * `fallbackGuideVersion` is stamped only when the review does not state one itself, so a
+ * review written under an older guide keeps its own version.
  */
-export function buildReviewFile(raw: string, slugOverride?: string): BuiltReview {
+export function buildReviewFile(
+  raw: string,
+  slugOverride?: string,
+  fallbackGuideVersion?: string,
+): BuiltReview {
   const source = (raw ?? '').trim();
   if (!source) throw new Error('Nothing pasted yet.');
 
@@ -185,7 +191,7 @@ export function buildReviewFile(raw: string, slugOverride?: string): BuiltReview
     weaknesses: strings(data.weaknesses),
     context: contextOf(data.context),
     reviewedOn,
-    guideVersion: text(data.guideVersion),
+    guideVersion: text(data.guideVersion) ?? fallbackGuideVersion,
     model: text(data.model),
   };
 

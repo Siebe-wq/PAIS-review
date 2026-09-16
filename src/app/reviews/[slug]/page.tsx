@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { citationOf, getAllReviews, getReview, paperLink } from '@/lib/reviews';
 import { KIND_LABELS } from '@/lib/types';
+import { extractToc } from '@/lib/toc';
+import { TableOfContents } from '@/components/TableOfContents';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { Markdown } from '@/components/Markdown';
 import { site } from '@/lib/site';
@@ -28,6 +30,7 @@ export default async function ReviewPage({ params }: Params) {
   if (!review) notFound();
 
   const link = paperLink(review);
+  const toc = extractToc(review.body);
   const reviewedOn = new Date(`${review.reviewedOn}T00:00:00Z`).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'long',
@@ -155,7 +158,10 @@ export default async function ReviewPage({ params }: Params) {
         )}
       </header>
 
-      <Markdown>{review.body}</Markdown>
+      <div className="review-body">
+        <TableOfContents entries={toc} />
+        <Markdown>{review.body}</Markdown>
+      </div>
 
       <aside className="provenance">
         <p>
