@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { dbConfigured } from '@/lib/db';
+import { dbConfigured, describeDbError } from '@/lib/db';
 import { getRating, setRating } from '@/lib/comments';
 import { getReview } from '@/lib/reviews';
 import { attachVoter, newVoter, readVoter } from '@/lib/voter';
@@ -15,7 +15,11 @@ export async function GET(request: Request) {
   if (!dbConfigured()) return NextResponse.json({ configured: false });
   const slug = new URL(request.url).searchParams.get('slug');
   if (!validSlug(slug)) return NextResponse.json({ error: 'Unknown review.' }, { status: 400 });
-  return NextResponse.json({ configured: true, ...(await getRating(slug, readVoter(request))) });
+  try {
+    return NextResponse.json({ configured: true, ...(await getRating(slug, readVoter(request))) });
+  } catch (error) {
+    return NextResponse.json({ configured: true, error: describeDbError(error) }, { status: 503 });
+  }
 }
 
 export async function POST(request: Request) {

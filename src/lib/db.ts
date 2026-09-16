@@ -88,3 +88,35 @@ export function ensureSchema(): Promise<void> {
   }
   return schemaReady;
 }
+
+/**
+ * A plain-English reason for a failed connection, safe to show publicly: never the
+ * host, user or password, only what kind of thing went wrong. The codes are the ones
+ * `pg` and Node put on the error.
+ */
+export function describeDbError(error: unknown): string {
+  const code = typeof error === 'object' && error && 'code' in error ? String((error as { code: unknown }).code) : '';
+  switch (code) {
+    case 'ENOTFOUND':
+    case 'EAI_AGAIN':
+      return 'The database host name could not be resolved. Check DATABASE_URL.';
+    case 'ECONNREFUSED':
+    case 'ETIMEDOUT':
+    case 'ECONNRESET':
+      return 'The database did not answer. It may be paused, or the URL points somewhere wrong.';
+    case '28P01':
+    case '28000':
+      return 'The database rejected the username or password in DATABASE_URL.';
+    case '3D000':
+      return 'The database named in DATABASE_URL does not exist.';
+    case '42501':
+      return 'The database user is not allowed to create tables.';
+    default:
+      return code ? `Database error ${code}.` : 'Could not reach the database.';
+  }
+}
+
+/** Runs one trivial query so a status page can say whether the database answers. */
+export async function pingDb(): Promise<void> {
+  await query('select 1');
+}

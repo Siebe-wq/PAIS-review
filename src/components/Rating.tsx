@@ -7,6 +7,7 @@ interface Summary {
   average?: number | null;
   count?: number;
   mine?: number | null;
+  error?: string;
 }
 
 /** One-to-five stars from anyone. One rating per browser; changing it replaces it. */
@@ -17,12 +18,24 @@ export function Rating({ slug }: { slug: string }) {
 
   useEffect(() => {
     fetch(`/api/ratings?slug=${encodeURIComponent(slug)}`)
-      .then((response) => response.json())
-      .then((json: Summary) => setSummary(json))
-      .catch(() => setSummary({ configured: false }));
+      .then(async (response) => {
+        const json = (await response.json()) as Summary;
+        if (!response.ok && !json.error) json.error = 'Ratings could not be loaded.';
+        setSummary(json);
+      })
+      .catch(() => setSummary({ configured: true, error: 'Ratings could not be loaded.' }));
   }, [slug]);
 
   if (!summary || !summary.configured) return null;
+
+  if (summary.error) {
+    return (
+      <div className="rating">
+        <span className="rating-label">Rate this review</span>
+        <span className="rating-summary">Unavailable right now. {summary.error}</span>
+      </div>
+    );
+  }
 
   async function rate(stars: number) {
     setBusy(true);

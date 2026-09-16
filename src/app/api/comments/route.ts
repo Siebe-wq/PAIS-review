@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { dbConfigured } from '@/lib/db';
+import { dbConfigured, describeDbError } from '@/lib/db';
 import { createComment, isRateLimited, listComments, validateComment, type TargetType } from '@/lib/comments';
 import { getDoc } from '@/lib/doc';
 import { getReview } from '@/lib/reviews';
@@ -33,8 +33,13 @@ export async function GET(request: Request) {
   if (!target) return fail('Unknown target.', 400);
 
   const admin = await isSignedIn();
-  const comments = await listComments(target.type, target.slug, readVoter(request), { includeHidden: admin });
-  return NextResponse.json({ configured: true, admin, comments, version: versionFor(target) });
+  try {
+    const comments = await listComments(target.type, target.slug, readVoter(request), { includeHidden: admin });
+    return NextResponse.json({ configured: true, admin, comments, version: versionFor(target) });
+  } catch (error) {
+    // Configured but not answering. Say so, so the page can show a notice instead of nothing.
+    return NextResponse.json({ configured: true, error: describeDbError(error) }, { status: 503 });
+  }
 }
 
 export async function POST(request: Request) {

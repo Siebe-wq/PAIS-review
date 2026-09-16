@@ -11,6 +11,7 @@ interface Loaded {
   admin: boolean;
   comments: CommentNode[];
   version: string | null;
+  error?: string;
 }
 
 function timeAgo(iso: string): string {
@@ -39,9 +40,18 @@ export function Comments({ type, slug }: { type: TargetType; slug: string }) {
   const load = useCallback(async () => {
     try {
       const response = await fetch(`/api/comments?type=${type}&slug=${encodeURIComponent(slug)}`);
-      setData((await response.json()) as Loaded);
+      const json = (await response.json()) as Partial<Loaded>;
+      setData({
+        configured: Boolean(json.configured),
+        admin: Boolean(json.admin),
+        comments: json.comments ?? [],
+        version: json.version ?? null,
+        error: json.error ?? (response.ok ? undefined : 'Comments could not be loaded.'),
+      });
     } catch {
-      setData({ configured: false, admin: false, comments: [], version: null });
+      // The request itself failed (network, or the server crashed). A site without a
+      // database answers cleanly, so this is a real failure and should be visible.
+      setData({ configured: true, admin: false, comments: [], version: null, error: 'Comments could not be loaded.' });
     }
   }, [type, slug]);
 
@@ -55,6 +65,15 @@ export function Comments({ type, slug }: { type: TargetType; slug: string }) {
   }, [load]);
 
   if (!data || !data.configured) return null;
+
+  if (data.error) {
+    return (
+      <section className="comments" id="comments">
+        <h2>Comments</h2>
+        <p className="notice err">Comments are unavailable right now. {data.error}</p>
+      </section>
+    );
+  }
 
   async function castVote(commentId: number, axis: 'karma' | 'agree', value: -1 | 0 | 1) {
     setError(null);
