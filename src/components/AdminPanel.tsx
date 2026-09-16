@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { ReviewPublisher } from './ReviewPublisher';
 import { DocEditor } from './DocEditor';
+import { ReviewManager } from './ReviewManager';
 
 const TABS = [
   { id: 'review', label: 'Publish a review' },
   { id: 'page', label: 'Edit a page' },
+  { id: 'manage', label: 'Reviews' },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -121,7 +123,9 @@ export function AdminPanel() {
         ))}
       </div>
 
-      {tab === 'review' ? <ReviewPublisher onExpired={() => setSignedIn(false)} /> : <DocEditor onExpired={() => setSignedIn(false)} />}
+      {tab === 'review' && <ReviewPublisher onExpired={() => setSignedIn(false)} />}
+      {tab === 'page' && <DocEditor onExpired={() => setSignedIn(false)} />}
+      {tab === 'manage' && <ReviewManager onExpired={() => setSignedIn(false)} />}
     </div>
   );
 }

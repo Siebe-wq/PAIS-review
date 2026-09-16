@@ -77,3 +77,22 @@ export async function putFile(
   const result = (await response.json()) as { commit?: { html_url?: string } };
   return { replaced: Boolean(sha), commitUrl: result.commit?.html_url };
 }
+
+/** A file's current content and sha, or undefined if it does not exist. */
+export async function getFile(
+  config: GithubConfig,
+  path: string,
+): Promise<{ sha: string; content: string } | undefined> {
+  const query = `?ref=${encodeURIComponent(config.branch)}`;
+  const response = await githubFetch(`/repos/${config.repo}/contents/${path}${query}`, config.token);
+
+  if (response.status === 404) return undefined;
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new GithubError(502, `GitHub rejected the read (${response.status}): ${detail.slice(0, 300)}`);
+  }
+
+  const json = (await response.json()) as { sha: string; content: string; encoding: string };
+  if (json.encoding !== 'base64') throw new GithubError(502, `Unexpected encoding ${json.encoding} for ${path}.`);
+  return { sha: json.sha, content: Buffer.from(json.content, 'base64').toString('utf8') };
+}

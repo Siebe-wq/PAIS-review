@@ -50,6 +50,19 @@ organisations, so:
   fraudulent.
 - If you cannot check it, leave it out.
 
+## Notes for the guide
+
+If the paper surfaced a methodological point the guide does not cover, or gets wrong, record it
+in `guideNotes` as a short clause. Do not apply it as if it were already in the guide and do not
+edit the guide. The editor collects these for the next version.
+
+## What to be careful of
+
+Received wisdom about these conditions — "ME/CFS involves X" — often rests on weak evidence.
+Treat it as a claim to check, not a premise. Evaluate online commentary in its context rather
+than repeating it. Make sure you have the whole paper, the figures and tables, and the
+supplement where the claims rest on it; if not, say so at the top and set `confidence` to match.
+
 ## Grading
 
 For `kind: paper`, grade out of 10, in steps of 0.5. The grade is about how much the paper's evidence can carry
@@ -85,7 +98,7 @@ guessing — never invent a DOI, a journal or an author list.
 ```yaml
 ---
 title: "<paper title, plain, no trailing full stop>"
-authors: "Surname AB, Surname CD, et al."
+authors: "Surname AB, Surname CD, Surname EF"   # full list; the site abbreviates
 journal: "<journal>"
 year: 2024
 doi: "10.xxxx/xxxxx"
@@ -104,6 +117,8 @@ weaknesses:
 context:                      # optional, see below
   - note: "<a fact outside the paper that bears on reading it>"
     source: "<url>"
+guideNotes:                   # optional, see below
+  - "<a point the guide does not cover>"
 reviewedOn: <today, YYYY-MM-DD>
 guideVersion: "<version from content/guide.md frontmatter>"
 model: "claude-opus-5"   # the model actually writing this, not a generic "Claude"

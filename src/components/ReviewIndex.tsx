@@ -17,11 +17,25 @@ export function ReviewIndex({
 }) {
   const [active, setActive] = useState<string[]>([]);
   const [sort, setSort] = useState<Sort>('newest');
+  const [query, setQuery] = useState('');
 
   const shown = useMemo(() => {
-    const filtered = active.length
-      ? reviews.filter((r) => active.every((c) => r.conditions?.includes(c)))
-      : reviews;
+    const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+    const haystack = (r: ReviewSummary) =>
+      [r.title, r.authors, r.journal, r.studyType, r.verdict, r.conditions, r.strengths, r.weaknesses, r.year]
+        .flat()
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+    const filtered = reviews.filter((r) => {
+      if (active.length && !active.every((c) => r.conditions?.includes(c))) return false;
+      if (terms.length) {
+        const text = haystack(r);
+        if (!terms.every((term) => text.includes(term))) return false;
+      }
+      return true;
+    });
 
     return [...filtered].sort((a, b) => {
       switch (sort) {
@@ -36,7 +50,7 @@ export function ReviewIndex({
           return b.reviewedOn.localeCompare(a.reviewedOn);
       }
     });
-  }, [reviews, active, sort]);
+  }, [reviews, active, sort, query]);
 
   const toggle = (condition: string) =>
     setActive((current) =>
@@ -48,6 +62,14 @@ export function ReviewIndex({
   return (
     <>
       <div className="controls">
+        <input
+          type="search"
+          className="search"
+          placeholder="Search reviews"
+          aria-label="Search reviews"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
         {conditions.length > 0 && (
           <div className="chip-row">
             {conditions.map((condition) => (

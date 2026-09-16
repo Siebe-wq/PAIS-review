@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import type { ReviewFrontmatter } from '@/lib/types';
 import { ScoreBadge } from './ScoreBadge';
+import { abbreviateAuthors } from '@/lib/authors';
 
 /**
  * One row on the index. Also used by /admin to preview a pasted review exactly as it
  * will appear once published, so there is nothing to imagine.
  */
 export function ReviewCard({ review, href }: { review: ReviewFrontmatter; href?: string }) {
-  const citation = [review.authors, review.journal, review.year].filter(Boolean).join(' · ');
+  const citation = [abbreviateAuthors(review.authors), review.journal, review.year].filter(Boolean).join(' · ');
 
   return (
     <article className="card">

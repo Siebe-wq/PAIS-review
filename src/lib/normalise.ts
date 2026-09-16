@@ -157,6 +157,9 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
     // Keep the original's provenance. Absent a recorded model, leave it absent: the page
     // says "unrecorded", which is true, rather than crediting the review to the tidier.
     guideVersion: carriedOver('guideVersion'),
+    guideNotes: Array.isArray(original.guideNotes)
+      ? original.guideNotes.map((note) => String(note).trim()).filter(Boolean)
+      : undefined,
     model: carriedOver('model'),
     reviewedOn: carriedOver('reviewedOn') ?? new Date().toISOString().slice(0, 10),
   };

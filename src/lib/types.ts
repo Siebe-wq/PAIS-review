@@ -65,6 +65,12 @@ export interface ReviewFrontmatter {
   strengths?: string[];
   weaknesses?: string[];
   context?: ContextNote[];
+  /**
+   * Methodological points this paper surfaced that the guide does not cover. Collected by
+   * the editor for the next guide version; never applied to the review or the guide
+   * automatically.
+   */
+  guideNotes?: string[];
   reviewedOn: string;
   guideVersion?: string;
   model?: string;

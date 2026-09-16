@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { citationOf, getAllReviews, getReview, paperLink } from '@/lib/reviews';
+import { getAllReviews, getReview, paperLink } from '@/lib/reviews';
 import { KIND_LABELS } from '@/lib/types';
 import { extractToc } from '@/lib/toc';
 import { TableOfContents } from '@/components/TableOfContents';
+import { Authors } from '@/components/Authors';
+import { DiscussWithAI } from '@/components/DiscussWithAI';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { Markdown } from '@/components/Markdown';
 import { site } from '@/lib/site';
@@ -46,7 +48,9 @@ export default async function ReviewPage({ params }: Params) {
         </Link>
         <h1>{review.title}</h1>
         <p className="cite">
-          {citationOf(review)}
+          {review.authors && <Authors authors={review.authors} />}
+          {review.authors && (review.journal || review.year) ? ' · ' : ''}
+          {[review.journal, review.year].filter(Boolean).join(' · ')}
           {link && (
             <>
               {' · '}
@@ -162,6 +166,23 @@ export default async function ReviewPage({ params }: Params) {
         <TableOfContents entries={toc} />
         <Markdown>{review.body}</Markdown>
       </div>
+
+      {review.guideNotes && review.guideNotes.length > 0 && (
+        <aside className="guide-notes">
+          <h3>Notes for the guide</h3>
+          <p>
+            Points this paper raised that the <Link href="/guide">guide</Link> does not yet cover.
+            They are not applied to this review; the editor decides what goes into the next version.
+          </p>
+          <ul>
+            {review.guideNotes.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        </aside>
+      )}
+
+      <DiscussWithAI rawUrl={`${site.url}/reviews/${review.slug}.md`} title={review.title} doi={review.doi} />
 
       <aside className="provenance">
         <p>

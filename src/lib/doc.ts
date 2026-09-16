@@ -53,3 +53,26 @@ export function renderTemplate(body: string, siteUrl: string): string {
 export function currentGuideVersion(): string | undefined {
   return getDoc('guide')?.version;
 }
+
+/**
+ * Rewrites the guide's `version:` and `updated:` frontmatter lines. The version is the
+ * methods version — it covers the guide, the reviewing instructions and the project
+ * prompt together — so a change to any of them bumps it here, in the one place it lives.
+ */
+export function withGuideVersion(guideSource: string, version: string, updated: string): string {
+  const end = guideSource.indexOf('\n---', 3);
+  if (!guideSource.startsWith('---') || end === -1) {
+    throw new Error('The guide has no frontmatter block to update.');
+  }
+  let head = guideSource.slice(0, end);
+  const tail = guideSource.slice(end);
+
+  const setLine = (key: string, value: string) => {
+    const pattern = new RegExp(`^${key}:.*$`, 'm');
+    head = pattern.test(head) ? head.replace(pattern, `${key}: ${value}`) : `${head}\n${key}: ${value}`;
+  };
+  setLine('version', JSON.stringify(version));
+  setLine('updated', updated);
+
+  return head + tail;
+}

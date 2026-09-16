@@ -4,20 +4,36 @@ import { useEffect, useState } from 'react';
 
 const PAGES = [
   { value: 'about', label: 'About page' },
+  { value: 'methods', label: 'Methods page' },
   { value: 'guide', label: 'Review guide' },
   { value: 'instructions', label: 'Reviewing instructions' },
+  { value: 'prompt', label: 'Project prompt' },
 ];
 
 interface Result {
   ok?: boolean;
   path?: string;
   commitUrl?: string;
+  bumpedGuide?: boolean;
   error?: string;
+}
+
+/** "0.3" -> "0.4". Only a suggestion; the field is editable. */
+function nextMinor(version: string | null): string {
+  if (!version) return '';
+  const parts = version.split('.');
+  const last = Number(parts[parts.length - 1]);
+  if (!Number.isFinite(last)) return '';
+  parts[parts.length - 1] = String(last + 1);
+  return parts.join('.');
 }
 
 export function DocEditor({ onExpired }: { onExpired: () => void }) {
   const [name, setName] = useState('about');
   const [content, setContent] = useState('');
+  const [versioned, setVersioned] = useState(false);
+  const [currentVersion, setCurrentVersion] = useState<string | null>(null);
+  const [version, setVersion] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
@@ -29,11 +45,24 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
 
     fetch(`/api/admin/doc?name=${name}`)
       .then((response) => response.json())
-      .then((json: { content?: string; error?: string }) => {
-        if (cancelled) return;
-        if (json.content !== undefined) setContent(json.content);
-        else setResult({ error: json.error ?? 'Could not load the current page content.' });
-      })
+      .then(
+        (json: {
+          content?: string;
+          versioned?: boolean;
+          guideVersion?: string | null;
+          error?: string;
+        }) => {
+          if (cancelled) return;
+          if (json.content !== undefined) {
+            setContent(json.content);
+            setVersioned(Boolean(json.versioned));
+            setCurrentVersion(json.guideVersion ?? null);
+            setVersion(nextMinor(json.guideVersion ?? null));
+          } else {
+            setResult({ error: json.error ?? 'Could not load the current page content.' });
+          }
+        },
+      )
       .catch(() => {
         if (!cancelled) setResult({ error: 'Could not load the current page content.' });
       })
@@ -54,7 +83,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
       const response = await fetch('/api/admin/doc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, content }),
+        body: JSON.stringify({ name, content, version: versioned ? version : undefined }),
       });
       if (response.status === 401) {
         onExpired();
@@ -68,6 +97,10 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
     }
   }
 
+  // The guide carries its version inside its own frontmatter; the other versioned pages
+  // take it from this field and write it into the guide on save.
+  const showVersionField = versioned && name !== 'guide';
+
   return (
     <form onSubmit={onSubmit}>
       <div className="field">
@@ -80,6 +113,14 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
           ))}
         </select>
       </div>
+
+      {versioned && (
+        <p className="hint warn">
+          This page is part of the versioned method (guide + instructions + prompt, currently v
+          {currentVersion ?? '?'}). Saving it needs a new version number, and the change should
+          be logged in the guide&rsquo;s changelog.
+        </p>
+      )}
 
       <div className="field">
         <label htmlFor="doc-content">Content</label>
@@ -95,12 +136,27 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
           {loading
             ? 'Loading the current content…'
             : name === 'guide'
-              ? 'Markdown. Bump the version field at the top whenever the standard itself changes — reviews record which version they were written under.'
-              : name === 'instructions'
-                ? 'Served at /instructions.md. {{GUIDE_VERSION}} and {{SITE_URL}} are filled in when it is served, so never hard-code them.'
+              ? 'Markdown. Bump the version field at the top; the updated date is stamped for you.'
+              : name === 'instructions' || name === 'prompt' || name === 'methods'
+                ? 'Markdown. {{GUIDE_VERSION}} and {{SITE_URL}} are filled in when served — never hard-code them.'
                 : 'Markdown, including the frontmatter block at the top.'}
         </p>
       </div>
+
+      {showVersionField && (
+        <div className="field" style={{ maxWidth: '14rem' }}>
+          <label htmlFor="doc-version">New methods version</label>
+          <input
+            id="doc-version"
+            type="text"
+            value={version}
+            onChange={(event) => setVersion(event.target.value)}
+            placeholder={nextMinor(currentVersion)}
+            required
+          />
+          <p className="hint">Written into the guide&rsquo;s frontmatter alongside this save.</p>
+        </div>
+      )}
 
       <button className="primary" type="submit" disabled={busy || loading}>
         {busy ? 'Publishing…' : 'Publish'}
@@ -108,8 +164,9 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
 
       {result?.ok && (
         <div className="notice ok">
-          Saved <code>{result.path}</code>. Vercel is rebuilding — the change will be live in a
-          minute or two.
+          Saved <code>{result.path}</code>
+          {result.bumpedGuide ? ' and bumped the methods version' : ''}. Vercel is rebuilding —
+          the change will be live in a minute or two.
           {result.commitUrl && (
             <>
               {' '}

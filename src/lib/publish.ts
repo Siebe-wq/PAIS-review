@@ -190,6 +190,7 @@ export function buildReviewFile(
     strengths: strings(data.strengths),
     weaknesses: strings(data.weaknesses),
     context: contextOf(data.context),
+    guideNotes: strings(data.guideNotes),
     reviewedOn,
     guideVersion: text(data.guideVersion) ?? fallbackGuideVersion,
     model: text(data.model),

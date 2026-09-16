@@ -84,6 +84,7 @@ function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter 
     strengths: strings(data.strengths),
     weaknesses: strings(data.weaknesses),
     context: contextNotes(data.context),
+    guideNotes: strings(data.guideNotes),
     reviewedOn,
     guideVersion: data.guideVersion != null ? String(data.guideVersion) : undefined,
     model: typeof data.model === 'string' ? data.model : undefined,
@@ -91,7 +92,7 @@ function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter 
   };
 }
 
-export function getAllReviews(): Review[] {
+export function getAllReviews(options: { includeDrafts?: boolean } = {}): Review[] {
   if (!fs.existsSync(REVIEWS_DIR)) return [];
 
   return fs
@@ -103,8 +104,16 @@ export function getAllReviews(): Review[] {
       const { data, content } = matter(raw);
       return { ...coerce(data, slug), slug, body: content.trim() };
     })
-    .filter((review) => !review.draft)
+    .filter((review) => options.includeDrafts || !review.draft)
     .sort((a, b) => b.reviewedOn.localeCompare(a.reviewedOn) || a.title.localeCompare(b.title));
+}
+
+/** Raw file text for a published review. Drafts return undefined, as on the site. */
+export function getReviewSource(slug: string): string | undefined {
+  if (!/^[a-z0-9-]+$/.test(slug)) return undefined;
+  if (!getReview(slug)) return undefined;
+  const file = path.join(REVIEWS_DIR, `${slug}.md`);
+  return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : undefined;
 }
 
 export function getReview(slug: string): Review | undefined {

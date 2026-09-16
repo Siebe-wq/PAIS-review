@@ -35,15 +35,21 @@ rather than guessing one. Needs `ANTHROPIC_API_KEY`; see the deployment table be
 For reviews written in a claude.ai project, point that project at
 `https://pais-review.vercel.app/instructions.md` — see "One source of truth" below.
 
-The "Edit a page" tab does the same thing for the About page and the guide: it loads the page's
-current markdown, you edit it, and publishing commits it. Plain markdown, no rich-text editor.
+The "Edit a page" tab does the same for the About and Methods pages, the guide, the
+instructions and the prompt: it loads the current markdown, you edit it, publishing commits it.
+
+The "Reviews" tab lists every review, drafts included, with a Withdraw / Restore button, and
+collects the `guideNotes` that reviews have flagged for the next guide version. Withdrawing sets
+`draft: true` — the review and its raw URL vanish from the site at once and it can be put back;
+the commit history keeps the text. A takedown that needs the text gone from the repository is a
+deliberate git step, not a button.
 
 ## Review file format
 
 ```yaml
 ---
 title: "Paper title"
-authors: "Surname AB, Surname CD, et al."
+authors: "Surname AB, Surname CD, Surname EF"  # full list; the site shows 3 + "et al." with an expander
 journal: "Journal name"
 year: 2024
 doi: "10.xxxx/xxxxx"        # optional
@@ -60,6 +66,8 @@ weaknesses: ["Short clause"]
 context:                    # optional; see below
   - note: "A fact outside the paper that bears on reading it."
     source: "https://..."
+guideNotes:                 # optional: points the guide doesn't cover, for the editor
+  - "Nothing in the guide on cluster-randomised designs"
 reviewedOn: 2026-09-16
 guideVersion: "0.2"
 model: "claude-opus-5"      # the exact model, not a generic "Claude"
@@ -93,22 +101,30 @@ each note should carry a `source` URL; the site marks unsourced notes as unsourc
 warns before publishing one. They render in their own panel, labelled as circumstance rather
 than as part of the methodological assessment.
 
-## One source of truth
+## The method, and its one version number
 
-The guide lives in exactly one place, `content/guide.md`, and everything else reads it from
-there. Two URLs serve it as plain markdown:
+Three documents are "the method": the guide (`content/guide.md`), the reviewing instructions
+(`content/instructions.md`) and the project prompt (`content/prompt.md`). They share one
+version number, kept in the guide's frontmatter, and every review records which version it was
+written under. Saving any of the three from `/admin` requires a new version; for the
+instructions and the prompt the editor writes it into the guide for you. Log what changed in
+the guide's changelog.
+
+`/methods` explains the whole thing publicly, shows the prompt verbatim, and links the raw
+files. Raw markdown URLs, for pointing a model at:
 
 | URL | What it is |
 |---|---|
-| `/guide.md` | The guide itself, raw. |
-| `/instructions.md` | The reviewing instructions, with the guide's current version and the site URL substituted in. |
+| `/guide.md` | The guide. |
+| `/instructions.md` | The reviewing instructions, version and site URL filled in. |
+| `/prompt.md` | The project prompt, verbatim. |
+| `/reviews/<slug>.md` | Any published review, frontmatter and all. |
 
-So a claude.ai project needs only a one-line custom instruction telling it to fetch
-`/instructions.md` before reviewing. Update the guide here and the project follows, with
-nothing to re-upload to Drive, GitHub or the project itself.
+So a claude.ai project needs only the prompt, which tells it to fetch `/instructions.md`.
+Update the guide here and the project follows, with nothing to re-upload anywhere.
 
-Never hard-code a version number in `content/instructions.md`. Write `{{GUIDE_VERSION}}` and
-`{{SITE_URL}}`; both are filled in when the file is served.
+Never hard-code a version number in the instructions, prompt or methods pages. Write
+`{{GUIDE_VERSION}}` and `{{SITE_URL}}`; both are filled in when served.
 
 ## Updating the guide
 
@@ -153,6 +169,18 @@ first four if you want the `/admin` publishing page:
 
 Until `ADMIN_PASSWORD`, `GITHUB_TOKEN` and `GITHUB_REPO` are all set, `/admin` loads but
 publishing returns a clear "not configured" error rather than failing quietly.
+
+## Other things the site does
+
+- Dark by default, with a toggle in the header that is remembered per device.
+- A pilot banner on every page, set in `src/lib/site.ts` (`pilotNotice`; empty string removes it).
+- Search on the index over title, authors, journal, verdict, tags, strengths and weaknesses. Not
+  the body — see `docs/roadmap.md`.
+- A contents list on long reviews: collapsed bar on phones, sticky sidebar on wide screens.
+- "Discuss this review with an AI" under each review: opens Claude or ChatGPT with a prompt
+  pointing at the raw markdown and asking it to argue with the review rather than summarise it.
+
+Things not built yet, and what each would take, are in `docs/roadmap.md`.
 
 ## Editorial notes
 
