@@ -1,6 +1,6 @@
 import matter from 'gray-matter';
 import { createHash, timingSafeEqual } from 'node:crypto';
-import type { ReviewFrontmatter } from './types';
+import { REVIEW_KINDS, SIGNALS, type ContextNote, type ReviewFrontmatter, type ReviewKind, type Signal } from './types';
 
 export function slugify(value: string): string {
   return value
@@ -38,6 +38,42 @@ const level = (value: unknown): 'high' | 'moderate' | 'low' | undefined => {
   return out === 'high' || out === 'moderate' || out === 'low' ? out : undefined;
 };
 
+const kindOf = (value: unknown): ReviewKind => {
+  const out = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (!out) return 'paper';
+  if ((REVIEW_KINDS as string[]).includes(out)) return out as ReviewKind;
+  throw new Error(`"kind" must be one of ${REVIEW_KINDS.join(', ')}, got ${String(value)}.`);
+};
+
+const signalOf = (value: unknown): Signal | undefined => {
+  const out = typeof value === 'string' ? value.trim().toLowerCase().replace(/\s+/g, '-') : '';
+  if (!out) return undefined;
+  if ((SIGNALS as string[]).includes(out)) return out as Signal;
+  throw new Error(`"signal" must be one of ${SIGNALS.join(', ')}, got ${String(value)}.`);
+};
+
+/** Accepts either a bare string or {note, source}; always stores the object form. */
+const contextOf = (value: unknown): ContextNote[] => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((entry): ContextNote | undefined => {
+      if (typeof entry === 'string') {
+        const note = entry.trim();
+        return note ? { note } : undefined;
+      }
+      if (entry && typeof entry === 'object') {
+        const record = entry as Record<string, unknown>;
+        const note = text(record.note);
+        if (!note) return undefined;
+        const source = text(record.source);
+        // Omit the key entirely rather than setting undefined: js-yaml refuses to dump it.
+        return source ? { note, source } : { note };
+      }
+      return undefined;
+    })
+    .filter((entry): entry is ContextNote => entry !== undefined);
+};
+
 /**
  * Parses a complete review file — the whole thing Claude writes, frontmatter and all —
  * and normalises it into the file that gets committed. There are no separate form
@@ -52,7 +88,7 @@ export function buildReviewFile(raw: string, slugOverride?: string): BuiltReview
 
   if (!source.startsWith('---')) {
     throw new Error(
-      'No frontmatter found. The review needs to start with a --- block carrying at least title, score and verdict.',
+      'No frontmatter found. The review needs to start with a --- block carrying at least title, kind and verdict.',
     );
   }
 
@@ -70,13 +106,36 @@ export function buildReviewFile(raw: string, slugOverride?: string): BuiltReview
   const title = text(data.title);
   if (!title) throw new Error('Frontmatter is missing "title".');
 
-  const score = typeof data.score === 'number' ? data.score : Number(data.score);
-  if (!Number.isFinite(score) || score < 0 || score > 10) {
-    throw new Error(
-      data.score == null
-        ? 'Frontmatter is missing "score".'
-        : `"score" must be a number from 0 to 10, got ${String(data.score)}.`,
-    );
+  const kind = kindOf(data.kind);
+
+  // The verdict field depends on the kind, so that a literature review is never
+  // forced into a number that would not mean anything.
+  let score: number | undefined;
+  let signal: Signal | undefined;
+
+  if (kind === 'paper') {
+    if (data.signal != null) throw new Error('A paper review takes "score", not "signal".');
+    const parsedScore = typeof data.score === 'number' ? data.score : Number(data.score);
+    if (!Number.isFinite(parsedScore) || parsedScore < 0 || parsedScore > 10) {
+      throw new Error(
+        data.score == null
+          ? 'Frontmatter is missing "score". A paper review is graded 0–10.'
+          : `"score" must be a number from 0 to 10, got ${String(data.score)}.`,
+      );
+    }
+    score = parsedScore;
+  } else if (kind === 'preliminary') {
+    if (data.score != null) {
+      throw new Error(
+        'Preliminary findings take "signal", not "score" — a decimal grade on unpublished data is false precision.',
+      );
+    }
+    signal = signalOf(data.signal);
+    if (!signal) {
+      throw new Error(`Frontmatter is missing "signal". One of: ${SIGNALS.join(', ')}.`);
+    }
+  } else if (data.score != null || data.signal != null) {
+    throw new Error('A literature review takes neither "score" nor "signal" — just a verdict.');
   }
 
   const verdict = text(data.verdict);
@@ -107,12 +166,15 @@ export function buildReviewFile(raw: string, slugOverride?: string): BuiltReview
     url: text(data.url),
     conditions: strings(data.conditions),
     studyType: text(data.studyType),
+    kind,
     score,
+    signal,
     verdict,
     confidence: level(data.confidence),
     importance: level(data.importance),
     strengths: strings(data.strengths),
     weaknesses: strings(data.weaknesses),
+    context: contextOf(data.context),
     reviewedOn,
     guideVersion: text(data.guideVersion),
     model: text(data.model),

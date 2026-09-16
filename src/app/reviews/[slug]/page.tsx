@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { citationOf, getAllReviews, getReview, paperLink } from '@/lib/reviews';
+import { KIND_LABELS } from '@/lib/types';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { Markdown } from '@/components/Markdown';
 import { site } from '@/lib/site';
@@ -54,11 +55,15 @@ export default async function ReviewPage({ params }: Params) {
         </p>
 
         <div className="verdict-box">
-          <ScoreBadge score={review.score} />
+          <ScoreBadge review={review} />
           <p className="verdict">{review.verdict}</p>
         </div>
 
         <dl className="facts">
+          <div>
+            <dt>Type</dt>
+            <dd>{KIND_LABELS[review.kind]}</dd>
+          </div>
           {review.studyType && (
             <div>
               <dt>Design</dt>
@@ -122,6 +127,31 @@ export default async function ReviewPage({ params }: Params) {
               </section>
             )}
           </div>
+        )}
+
+        {review.context && review.context.length > 0 && (
+          <section className="context-panel">
+            <h3>Context beyond the paper</h3>
+            <ul>
+              {review.context.map((item) => (
+                <li key={item.note}>
+                  {item.note}{' '}
+                  {item.source ? (
+                    <a href={item.source} target="_blank" rel="noreferrer">
+                      Source
+                    </a>
+                  ) : (
+                    <span className="unsourced">(no source given)</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <p className="context-note">
+              These are facts about the circumstances around the work, not part of the
+              assessment of its methods. They are listed so readers can weigh them
+              themselves, not as a claim that the findings are wrong.
+            </p>
+          </section>
         )}
       </header>
 

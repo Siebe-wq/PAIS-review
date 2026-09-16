@@ -7,6 +7,7 @@ doi: ""
 url: ""
 conditions: ["Long Covid"]
 studyType: "Observational, interrupted time series, 36 weeks, n=103"
+kind: paper
 score: 3.5
 verdict: "No control group, no blinding and only subjective outcomes, so the reported improvement cannot be separated from placebo, regression to the mean or natural recovery."
 confidence: "high"

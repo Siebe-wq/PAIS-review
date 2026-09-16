@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
-import type { Review, ReviewFrontmatter } from './types';
+import { REVIEW_KINDS, SIGNALS, type ContextNote, type Review, type ReviewFrontmatter, type ReviewKind, type Signal } from './types';
 
 const REVIEWS_DIR = path.join(process.cwd(), 'content', 'reviews');
 
@@ -9,9 +9,29 @@ function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter 
   const title = typeof data.title === 'string' ? data.title.trim() : '';
   if (!title) throw new Error(`${slug}: frontmatter is missing "title"`);
 
-  const score = typeof data.score === 'number' ? data.score : Number(data.score);
-  if (!Number.isFinite(score) || score < 0 || score > 10) {
-    throw new Error(`${slug}: "score" must be a number from 0 to 10, got ${String(data.score)}`);
+  const rawKind = typeof data.kind === 'string' ? data.kind.trim().toLowerCase() : 'paper';
+  if (!(REVIEW_KINDS as string[]).includes(rawKind)) {
+    throw new Error(`${slug}: "kind" must be one of ${REVIEW_KINDS.join(', ')}, got ${rawKind}`);
+  }
+  const kind = rawKind as ReviewKind;
+
+  let score: number | undefined;
+  if (kind === 'paper') {
+    const parsedScore = typeof data.score === 'number' ? data.score : Number(data.score);
+    if (!Number.isFinite(parsedScore) || parsedScore < 0 || parsedScore > 10) {
+      throw new Error(`${slug}: "score" must be a number from 0 to 10, got ${String(data.score)}`);
+    }
+    score = parsedScore;
+  }
+
+  let signal: Signal | undefined;
+  if (kind === 'preliminary') {
+    const rawSignal =
+      typeof data.signal === 'string' ? data.signal.trim().toLowerCase().replace(/\s+/g, '-') : '';
+    if (!(SIGNALS as string[]).includes(rawSignal)) {
+      throw new Error(`${slug}: "signal" must be one of ${SIGNALS.join(', ')}, got ${rawSignal}`);
+    }
+    signal = rawSignal as Signal;
   }
 
   const verdict = typeof data.verdict === 'string' ? data.verdict.trim() : '';
@@ -29,6 +49,23 @@ function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter 
   const strings = (value: unknown): string[] =>
     Array.isArray(value) ? value.map((v) => String(v).trim()).filter(Boolean) : [];
 
+  const contextNotes = (value: unknown): ContextNote[] =>
+    Array.isArray(value)
+      ? value
+          .map((entry): ContextNote | undefined => {
+            if (typeof entry === 'string') return entry.trim() ? { note: entry.trim() } : undefined;
+            if (entry && typeof entry === 'object') {
+              const record = entry as Record<string, unknown>;
+              const note = String(record.note ?? '').trim();
+              const source = String(record.source ?? '').trim();
+              if (!note) return undefined;
+              return source ? { note, source } : { note };
+            }
+            return undefined;
+          })
+          .filter((entry): entry is ContextNote => entry !== undefined)
+      : [];
+
   return {
     title,
     authors: typeof data.authors === 'string' ? data.authors : undefined,
@@ -38,12 +75,15 @@ function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter 
     url: typeof data.url === 'string' && data.url ? data.url : undefined,
     conditions: strings(data.conditions),
     studyType: typeof data.studyType === 'string' ? data.studyType : undefined,
+    kind,
     score,
+    signal,
     verdict,
     confidence: data.confidence as ReviewFrontmatter['confidence'],
     importance: data.importance as ReviewFrontmatter['importance'],
     strengths: strings(data.strengths),
     weaknesses: strings(data.weaknesses),
+    context: contextNotes(data.context),
     reviewedOn,
     guideVersion: data.guideVersion != null ? String(data.guideVersion) : undefined,
     model: typeof data.model === 'string' ? data.model : undefined,

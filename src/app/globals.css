@@ -160,6 +160,28 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .score[data-tone='fatal'] { background: var(--fatal-bg); border-color: var(--fatal-br); }
 .score[data-tone='fatal'] .num, .score[data-tone='fatal'] .band { color: var(--fatal-fg); }
 
+.score[data-tone='neutral'] { background: var(--surface-2); border-color: var(--border-strong); }
+.score[data-tone='neutral'] .num, .score[data-tone='neutral'] .band { color: var(--muted); }
+
+/* Word verdicts need room for a word, not two digits. */
+.score-word { width: 104px; }
+.score-word .num { font-size: 0.95rem; line-height: 1.2; font-weight: 620; }
+.score-word .band { margin-top: 5px; }
+
+/* Context beyond the paper */
+.context-panel { margin: 26px 0 0; }
+.context-panel h3 {
+  font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--muted); margin: 0 0 9px; font-weight: 600;
+}
+.context-panel ul { margin: 0; padding: 0; list-style: none; }
+.context-panel li {
+  font-size: 0.92rem; padding: 9px 0; border-top: 1px solid var(--border);
+}
+.context-panel li:last-child { border-bottom: 1px solid var(--border); }
+.context-panel .unsourced { color: var(--muted); font-size: 0.8rem; }
+.context-note { margin-top: 10px; font-size: 0.82rem; color: var(--muted); }
+
 .empty { padding: 48px 0; color: var(--muted); }
 
 /* ---------- review page ---------- */
@@ -253,6 +275,17 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .field input, .field textarea, .field select { width: 100%; }
 .field .hint { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
 .hint.warn { color: var(--borderline-fg); margin: -8px 0 18px; font-size: 0.85rem; }
+.admin-signin { max-width: 26rem; }
+.admin-head { display: flex; align-items: baseline; gap: 14px; }
+.admin-head h1 { flex: 1; }
+button.linkish {
+  font: inherit; font-size: 0.85rem; cursor: pointer; background: none; border: 0;
+  color: var(--muted); text-decoration: underline; text-underline-offset: 2px; padding: 0;
+}
+button.linkish:hover { color: var(--text); }
+.tidy-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.tidy-row .hint { flex: 1; min-width: 14rem; margin: 0; font-size: 0.78rem; color: var(--muted); }
+.notice.info { background: var(--solid-bg); border-color: var(--solid-br); color: var(--solid-fg); }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
 button.primary {
@@ -274,6 +307,8 @@ button.secondary {
   .two-col, .field-row { grid-template-columns: 1fr; }
   .card { gap: 14px; }
   .score { width: 70px; }
+  .score-word { width: 86px; }
+  .score-word .num { font-size: 0.85rem; }
   .score .num { font-size: 1.3rem; }
   .lede h1 { font-size: 1.55rem; }
   .review-head h1 { font-size: 1.35rem; }

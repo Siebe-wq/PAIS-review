@@ -11,7 +11,7 @@ export function ReviewCard({ review, href }: { review: ReviewFrontmatter; href?:
 
   return (
     <article className="card">
-      <ScoreBadge score={review.score} />
+      <ScoreBadge review={review} />
       <div className="card-main">
         <h2>{href ? <Link href={href}>{review.title}</Link> : review.title}</h2>
         {citation && <p className="cite">{citation}</p>}

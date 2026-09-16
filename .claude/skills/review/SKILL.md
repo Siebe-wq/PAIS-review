@@ -25,9 +25,34 @@ A short review of a sound paper is a correct outcome.
    pre-registration and outcome switching, the supplement for methods the main text skips,
    cited papers where a claim leans on them. Note what you could not check.
 
+## Kind
+
+- `paper` — one study. Takes `score`.
+- `literature` — a body of work, several papers, a field. Takes **no score and no signal**; the
+  verdict sentence carries it. "How good is this body of evidence" is not the question the 0–10
+  scale was built to answer, and forcing a number on it invents precision.
+- `preliminary` — unpublished data, a conference abstract, an early preprint, a company
+  announcement. Takes `signal`: one of `promising`, `mixed`, `unconvincing`, `too-early`.
+
+Supplying the wrong verdict field for the kind is rejected at publish time.
+
+## Context beyond the paper
+
+`context` records facts outside the paper that bear on how to read it: a funder's or author's
+history, a market reaction after publication, an undisclosed tie, a regulatory action, a pattern
+of self-citation. These are published as statements of fact about named people and
+organisations, so:
+
+- Include only what a citable public source supports, and put the URL in `source`.
+- State it neutrally and specifically. "The sponsor's CEO was convicted of securities fraud in
+  2019" — not "the company has a questionable history".
+- Never speculate about motive. A fact about a funder is not a claim that the science is
+  fraudulent.
+- If you cannot check it, leave it out.
+
 ## Grading
 
-Grade out of 10, in steps of 0.5. The grade is about how much the paper's evidence can carry
+For `kind: paper`, grade out of 10, in steps of 0.5. The grade is about how much the paper's evidence can carry
 its own claims, not about how interesting the topic is or how much you like the conclusion.
 
 - **8–10** — Strong. Design and measures support the claims. Limitations are stated and minor.
@@ -67,7 +92,8 @@ doi: "10.xxxx/xxxxx"
 url: ""
 conditions: ["ME/CFS"]        # or ["Long Covid"], both, or another topic tag
 studyType: "RCT, n=240, 12 weeks"
-score: 6.5
+kind: paper                   # paper | literature | preliminary
+score: 6.5                    # papers only
 verdict: "<one sentence; the single most useful thing a reader can take away>"
 confidence: "high"            # high | moderate | low
 importance: "moderate"        # high | moderate | low
@@ -75,6 +101,9 @@ strengths:
   - "<short clause, not a sentence>"
 weaknesses:
   - "<short clause, not a sentence>"
+context:                      # optional, see below
+  - note: "<a fact outside the paper that bears on reading it>"
+    source: "<url>"
 reviewedOn: <today, YYYY-MM-DD>
 guideVersion: "<version from content/guide.md frontmatter>"
 model: "claude-opus-5"   # the model actually writing this, not a generic "Claude"

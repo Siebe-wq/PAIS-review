@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import matter from 'gray-matter';
 import { getDoc, getDocSource } from '@/lib/doc';
-import { passwordMatches } from '@/lib/publish';
+import { isSignedIn } from '@/lib/session';
 import { GithubError, getFileSha, getGithubConfig, putFile } from '@/lib/github';
 
 export const runtime = 'nodejs';
@@ -26,17 +26,17 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  const github = getGithubConfig();
+  if (!(await isSignedIn())) return fail('Sign in first.', 401);
 
-  if (!adminPassword || !github) {
+  const github = getGithubConfig();
+  if (!github) {
     return fail(
       'Publishing is not configured. Set ADMIN_PASSWORD, GITHUB_TOKEN and GITHUB_REPO.',
       503,
     );
   }
 
-  let input: { name?: string; content?: string; password?: string };
+  let input: { name?: string; content?: string };
   try {
     input = await request.json();
   } catch {
@@ -44,9 +44,6 @@ export async function POST(request: Request) {
   }
 
   if (!input.name || !EDITABLE_PAGES.has(input.name)) return fail('Unknown page.', 400);
-  if (typeof input.password !== 'string' || !passwordMatches(input.password, adminPassword)) {
-    return fail('Wrong password.', 401);
-  }
 
   const content = (input.content ?? '').trim();
   if (!content.startsWith('---')) {

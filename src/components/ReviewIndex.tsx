@@ -27,10 +27,11 @@ export function ReviewIndex({
       switch (sort) {
         case 'oldest':
           return a.reviewedOn.localeCompare(b.reviewedOn);
+        // Unscored kinds (literature reviews) sort to the end either way.
         case 'score-desc':
-          return b.score - a.score || a.title.localeCompare(b.title);
+          return (b.score ?? -1) - (a.score ?? -1) || a.title.localeCompare(b.title);
         case 'score-asc':
-          return a.score - b.score || a.title.localeCompare(b.title);
+          return (a.score ?? 11) - (b.score ?? 11) || a.title.localeCompare(b.title);
         default:
           return b.reviewedOn.localeCompare(a.reviewedOn);
       }

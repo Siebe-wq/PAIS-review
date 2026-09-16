@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { buildReviewFile, passwordMatches } from '@/lib/publish';
+import { buildReviewFile } from '@/lib/publish';
+import { isSignedIn } from '@/lib/session';
 import { GithubError, getFileSha, getGithubConfig, putFile } from '@/lib/github';
 
 export const runtime = 'nodejs';
@@ -10,25 +11,21 @@ function fail(message: string, status: number) {
 }
 
 export async function POST(request: Request) {
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  const github = getGithubConfig();
+  if (!(await isSignedIn())) return fail('Sign in first.', 401);
 
-  if (!adminPassword || !github) {
+  const github = getGithubConfig();
+  if (!github) {
     return fail(
       'Publishing is not configured. Set ADMIN_PASSWORD, GITHUB_TOKEN and GITHUB_REPO.',
       503,
     );
   }
 
-  let input: { body?: string; slug?: string; password?: string; overwrite?: boolean };
+  let input: { body?: string; slug?: string; overwrite?: boolean };
   try {
     input = await request.json();
   } catch {
     return fail('Could not read the request.', 400);
-  }
-
-  if (typeof input.password !== 'string' || !passwordMatches(input.password, adminPassword)) {
-    return fail('Wrong password.', 401);
   }
 
   let built;

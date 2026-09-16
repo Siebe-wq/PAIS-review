@@ -14,7 +14,7 @@ interface Result {
   error?: string;
 }
 
-export function DocEditor({ password }: { password: string }) {
+export function DocEditor({ onExpired }: { onExpired: () => void }) {
   const [name, setName] = useState('about');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
@@ -53,8 +53,12 @@ export function DocEditor({ password }: { password: string }) {
       const response = await fetch('/api/admin/doc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, content, password }),
+        body: JSON.stringify({ name, content }),
       });
+      if (response.status === 401) {
+        onExpired();
+        return;
+      }
       setResult(await response.json());
     } catch {
       setResult({ error: 'Could not reach the server. Check your connection and try again.' });
@@ -95,10 +99,9 @@ export function DocEditor({ password }: { password: string }) {
         </p>
       </div>
 
-      <button className="primary" type="submit" disabled={busy || loading || !password}>
+      <button className="primary" type="submit" disabled={busy || loading}>
         {busy ? 'Publishing…' : 'Publish'}
       </button>
-      {!password && <p className="hint">Enter the admin password above to publish.</p>}
 
       {result?.ok && (
         <div className="notice ok">
