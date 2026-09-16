@@ -1,7 +1,7 @@
-# IACI Peer Review
+# PAIS Review
 
-A small site that publishes reviews of research on infection-associated chronic illnesses
-(ME/CFS, Long Covid and related conditions). Each review is written by Claude against
+A small site that publishes reviews of research on post-acute infection syndromes
+(PAIS) — ME/CFS, Long Covid and related conditions. Each review is written by Claude against
 [the review guide](content/guide.md), graded out of 10, and published here with its main
 strengths and weaknesses on the front page.
 
@@ -88,7 +88,7 @@ first four if you want the `/admin` publishing page:
 | `GITHUB_TOKEN` | Fine-grained personal access token, scoped to this repository only, with Contents: Read and write. |
 | `GITHUB_REPO` | `Siebe-wq/PAIS-review` |
 | `GITHUB_BRANCH` | Defaults to `main`. |
-| `NEXT_PUBLIC_SITE_URL` | Your domain. Used for the sitemap and social previews. |
+| `NEXT_PUBLIC_SITE_URL` | Only needed if the site moves off `pais-review.vercel.app`. Used for the sitemap and link previews. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Shown on the About page as the corrections address. Left unset, no address is shown. |
 
 Until `ADMIN_PASSWORD`, `GITHUB_TOKEN` and `GITHUB_REPO` are all set, `/admin` loads but

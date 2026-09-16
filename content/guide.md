@@ -1,5 +1,5 @@
 ---
-title: Guide to peer review in Infection-Associated Chronic Illnesses
+title: Guide to peer review in post-acute infection syndromes
 version: "0.2"
 updated: 2026-02-01
 authors: Siebe Rozendal, Claude
@@ -7,7 +7,7 @@ source: https://docs.google.com/document/d/1ByGQkEYnSkp0MEMCJXaKENt7NcaUicQKcutM
 ---
 
 This is the standard every review on this site is written against. It is deliberately
-specific to infection-associated chronic illnesses, because the usual generic appraisal
+specific to post-acute infection syndromes, because the usual generic appraisal
 checklists miss most of what goes wrong in this field.
 
 ## Sample selection

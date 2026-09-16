@@ -1,13 +1,13 @@
 ---
 name: review
-description: Peer-review a scientific paper against the IACI review guide and write it into this site as a publishable review file. Use when the user supplies a paper (PDF, link, DOI or pasted text) and asks for a review, a critique, an appraisal, or a grade.
+description: Peer-review a scientific paper against the PAIS review guide and write it into this site as a publishable review file. Use when the user supplies a paper (PDF, link, DOI or pasted text) and asks for a review, a critique, an appraisal, or a grade.
 ---
 
 # Review a paper for this site
 
 Produce one file at `content/reviews/<slug>.md` that is ready to publish. Read
 `content/guide.md` in full first — it is the standard, and it is specific to
-infection-associated chronic illnesses in ways generic appraisal checklists are not.
+post-acute infection syndromes in ways generic appraisal checklists are not.
 
 ## Standing instruction
 

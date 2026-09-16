@@ -4,7 +4,7 @@ title: About this site
 
 ## What this is
 
-Research on ME/CFS, Long Covid and related infection-associated chronic illnesses is
+Research on ME/CFS, Long Covid and other post-acute infection syndromes (PAIS) is
 reviewed unevenly. Papers with fatal design problems get published and then get quoted
 in the press as if settled. Good work sometimes gets ignored. This site publishes
 careful reviews of individual papers so that anyone can see the reasoning, not just the

@@ -6,7 +6,7 @@ import { Markdown } from '@/components/Markdown';
 export const metadata: Metadata = {
   title: 'Review guide',
   description:
-    'The standard every review on this site is written against, specific to infection-associated chronic illnesses.',
+    'The standard every review on this site is written against, specific to post-acute infection syndromes.',
 };
 
 export default function GuidePage() {
