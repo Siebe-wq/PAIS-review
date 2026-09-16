@@ -2,14 +2,23 @@ import matter from 'gray-matter';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { REVIEW_KINDS, SIGNALS, type ContextNote, type ReviewFrontmatter, type ReviewKind, type Signal } from './types';
 
+const SLUG_MAX = 80;
+
 export function slugify(value: string): string {
-  return value
+  const base = value
     .normalize('NFKD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80);
+    .replace(/^-+|-+$/g, '');
+
+  if (base.length <= SLUG_MAX) return base;
+
+  // Trim back to the last whole word, so a long title does not end mid-syllable
+  // in a public URL. Falls back to a hard cut if the first word is itself huge.
+  const cut = base.slice(0, SLUG_MAX);
+  const lastBoundary = cut.lastIndexOf('-');
+  return (lastBoundary > SLUG_MAX / 2 ? cut.slice(0, lastBoundary) : cut).replace(/-+$/, '');
 }
 
 /** Constant-time password check. Hashing first keeps the comparison length-independent. */

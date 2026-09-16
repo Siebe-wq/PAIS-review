@@ -57,7 +57,8 @@ context:
       studies.
     source: 'https://link.springer.com/article/10.1186/s12967-025-07397-z'
 reviewedOn: '2026-09-16'
-model: claude-sonnet-5
+guideVersion: '0.2'
+model: claude-opus-5
 ---
 ## Executive summary
 

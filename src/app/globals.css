@@ -208,10 +208,26 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .panel li:last-child { margin-bottom: 0; }
 
 .prose { font-family: var(--font-read); font-size: 1.02rem; line-height: 1.72; padding: 8px 0 0; max-width: 42rem; }
+/*
+ * Reviews are long and have three real levels: section, sub-section, paragraph.
+ * H2 gets a rule above it so sections are findable when scrolling; H3 is set in the
+ * sans face so it reads as structure rather than as emphasised prose.
+ */
 .prose h1 { font-size: 1.35rem; letter-spacing: -0.01em; margin: 2.1em 0 0.5em; line-height: 1.3; }
-.prose h2 { font-size: 1.15rem; margin: 1.9em 0 0.45em; line-height: 1.3; }
-.prose h3 { font-size: 1rem; margin: 1.6em 0 0.4em; }
-.prose h1:first-child, .prose h2:first-child { margin-top: 0.6em; }
+.prose h2 {
+  font-family: var(--font); font-size: 1.12rem; font-weight: 650; letter-spacing: -0.01em;
+  margin: 2.2em 0 0.7em; padding-top: 1.1em; border-top: 1px solid var(--border); line-height: 1.3;
+}
+.prose h3 {
+  font-family: var(--font); font-size: 0.95rem; font-weight: 650; letter-spacing: -0.005em;
+  margin: 1.8em 0 0.5em; line-height: 1.35;
+}
+.prose h3.run-in strong { font-weight: inherit; }
+.prose h1:first-child, .prose h2:first-child {
+  margin-top: 0.4em; padding-top: 0; border-top: 0;
+}
+/* A run-in label — "**Cases.** The criteria are…" — stays prose but reads as a label. */
+.prose p > strong:first-child { letter-spacing: 0.005em; }
 .prose p, .prose ul, .prose ol { margin: 0 0 1.05em; }
 .prose ul, .prose ol { padding-left: 1.35em; }
 .prose li { margin-bottom: 0.35em; }

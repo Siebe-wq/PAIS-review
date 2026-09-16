@@ -108,6 +108,26 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
   const source = raw.trim();
   if (!source) throw new Error('Nothing to convert.');
 
+  // Provenance fields are read from the source's own frontmatter, never from the model.
+  // Asking the model for them invites invention, and `model` in particular records who
+  // WROTE the review — the tidier is not the author and must not claim the credit.
+  const original = source.startsWith('---')
+    ? (() => {
+        try {
+          return matter(source).data as Record<string, unknown>;
+        } catch {
+          return {};
+        }
+      })()
+    : {};
+
+  const carriedOver = (key: string): string | undefined => {
+    const value = original[key];
+    if (value == null) return undefined;
+    const out = value instanceof Date ? value.toISOString().slice(0, 10) : String(value).trim();
+    return out || undefined;
+  };
+
   const client = new Anthropic();
 
   const response = await client.messages.parse({
@@ -134,8 +154,11 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
     year: rest.year && rest.year > 0 ? rest.year : undefined,
     ...(rest.kind === 'paper' && !scoreMissing ? { score } : {}),
     ...(rest.kind === 'preliminary' && signal ? { signal } : {}),
-    reviewedOn: new Date().toISOString().slice(0, 10),
-    model: NORMALISER_MODEL,
+    // Keep the original's provenance. Absent a recorded model, leave it absent: the page
+    // says "unrecorded", which is true, rather than crediting the review to the tidier.
+    guideVersion: carriedOver('guideVersion'),
+    model: carriedOver('model'),
+    reviewedOn: carriedOver('reviewedOn') ?? new Date().toISOString().slice(0, 10),
   };
 
   // Drop the empty strings and empty arrays the schema forces the model to emit.
