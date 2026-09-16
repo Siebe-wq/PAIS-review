@@ -168,42 +168,86 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .score-word .num { font-size: 0.95rem; line-height: 1.2; font-weight: 620; }
 .score-word .band { margin-top: 5px; }
 
-/* ---------- contents sidebar ---------- */
+/* ---------- contents ---------- */
 
+/*
+ * Phone first: a collapsed disclosure above the review. Closed it costs one line and
+ * still shows which section you are in; open it lists them all.
+ */
 .review-body { display: block; }
-.toc { display: none; }
+
+.toc { margin: 0 0 26px; }
+.toc-label { display: none; }
+
+.toc-toggle {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  font: inherit; font-size: 0.85rem; text-align: left; cursor: pointer;
+  background: var(--surface); color: var(--muted);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 11px 14px;
+}
+.toc-toggle-label { font-weight: 600; color: var(--text); flex: none; }
+.toc-toggle-current {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.toc-chevron {
+  flex: none; width: 8px; height: 8px; margin-right: 2px;
+  border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 120ms ease;
+}
+.toc[data-open='true'] .toc-chevron { transform: rotate(-135deg) translate(-2px, -2px); }
+
+.toc-list { list-style: none; margin: 0; padding: 0; }
+.toc[data-open='false'] .toc-list { display: none; }
+.toc[data-open='true'] .toc-list {
+  margin-top: 6px; border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; background: var(--surface);
+}
+.toc-list li + li { border-top: 1px solid var(--border); }
+.toc-list a {
+  /* 13px padding keeps the tap target at ~45px, above the 44px guideline. */
+  display: block; padding: 13px 14px; color: var(--text); text-decoration: none;
+  font-size: 0.88rem; line-height: 1.35;
+}
+.toc-list a[aria-current='true'] { font-weight: 600; background: var(--surface-2); }
 
 @media (min-width: 1020px) {
-  /* The sidebar sits outside the reading column so the prose measure is unchanged. */
+  /* Wide: the toggle goes away and the list becomes a sticky sidebar, outside the
+     reading column so the prose measure is unchanged. */
   .review-body {
-    display: grid;
-    grid-template-columns: 1fr 13rem;
-    gap: 40px;
-    align-items: start;
+    display: grid; grid-template-columns: 1fr 13rem; gap: 40px; align-items: start;
   }
   .review-body .prose { grid-column: 1; min-width: 0; }
+
   .toc {
-    display: block; grid-column: 2; position: sticky; top: 28px;
+    grid-column: 2; grid-row: 1; position: sticky; top: 28px; margin: 0;
     max-height: calc(100vh - 56px); overflow-y: auto;
     font-size: 0.82rem; line-height: 1.4;
   }
+  .toc-toggle { display: none; }
+  .toc-label {
+    display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted); font-weight: 600; margin: 0 0 10px;
+  }
+  .toc[data-open='false'] .toc-list,
+  .toc[data-open='true'] .toc-list {
+    display: block; margin: 0; border: 0; border-left: 1px solid var(--border);
+    border-radius: 0; background: none;
+  }
+  .toc-list li + li { border-top: 0; }
+  .toc-list a {
+    padding: 5px 0 5px 12px; margin-left: -1px;
+    border-left: 2px solid transparent; color: var(--muted); font-size: inherit;
+  }
+  .toc-list a:hover { color: var(--text); }
+  .toc-list a[aria-current='true'] {
+    color: var(--text); border-left-color: var(--text); font-weight: 550; background: none;
+  }
 }
 
-.toc-label {
-  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--muted); font-weight: 600; margin: 0 0 10px;
-}
-.toc ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--border); }
-.toc li { margin: 0; }
-.toc a {
-  display: block; padding: 5px 0 5px 12px; margin-left: -1px;
-  border-left: 2px solid transparent;
-  color: var(--muted); text-decoration: none;
-}
-.toc a:hover { color: var(--text); }
-.toc a[aria-current='true'] {
-  color: var(--text); border-left-color: var(--text); font-weight: 550;
-}
+/* Anchors must not land beneath the top of the viewport. */
+.prose h2 { scroll-margin-top: 20px; }
 
 /* Context beyond the paper */
 .context-panel { margin: 26px 0 0; }
