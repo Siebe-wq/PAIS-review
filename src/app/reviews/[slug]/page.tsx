@@ -81,6 +81,16 @@ export default async function ReviewPage({ params }: Params) {
             <dt>Reviewed</dt>
             <dd>{reviewedOn}</dd>
           </div>
+          <div>
+            <dt>Written by</dt>
+            <dd>{review.model ?? 'an unrecorded model'}</dd>
+          </div>
+          {review.guideVersion && (
+            <div>
+              <dt>Guide version</dt>
+              <dd>v{review.guideVersion}</dd>
+            </div>
+          )}
           {review.conditions && review.conditions.length > 0 && (
             <div>
               <dt>Topic</dt>
@@ -119,7 +129,7 @@ export default async function ReviewPage({ params }: Params) {
 
       <aside className="provenance">
         <p>
-          Written by {review.model ?? 'Claude'} against{' '}
+          Written by {review.model ?? 'an unrecorded Claude model'} against{' '}
           <Link href="/guide">the review guide</Link>
           {review.guideVersion ? ` (v${review.guideVersion})` : ''}, then read and published by{' '}
           {site.editor}. The grade is a judgement about this paper&rsquo;s evidence, not a

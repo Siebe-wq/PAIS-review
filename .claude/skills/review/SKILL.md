@@ -77,7 +77,7 @@ weaknesses:
   - "<short clause, not a sentence>"
 reviewedOn: <today, YYYY-MM-DD>
 guideVersion: "<version from content/guide.md frontmatter>"
-model: "Claude"
+model: "claude-opus-5"   # the model actually writing this, not a generic "Claude"
 ---
 ```
 
@@ -87,6 +87,11 @@ placebo" works. "This study has several limitations" does not.
 
 `strengths` and `weaknesses` become chips on the index. Keep each under about 60 characters.
 Two to four of each.
+
+`model` records which model wrote the review — the exact model ID, not "Claude". It shows on
+the review page. Reviews will eventually be written by more than one model, and two reviews
+disagreeing is only interpretable if a reader can see what wrote each one. If you genuinely
+cannot tell which model you are, leave the field out rather than guessing.
 
 The body starts at `##`, because the page supplies the H1. Cover the guide's domains that apply
 to this paper, in roughly this order, skipping any that do not apply:

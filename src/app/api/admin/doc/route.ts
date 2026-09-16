@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getDocSource } from '@/lib/doc';
+import matter from 'gray-matter';
+import { getDoc, getDocSource } from '@/lib/doc';
 import { passwordMatches } from '@/lib/publish';
 import { GithubError, getFileSha, getGithubConfig, putFile } from '@/lib/github';
 
@@ -50,6 +51,32 @@ export async function POST(request: Request) {
   const content = (input.content ?? '').trim();
   if (!content.startsWith('---')) {
     return fail('The page must keep its --- frontmatter block at the top.', 400);
+  }
+
+  // Reviews are stamped with the guide version they were written under, so an edit that
+  // silently leaves the version alone breaks the only signal a reader has that a review
+  // predates the current standard. Compares against the deployed copy, which is a commit
+  // behind at worst — enough to catch forgetting, which is the actual failure mode.
+  if (input.name === 'guide') {
+    let submittedVersion: string | undefined;
+    try {
+      const value = (matter(content).data as Record<string, unknown>).version;
+      submittedVersion = value == null ? undefined : String(value).trim();
+    } catch {
+      return fail('The guide\'s frontmatter is not valid YAML.', 400);
+    }
+
+    if (!submittedVersion) {
+      return fail('The guide needs a "version" field in its frontmatter.', 400);
+    }
+
+    const currentVersion = getDoc('guide')?.version;
+    if (currentVersion && submittedVersion === currentVersion) {
+      return fail(
+        `The guide is still marked v${currentVersion}. Bump the version before saving — reviews record which version they were written under, and leaving it unchanged makes older reviews look current.`,
+        409,
+      );
+    }
   }
 
   const path = `content/${input.name}.md`;

@@ -22,7 +22,6 @@ weaknesses:
   - "Funded by the clinic selling the treatment"
 reviewedOn: 2025-12-05
 guideVersion: "0.2"
-model: "Claude"
 ---
 
 ## Executive summary

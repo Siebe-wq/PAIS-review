@@ -115,7 +115,7 @@ export function buildReviewFile(raw: string, slugOverride?: string): BuiltReview
     weaknesses: strings(data.weaknesses),
     reviewedOn,
     guideVersion: text(data.guideVersion),
-    model: text(data.model) ?? 'Claude',
+    model: text(data.model),
   };
 
   const out: Record<string, unknown> = { ...review };

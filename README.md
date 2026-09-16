@@ -48,7 +48,7 @@ strengths: ["Short clause"]  # become chips on the index
 weaknesses: ["Short clause"]
 reviewedOn: 2026-09-16
 guideVersion: "0.2"
-model: "Claude"
+model: "claude-opus-5"     # the exact model, not a generic "Claude"
 draft: false                 # true keeps it off the site
 ---
 ```
@@ -63,8 +63,13 @@ Score bands, used for the colour and the label under the number: 8+ Strong, 6.5�
 
 ## Updating the guide
 
-Edit `content/guide.md` and bump `version` in its frontmatter. Reviews record the version they
-were written under, so old reviews keep pointing at the standard that actually produced them.
+Edit the guide from the "Edit a page" tab in `/admin`, or edit `content/guide.md` directly, and
+bump `version` in its frontmatter. Saving from `/admin` is refused if the version is unchanged,
+because forgetting is the normal failure mode and it makes older reviews look current.
+
+Bump the minor version (0.2 → 0.3) for clarifications and additions that would not move a
+grade. Bump the major version (0.x → 1.0) for a new required criterion or a changed scoring
+rule — anything that could change a verdict on a paper already reviewed.
 
 ## Running it locally
 

@@ -114,6 +114,14 @@ export function ReviewPublisher({ password }: { password: string }) {
             <ReviewCard review={parsed.review} />
           </div>
 
+          {!parsed.review.model && (
+            <p className="hint warn">
+              No <code>model</code> in the frontmatter. Add the model that wrote this
+              (e.g. <code>claude-opus-5</code>) — it publishes either way, but the review page
+              will say the model is unrecorded.
+            </p>
+          )}
+
           <div className="field-row">
             <div className="field">
               <label htmlFor="review-slug">Filename</label>
