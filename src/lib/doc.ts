@@ -29,3 +29,10 @@ export function getDoc(name: string): Doc | undefined {
     body: content.trim(),
   };
 }
+
+/** Raw file text, frontmatter included — what the /admin page editor reads and writes back. */
+export function getDocSource(name: string): string | undefined {
+  const file = path.join(process.cwd(), 'content', `${name}.md`);
+  if (!fs.existsSync(file)) return undefined;
+  return fs.readFileSync(file, 'utf8');
+}

@@ -21,6 +21,11 @@ That commits the file through the GitHub API, which triggers the same redeploy. 
 whole review file including its frontmatter, the frontmatter wins and you can leave the form
 fields empty.
 
+`/admin` also has an "Edit a page" section below the review form, for the About page and the
+guide. It loads the page's current markdown into a text box — frontmatter included — and
+publishes edits the same way. That's the friendliest way to change site copy without touching
+code; there's no rich-text editor, just plain markdown headings and paragraphs.
+
 ## Review file format
 
 ```yaml
