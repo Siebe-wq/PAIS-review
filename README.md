@@ -128,6 +128,7 @@ first four if you want the `/admin` publishing page:
 | `NEXT_PUBLIC_SITE_URL` | Only needed if the site moves off `pais-review.vercel.app`. Used for the sitemap and link previews. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Shown on the About page as the corrections address. Left unset, no address is shown. |
 | `ANTHROPIC_API_KEY` | Only for the "Tidy up with Claude" button in `/admin`. Without it, that button reports it is not configured and everything else works as normal. |
+| `NORMALISER_MODEL` | Which model the tidy-up button uses. Defaults to `claude-sonnet-5`. `claude-haiku-4-5` halves the cost per review; see the note in `src/lib/normalise.ts` before switching. |
 
 Until `ADMIN_PASSWORD`, `GITHUB_TOKEN` and `GITHUB_REPO` are all set, `/admin` loads but
 publishing returns a clear "not configured" error rather than failing quietly.

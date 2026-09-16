@@ -4,8 +4,17 @@ import matter from 'gray-matter';
 import { z } from 'zod';
 import { REVIEW_KINDS, SIGNALS } from './types';
 
-/** The model doing the conversion. Sonnet is ample for restructuring text it is handed. */
-export const NORMALISER_MODEL = 'claude-sonnet-5';
+/**
+ * The model doing the conversion, overridable with NORMALISER_MODEL.
+ *
+ * Sonnet is the default deliberately. Restructuring a review without altering any of its
+ * judgements is precision instruction-following over long text, and when a cheaper model
+ * slips at it the output still looks clean — a dropped caveat or a misfiled paragraph does
+ * not announce itself. Haiku 4.5 (claude-haiku-4-5) halves the per-review cost, which is a
+ * few pence across an entire backlog; the reading time to catch a silent distortion costs
+ * more than that. Switch it if a side-by-side says otherwise.
+ */
+export const NORMALISER_MODEL = process.env.NORMALISER_MODEL || 'claude-sonnet-5';
 
 const FrontmatterSchema = z.object({
   title: z.string().describe('The title of the paper, or of the review if it is not about one paper.'),
