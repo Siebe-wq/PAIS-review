@@ -26,10 +26,10 @@ The model that wrote each review is named on that review's page.
 
 ## What it is told to watch for
 
-Received wisdom about these conditions — "ME/CFS involves X" — often rests on weak evidence,
-and the model is told to treat such statements as claims to check rather than premises. It is
-told to be calibrated: to say plainly when work is good, and not to manufacture criticism in
-order to look rigorous.
+The project prompt, quoted in full below, says this in the editor's own words: be careful with
+received wisdom about these conditions, which often rests on weak evidence; do not parrot
+online comments on research; and have the whole paper. It also asks for calibration — when
+something is good, it is good.
 
 ## Where to read the method in full
 

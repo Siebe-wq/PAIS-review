@@ -58,10 +58,14 @@ edit the guide. The editor collects these for the next version.
 
 ## What to be careful of
 
-Received wisdom about these conditions — "ME/CFS involves X" — often rests on weak evidence.
-Treat it as a claim to check, not a premise. Evaluate online commentary in its context rather
-than repeating it. Make sure you have the whole paper, the figures and tables, and the
-supplement where the claims rest on it; if not, say so at the top and set `confidence` to match.
+Be very careful with received wisdom/common knowledge like "ME/CFS involves x", because in
+many cases it rests on (very) weak evidence.
+
+Be careful with parroting online comments on research — evaluate the comment in its context
+rather than just parroting.
+
+Make sure you have access to the whole paper, and ideally also graphs. Plus supplementary files
+when needed.
 
 ## Grading
 
