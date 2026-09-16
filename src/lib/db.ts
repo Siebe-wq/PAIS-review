@@ -1,12 +1,33 @@
 import { Pool, type QueryResultRow } from 'pg';
 
 /**
- * One Postgres pool per server instance. Vercel's Neon integration sets DATABASE_URL
- * (pooled); a plain Postgres URL works the same locally. Without either, comments and
+ * One Postgres pool per server instance. Vercel's storage integrations set the connection
+ * URL under a name that depends on the prefix chosen when the store was connected
+ * (DATABASE_URL, STORAGE_URL, STORAGE_POSTGRES_URL, ...), so rather than guess the name,
+ * take any variable whose value is a Postgres URL. Pooled URLs are preferred over the
+ * unpooled / Prisma variants the same integration also sets. Without any, comments and
  * ratings simply do not appear — the rest of the site does not depend on this.
  */
+const PREFERRED_NAMES = ['DATABASE_URL', 'POSTGRES_URL'];
+
+function looksLikePostgres(value: string | undefined): value is string {
+  return Boolean(value && /^postgres(ql)?:\/\//i.test(value));
+}
+
+/** Names (never values) of every environment variable holding a Postgres URL. */
+export function postgresEnvNames(): string[] {
+  return Object.keys(process.env)
+    .filter((name) => looksLikePostgres(process.env[name]))
+    .sort();
+}
+
 function connectionString(): string | undefined {
-  return process.env.DATABASE_URL || process.env.POSTGRES_URL || undefined;
+  for (const name of PREFERRED_NAMES) {
+    if (looksLikePostgres(process.env[name])) return process.env[name];
+  }
+  const secondBest = (name: string) => (/UNPOOLED|NON_POOLING|NO_SSL|PRISMA/i.test(name) ? 1 : 0);
+  const [best] = postgresEnvNames().sort((a, b) => secondBest(a) - secondBest(b) || a.localeCompare(b));
+  return best ? process.env[best] : undefined;
 }
 
 export function dbConfigured(): boolean {
@@ -17,7 +38,7 @@ let pool: Pool | undefined;
 
 function getPool(): Pool {
   const url = connectionString();
-  if (!url) throw new Error('DATABASE_URL is not set.');
+  if (!url) throw new Error('No database URL is set.');
   if (!pool) {
     pool = new Pool({
       connectionString: url,

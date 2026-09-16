@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { dbConfigured, describeDbError, pingDb } from '@/lib/db';
+import { dbConfigured, describeDbError, pingDb, postgresEnvNames } from '@/lib/db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -9,16 +9,14 @@ export const dynamic = 'force-dynamic';
  * Says only what kind of thing is wrong — never the connection details.
  */
 export async function GET() {
-  const env = {
-    DATABASE_URL: Boolean(process.env.DATABASE_URL),
-    POSTGRES_URL: Boolean(process.env.POSTGRES_URL),
-  };
+  // Names only, never values: which variables in this deployment hold a Postgres URL.
+  const env = { postgresUrls: postgresEnvNames() };
   if (!dbConfigured()) {
     return NextResponse.json({
       configured: false,
       ok: false,
       env,
-      hint: 'No DATABASE_URL in this deployment. If you added the database after the last deploy, redeploy: environment variables only apply to new builds.',
+      hint: 'No environment variable in this deployment holds a Postgres URL. If you connected the database after the last deploy, redeploy: environment variables only apply to new builds. Also check the variable is enabled for Production.',
     });
   }
   try {
