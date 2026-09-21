@@ -1,7 +1,7 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.3.1"
-updated: 2026-09-16
+version: "0.4"
+updated: 2026-09-21
 authors: Siebe Rozendal (main), Claude
 
 ---
@@ -95,6 +95,31 @@ For cerebral blood flow: was velocity measured, or volume?
 - Was it pre-registered?
 - Has the protocol been adhered to? Has the protocol been changed?
 
+### Drug trials: target engagement
+
+Is there any evidence the drug actually reached and acted on its intended target, at the dose
+used? That is a separate question from whether the outcome moved. Three things to look for,
+and a paper can fail at any of them:
+
+- **Exposure.** Was the drug present at the target site, at a concentration that could do
+  something? Plasma levels are weak evidence when the target sits in tissue, in a reservoir,
+  or behind the blood-brain barrier.
+- **Binding.** Is there a measurement of the drug acting on the target — receptor occupancy,
+  enzyme inhibition, viral load for an antiviral, the immune marker for an immunomodulator?
+- **Downstream effect.** Did the thing that should move if the target was hit actually move?
+
+Also ask where the dose came from. A dose carried over from another indication, where the
+target or the tissue differs, is a guess. A dose-response across arms, or prior human data at
+this dose, is evidence.
+
+Symptom improvement is not evidence of target engagement, and neither is in vitro potency at
+concentrations the dose cannot reach.
+
+This matters most for a null result. A trial that fails without showing the drug engaged its
+target has not tested the hypothesis, and should not be cited as though it had. For a positive
+result, missing engagement evidence does not undo the effect, but it does mean the stated
+mechanism is unsupported: the drug may have worked through something else.
+
 ### Data collection
 
 Measuring PEM status at each data collection point is essential. In ME/CFS, the state of the
@@ -172,6 +197,8 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
+- **0.4** (2026-09-21) — Study design: drug trials must show evidence of target engagement —
+  exposure, binding and a downstream effect — not just a moved outcome.
 - **0.3.1** (2026-09-16) - Edited out some AI additions to this guide.
 - **0.3** (2026-09-16) — Outcome measures: subjective, patient-reported outcomes are acceptable
   when the trial is properly blinded and the instrument is validated in this population. The
