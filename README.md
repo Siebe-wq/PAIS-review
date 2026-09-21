@@ -182,10 +182,14 @@ publishing returns a clear "not configured" error rather than failing quietly.
   pointing at the raw markdown and asking it to argue with the review rather than summarise it.
 - Comments under every review and under the guide: threaded, with a self-chosen username and
   no account. Two vote axes — karma (is this a good comment) and agree/disagree — open to
-  anyone, one vote per browser. Each comment records the method version it was written
-  against. Spam defences: honeypot field, per-browser and per-network rate limits, a link cap,
-  duplicate rejection. When signed in, `/admin` sessions see a Hide button on each comment;
-  hidden comments keep their place in a thread so replies are not orphaned.
+  anyone, one vote per browser. A new comment starts at one karma, its author's own upvote,
+  which they can take back like any other vote. Each comment records the method version it
+  was written against. Any comment can be collapsed, which folds its replies with it.
+  Spam defences: honeypot field, per-browser and per-network rate limits, a link cap,
+  duplicate rejection. When signed in, `/admin` sessions get two buttons on each comment:
+  Hide keeps the row, so replies to it are not orphaned, and shows "hidden by the editor" in
+  its place; Remove deletes it and everything under it after a confirmation that names how
+  many comments will go.
 - Star ratings, 1–5, one per browser, under each review.
 - The `.md` endpoint for a review appends its comment thread, so a model reading the review
   sees the discussion too.

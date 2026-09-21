@@ -361,6 +361,16 @@ button.linkish.inline { font-size: inherit; color: var(--accent); }
 .comment.hidden > .comment-head, .comment.hidden > .comment-body { opacity: 0.55; }
 .comment-hidden { font-size: 0.82rem; color: var(--muted); margin: 0 0 6px; font-style: italic; }
 .comment-head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 0.82rem; margin-bottom: 4px; }
+/* A long name wraps to the next line rather than breaking mid-word. */
+.comment-head > .comment-user { overflow-wrap: break-word; }
+.collapse {
+  font: inherit; font-size: 0.9rem; line-height: 1; cursor: pointer;
+  background: none; border: 1px solid transparent; border-radius: 6px;
+  color: var(--muted); padding: 5px 8px; min-width: 30px; min-height: 30px;
+  margin: -5px 0 -5px -8px; flex: 0 0 auto; align-self: flex-start;
+}
+.collapse:hover { color: var(--text); border-color: var(--border); }
+.comment-head .comment-hidden { margin: 0; }
 .comment-user { font-weight: 600; color: var(--text); font-size: 0.9rem; }
 .comment-version, .comment-time { color: var(--muted); }
 .comment-version { font-size: 0.75rem; padding: 1px 7px; border: 1px solid var(--border); border-radius: 999px; }
@@ -378,6 +388,7 @@ button.linkish.inline { font-size: inherit; color: var(--accent); }
 .vote.agree { font-size: 0.78rem; }
 .vote-count { font-size: 0.82rem; min-width: 1.4em; text-align: center; color: var(--text); font-variant-numeric: tabular-nums; }
 .comment-actions .linkish { font-size: 0.8rem; }
+.comment-actions .linkish.danger { color: var(--fatal-fg); }
 
 /* Context beyond the paper */
 .context-panel { margin: 40px 0 0; max-width: 42rem; }

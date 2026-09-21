@@ -35,6 +35,7 @@ export function Comments({ type, slug }: { type: TargetType; slug: string }) {
   const [data, setData] = useState<Loaded | null>(null);
   const [username, setUsername] = useState('');
   const [replyTo, setReplyTo] = useState<number | null>(null);
+  const [collapsed, setCollapsed] = useState<Set<number>>(() => new Set());
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -90,13 +91,27 @@ export function Comments({ type, slug }: { type: TargetType; slug: string }) {
     load();
   }
 
-  async function moderate(commentId: number, hidden: boolean) {
-    await fetch('/api/comments/moderate', {
+  async function moderate(commentId: number, action: 'hide' | 'unhide' | 'remove') {
+    setError(null);
+    const response = await fetch('/api/comments/moderate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ commentId, hidden }),
+      body: JSON.stringify({ commentId, action }),
     });
+    if (!response.ok) {
+      const json = (await response.json().catch(() => ({}))) as { error?: string };
+      setError(json.error ?? 'Could not moderate that comment.');
+      return;
+    }
     load();
+  }
+
+  function toggleCollapse(commentId: number) {
+    setCollapsed((current) => {
+      const next = new Set(current);
+      if (!next.delete(commentId)) next.add(commentId);
+      return next;
+    });
   }
 
   const count = countVisible(data.comments);
@@ -132,6 +147,8 @@ export function Comments({ type, slug }: { type: TargetType; slug: string }) {
             depth={0}
             admin={data.admin}
             replyTo={replyTo}
+            collapsed={collapsed}
+            onToggleCollapse={toggleCollapse}
             onReply={setReplyTo}
             onVote={castVote}
             onModerate={moderate}
@@ -165,6 +182,8 @@ function CommentItem({
   depth,
   admin,
   replyTo,
+  collapsed,
+  onToggleCollapse,
   onReply,
   onVote,
   onModerate,
@@ -174,27 +193,64 @@ function CommentItem({
   depth: number;
   admin: boolean;
   replyTo: number | null;
+  collapsed: Set<number>;
+  onToggleCollapse: (id: number) => void;
   onReply: (id: number | null) => void;
   onVote: (id: number, axis: 'karma' | 'agree', value: -1 | 0 | 1) => void;
-  onModerate: (id: number, hidden: boolean) => void;
+  onModerate: (id: number, action: 'hide' | 'unhide' | 'remove') => void;
   form: (parentId: number) => React.ReactNode;
 }) {
   const indent = Math.min(depth, MAX_INDENT);
   const toggle = (axis: 'karma' | 'agree', value: 1 | -1) =>
     onVote(node.id, axis, node.mine[axis] === value ? 0 : value);
+  const isCollapsed = collapsed.has(node.id);
+  const buried = countVisible(node.replies);
+
+  const collapseButton = (
+    <button
+      type="button"
+      className="collapse"
+      onClick={() => onToggleCollapse(node.id)}
+      aria-expanded={!isCollapsed}
+      aria-label={isCollapsed ? 'Expand this comment' : 'Collapse this comment'}
+    >
+      {isCollapsed ? '+' : '\u2212'}
+    </button>
+  );
+
+  function confirmRemove() {
+    const total = countVisible([node]);
+    const message =
+      total > 1
+        ? `Delete this comment and the ${total - 1} ${total === 2 ? 'reply' : 'replies'} under it? This cannot be undone.`
+        : 'Delete this comment? This cannot be undone.';
+    if (window.confirm(message)) onModerate(node.id, 'remove');
+  }
 
   return (
     <li className={`comment${node.hidden ? ' hidden' : ''}`} style={{ marginLeft: indent ? `${indent * 18}px` : 0 }}>
       {node.hidden && !admin ? (
-        <p className="comment-hidden">Comment hidden by the editor.</p>
+        <div className="comment-head">
+          {collapseButton}
+          <p className="comment-hidden">Comment hidden by the editor.</p>
+          {isCollapsed && buried > 0 && <span className="comment-time">{buried} hidden</span>}
+        </div>
       ) : (
         <>
           <div className="comment-head">
+            {collapseButton}
             <span className="comment-user">{node.username}</span>
             {node.version && <span className="comment-version">on v{node.version}</span>}
             <span className="comment-time">{timeAgo(node.createdAt)}</span>
             {node.hidden && <span className="comment-version">hidden</span>}
+            {isCollapsed && (
+              <span className="comment-time">
+                {buried > 0 ? `${buried} ${buried === 1 ? 'reply' : 'replies'} hidden` : 'collapsed'}
+              </span>
+            )}
           </div>
+          {!isCollapsed && (
+          <>
           <div className="comment-body">
             {node.body.split(/\n{2,}/).map((para, index) => (
               <p key={index}>{para}</p>
@@ -218,17 +274,24 @@ function CommentItem({
               Reply
             </button>
             {admin && (
-              <button type="button" className="linkish" onClick={() => onModerate(node.id, !node.hidden)}>
+              <button type="button" className="linkish" onClick={() => onModerate(node.id, node.hidden ? 'unhide' : 'hide')}>
                 {node.hidden ? 'Unhide' : 'Hide'}
               </button>
             )}
+            {admin && (
+              <button type="button" className="linkish danger" onClick={confirmRemove}>
+                Remove
+              </button>
+            )}
           </div>
+          </>
+          )}
         </>
       )}
 
-      {replyTo === node.id && form(node.id)}
+      {!isCollapsed && replyTo === node.id && form(node.id)}
 
-      {node.replies.length > 0 && (
+      {!isCollapsed && node.replies.length > 0 && (
         <ul className="thread">
           {node.replies.map((child) => (
             <CommentItem
@@ -237,6 +300,8 @@ function CommentItem({
               depth={depth + 1}
               admin={admin}
               replyTo={replyTo}
+              collapsed={collapsed}
+              onToggleCollapse={onToggleCollapse}
               onReply={onReply}
               onVote={onVote}
               onModerate={onModerate}
