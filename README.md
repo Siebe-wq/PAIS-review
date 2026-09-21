@@ -177,6 +177,17 @@ publishing returns a clear "not configured" error rather than failing quietly.
 - A pilot banner on every page, set in `src/lib/site.ts` (`pilotNotice`; empty string removes it).
 - Search on the index over title, authors, journal, verdict, tags, strengths and weaknesses. Not
   the body — see `docs/roadmap.md`.
+- Each row on the index carries its comment count, the time of the latest comment, and the mean
+  reader rating as part-filled stars to one decimal. Sorts: Active, newest, oldest, highest or
+  lowest score, most comments, recently discussed, highest reader rating. Without a database the
+  engagement sorts and the totals are simply absent.
+- **Active**, the default sort, blends three things (`src/lib/ranking.ts`): a live discussion
+  (comment count, damped by a logarithm, fading with a three-day half-life since the last
+  comment), reader interest (how many ratings, undecayed), and freshness (one-week half-life
+  since publication, so a new review is not published straight to the bottom of the page).
+  Weights 3, 1 and 2. Ties break on publication date. "Highest reader rating" pulls averages
+  toward 3.5 until a review has a few ratings, so a single five-star does not top the list; the
+  number shown on the card is still the plain mean.
 - A contents list on long reviews: collapsed bar on phones, sticky sidebar on wide screens.
 - "Discuss this review with an AI" under each review: opens Claude or ChatGPT with a prompt
   pointing at the raw markdown and asking it to argue with the review rather than summarise it.

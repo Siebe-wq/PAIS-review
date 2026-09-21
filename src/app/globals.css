@@ -163,6 +163,23 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .card .cite { font-size: 0.83rem; color: var(--muted); margin: 0 0 10px; }
 .card .verdict { margin: 0 0 12px; font-size: 0.95rem; }
 
+/* Comment and rating totals under each card on the index. */
+.card-meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 2px 18px;
+  margin: 10px 0 0; font-size: 0.8rem; color: var(--muted);
+}
+.card-rating { white-space: nowrap; }
+.card-rating .stars-static { margin-right: 6px; }
+.card-rating-n { margin-left: 4px; font-variant-numeric: tabular-nums; }
+
+/* Read-only stars, filled to a fraction: two rows stacked, the top one clipped. */
+.stars-static {
+  position: relative; display: inline-block; white-space: nowrap;
+  line-height: 1; vertical-align: -1px; letter-spacing: 1px;
+}
+.stars-base { color: var(--border-strong); }
+.stars-fill { position: absolute; left: 0; top: 0; overflow: hidden; color: var(--borderline-fg); }
+
 .score {
   flex: none; width: 82px; text-align: center;
   border: 1px solid var(--border); border-radius: var(--radius);
