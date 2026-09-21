@@ -128,13 +128,24 @@ Never hard-code a version number in the instructions, prompt or methods pages. W
 
 ## Updating the guide
 
-Edit it from the "Edit a page" tab in `/admin`, or edit `content/guide.md` directly, and bump
-`version` in its frontmatter. Saving from `/admin` is refused if the version is unchanged,
-because forgetting is the normal failure mode and it makes older reviews look current.
+Edit it from the "Edit a page" tab in `/admin`, choose what kind of change it was, and write one
+line saying what changed. Everything else happens on save: the version is bumped, the date is
+stamped, and your line is added to the top of the guide's changelog. There is no version number
+to type and no changelog to edit afterwards, whichever of the three documents you edited.
 
-Wording and small clarifications are a patch bump (0.3 → 0.3.1), which the editor suggests by
-default. A change that could move a grade — a new criterion, a changed rule — bumps the middle
-number (0.3 → 0.4). The first number is for a rewrite.
+| What kind of change | Bump | Example |
+|---|---|---|
+| Wording or a clarification | patch | 0.3 → 0.3.1 |
+| A new or changed criterion | minor | 0.3.1 → 0.4 |
+| A rewrite | major | 0.3.1 → 1.0 |
+
+The current version is read from the repository rather than from the running site, so saving
+twice before the first build finishes still bumps correctly instead of reusing a number.
+Saving the guide replaces the whole file, changelog included, so an editor left open across
+another save is refused with a note to reload rather than silently dropping entries.
+
+Editing `content/guide.md` by hand in git works too; then the version and changelog are yours
+to update.
 
 A review that does not state its own `guideVersion` is stamped with whatever the guide is at
 publish time. A review that does state one keeps it, so importing older work does not

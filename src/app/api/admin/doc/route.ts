@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import matter from 'gray-matter';
-import { getDoc, getDocSource, withGuideVersion } from '@/lib/doc';
+import { getDoc, getDocSource, withChangelogEntry, withGuideVersion } from '@/lib/doc';
 import { isSignedIn } from '@/lib/session';
-import { GithubError, getFileSha, getGithubConfig, putFile } from '@/lib/github';
+import { GithubError, getFile, getFileSha, getGithubConfig, putFile } from '@/lib/github';
+import { bumpVersion, isChangeKind, validateNote } from '@/lib/version';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let input: { name?: string; content?: string; version?: string };
+  let input: { name?: string; content?: string; change?: string; note?: string };
   try {
     input = await request.json();
   } catch {
@@ -65,57 +66,75 @@ export async function POST(request: Request) {
   }
 
   const today = new Date().toISOString().slice(0, 10);
-  const currentVersion = getDoc('guide')?.version;
+  const versioned = VERSIONED_PAGES.has(name);
 
-  // Work out what the guide file should end up containing. For the guide itself the
-  // version comes from the pasted frontmatter; for the other versioned pages it comes
-  // from the editor's version field and is written into the guide alongside the page.
-  let guideUpdate: string | undefined;
   let saveContent = content;
+  let guideUpdate: string | undefined;
+  let newVersion: string | undefined;
 
-  if (VERSIONED_PAGES.has(name)) {
-    let newVersion: string | undefined;
+  try {
+    if (versioned) {
+      const change = input.change;
+      if (!isChangeKind(change)) {
+        return fail('Say what kind of change this is before saving.', 400);
+      }
+      const note = (input.note ?? '').trim();
+      const noteProblem = validateNote(note);
+      if (noteProblem) return fail(noteProblem, 400);
 
-    if (name === 'guide') {
+      // The version and the changelog come from the repository, not from this
+      // deployment: a save made before the last one has finished building would
+      // otherwise bump from a stale number and log two entries under it.
+      const guideFile = await getFile(github, 'content/guide.md');
+      if (!guideFile) return fail('content/guide.md is missing from the repository.', 500);
+
+      let liveVersion: string | undefined;
       try {
-        const value = (matter(content).data as Record<string, unknown>).version;
-        newVersion = value == null ? undefined : String(value).trim();
+        const value = (matter(guideFile.content).data as Record<string, unknown>).version;
+        liveVersion = value == null ? undefined : String(value).trim();
       } catch {
         return fail("The guide's frontmatter is not valid YAML.", 400);
       }
-      if (!newVersion) return fail('The guide needs a "version" field in its frontmatter.', 400);
-    } else {
-      newVersion = (input.version ?? '').trim() || undefined;
-      if (!newVersion) {
-        return fail(
-          'This page is part of the versioned method. Give the new methods version to save it.',
-          400,
-        );
+
+      // Saving the guide replaces the whole file, changelog included. If the editor
+      // loaded it before an earlier save landed, saving now would drop the entries
+      // made in between, so refuse rather than lose them.
+      if (name === 'guide') {
+        let editedVersion: string | undefined;
+        try {
+          const value = (matter(content).data as Record<string, unknown>).version;
+          editedVersion = value == null ? undefined : String(value).trim();
+        } catch {
+          return fail('The frontmatter you pasted is not valid YAML.', 400);
+        }
+        if (editedVersion !== liveVersion) {
+          return fail(
+            `The guide has changed since you opened it — the repository is on v${liveVersion ?? '?'} and you are editing v${editedVersion ?? '?'}. Reload the page to pick up the current text, then make your change again.`,
+            409,
+          );
+        }
       }
-    }
 
-    if (currentVersion && newVersion === currentVersion) {
-      return fail(
-        `The method is still marked v${currentVersion}. Bump the version before saving — reviews record which version they were written under, and leaving it unchanged makes older reviews look current.`,
-        409,
-      );
-    }
+      newVersion = bumpVersion(liveVersion, change);
 
-    if (name === 'guide') {
-      // Stamp the date so it cannot drift from the version.
-      saveContent = withGuideVersion(content, newVersion, today);
-    } else {
-      const guideSource = getDocSource('guide');
-      if (!guideSource) return fail('content/guide.md is missing, so the version cannot be bumped.', 500);
-      guideUpdate = withGuideVersion(guideSource, newVersion, today);
+      // The guide carries both the version and the changelog, so it is always written.
+      // Editing the guide itself folds all three changes into one commit.
+      const base = name === 'guide' ? content : guideFile.content;
+      const stamped = withChangelogEntry(withGuideVersion(base, newVersion, today), newVersion, today, note);
+      if (name === 'guide') saveContent = stamped;
+      else guideUpdate = stamped;
     }
+  } catch (error) {
+    if (error instanceof GithubError) return fail(error.message, error.status);
+    return fail(error instanceof Error ? error.message : 'Could not prepare the save.', 400);
   }
 
   const path = `content/${name}.md`;
 
   try {
     const sha = await getFileSha(github, path);
-    const result = await putFile(github, path, `${saveContent}\n`, `Edit page: ${name}`, sha);
+    const message = versioned ? `Edit page: ${name} (methods v${newVersion})` : `Edit page: ${name}`;
+    const result = await putFile(github, path, `${saveContent}\n`, message, sha);
 
     if (guideUpdate) {
       const guideSha = await getFileSha(github, 'content/guide.md');
@@ -123,12 +142,18 @@ export async function POST(request: Request) {
         github,
         'content/guide.md',
         guideUpdate,
-        `Bump methods version to ${input.version} (${name} changed)`,
+        `Methods v${newVersion}: log the ${name} change`,
         guideSha,
       );
     }
 
-    return NextResponse.json({ ok: true, path, bumpedGuide: Boolean(guideUpdate), ...result });
+    return NextResponse.json({
+      ok: true,
+      path,
+      version: newVersion,
+      bumpedGuide: Boolean(guideUpdate),
+      ...result,
+    });
   } catch (error) {
     if (error instanceof GithubError) return fail(error.message, error.status);
     return fail('Unexpected error talking to GitHub.', 502);

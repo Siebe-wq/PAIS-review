@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { CHANGE_KINDS, CHANGE_LABELS, bumpVersion, type ChangeKind } from '@/lib/version';
 
 const PAGES = [
   { value: 'about', label: 'About page' },
@@ -15,20 +16,8 @@ interface Result {
   path?: string;
   commitUrl?: string;
   bumpedGuide?: boolean;
+  version?: string;
   error?: string;
-}
-
-/**
- * Suggests the next version. A wording change is a patch: "0.3" -> "0.3.1",
- * "0.3.1" -> "0.3.2". Edit the field for a change that could move a grade.
- */
-function nextPatch(version: string | null): string {
-  if (!version) return '';
-  const parts = version.split('.').map((part) => part.trim());
-  if (parts.some((part) => !/^\d+$/.test(part))) return '';
-  if (parts.length < 3) return `${parts.join('.')}.1`;
-  parts[parts.length - 1] = String(Number(parts[parts.length - 1]) + 1);
-  return parts.join('.');
 }
 
 export function DocEditor({ onExpired }: { onExpired: () => void }) {
@@ -36,7 +25,8 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
   const [content, setContent] = useState('');
   const [versioned, setVersioned] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<string | null>(null);
-  const [version, setVersion] = useState('');
+  const [change, setChange] = useState<ChangeKind>('patch');
+  const [note, setNote] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
@@ -60,7 +50,8 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
             setContent(json.content);
             setVersioned(Boolean(json.versioned));
             setCurrentVersion(json.guideVersion ?? null);
-            setVersion(nextPatch(json.guideVersion ?? null));
+            setChange('patch');
+            setNote('');
           } else {
             setResult({ error: json.error ?? 'Could not load the current page content.' });
           }
@@ -86,13 +77,20 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
       const response = await fetch('/api/admin/doc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, content, version: versioned ? version : undefined }),
+        body: JSON.stringify({
+          name,
+          content,
+          change: versioned ? change : undefined,
+          note: versioned ? note : undefined,
+        }),
       });
       if (response.status === 401) {
         onExpired();
         return;
       }
-      setResult(await response.json());
+      const json = (await response.json()) as Result;
+      setResult(json);
+      if (json.ok) setNote('');
     } catch {
       setResult({ error: 'Could not reach the server. Check your connection and try again.' });
     } finally {
@@ -100,9 +98,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
     }
   }
 
-  // The guide carries its version inside its own frontmatter; the other versioned pages
-  // take it from this field and write it into the guide on save.
-  const showVersionField = versioned && name !== 'guide';
+  const nextVersion = bumpVersion(currentVersion, change);
 
   return (
     <form onSubmit={onSubmit}>
@@ -119,9 +115,10 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
 
       {versioned && (
         <p className="hint warn">
-          This page is part of the versioned method (guide + instructions + prompt, currently v
-          {currentVersion ?? '?'}). Saving it needs a new version number, and the change should
-          be logged in the guide&rsquo;s changelog.
+          This page is part of the versioned method — the guide, the reviewing instructions and
+          the project prompt share one number, currently v{currentVersion ?? '?'}. Saving any of
+          them bumps it and writes your note into the guide&rsquo;s changelog, so there is
+          nothing to edit by hand afterwards.
         </p>
       )}
 
@@ -139,29 +136,49 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
           {loading
             ? 'Loading the current content…'
             : name === 'guide'
-              ? 'Markdown. Bump the version field at the top; the updated date is stamped for you.'
+              ? 'Markdown. Leave version and updated in the frontmatter alone — both are set for you on save.'
               : name === 'instructions' || name === 'prompt' || name === 'methods'
                 ? 'Markdown. {{GUIDE_VERSION}} and {{SITE_URL}} are filled in when served — never hard-code them.'
                 : 'Markdown, including the frontmatter block at the top.'}
         </p>
       </div>
 
-      {showVersionField && (
-        <div className="field" style={{ maxWidth: '14rem' }}>
-          <label htmlFor="doc-version">New methods version</label>
-          <input
-            id="doc-version"
-            type="text"
-            value={version}
-            onChange={(event) => setVersion(event.target.value)}
-            placeholder={nextPatch(currentVersion)}
-            required
-          />
-          <p className="hint">
-            Suggested: a patch bump for wording. Use the middle number for a change that could
-            move a grade. Written into the guide&rsquo;s frontmatter with this save.
-          </p>
-        </div>
+      {versioned && (
+        <>
+          <div className="field">
+            <label htmlFor="doc-change">What kind of change is this?</label>
+            <select
+              id="doc-change"
+              value={change}
+              onChange={(event) => setChange(event.target.value as ChangeKind)}
+            >
+              {CHANGE_KINDS.map((kind) => (
+                <option key={kind} value={kind}>
+                  {CHANGE_LABELS[kind].label} (v{currentVersion ?? '?'} &rarr; v
+                  {bumpVersion(currentVersion, kind)})
+                </option>
+              ))}
+            </select>
+            <p className="hint">{CHANGE_LABELS[change].help}</p>
+          </div>
+
+          <div className="field">
+            <label htmlFor="doc-note">What changed</label>
+            <textarea
+              id="doc-note"
+              rows={2}
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              placeholder="One line. Published as the changelog entry."
+              maxLength={300}
+              required
+            />
+            <p className="hint">
+              Goes in as <code>- **{nextVersion}** ({new Date().toISOString().slice(0, 10)}) &mdash;
+              your note</code>, at the top of the guide&rsquo;s changelog.
+            </p>
+          </div>
+        </>
       )}
 
       <button className="primary" type="submit" disabled={busy || loading}>
@@ -171,8 +188,8 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
       {result?.ok && (
         <div className="notice ok">
           Saved <code>{result.path}</code>
-          {result.bumpedGuide ? ' and bumped the methods version' : ''}. Vercel is rebuilding —
-          the change will be live in a minute or two.
+          {result.version ? ` as methods v${result.version}, changelog entry included` : ''}.
+          Vercel is rebuilding — the change will be live in a minute or two.
           {result.commitUrl && (
             <>
               {' '}

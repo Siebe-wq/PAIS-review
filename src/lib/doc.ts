@@ -76,3 +76,41 @@ export function withGuideVersion(guideSource: string, version: string, updated: 
 
   return head + tail;
 }
+
+/** Wraps a changelog line the way the rest of the file is wrapped, for readable diffs. */
+function wrap(text: string, width: number, indent: string): string {
+  const out: string[] = [];
+  let line = '';
+  for (const word of text.split(/\s+/)) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (candidate.length > width && line) {
+      out.push(line);
+      line = indent + word;
+    } else {
+      line = candidate;
+    }
+  }
+  if (line) out.push(line);
+  return out.join('\n');
+}
+
+/**
+ * Adds an entry at the top of the guide's changelog, so saving a change from /admin
+ * logs it instead of leaving that to be remembered. Creates the section if the guide
+ * has none yet.
+ */
+export function withChangelogEntry(
+  guideSource: string,
+  version: string,
+  date: string,
+  note: string,
+): string {
+  const entry = wrap(`- **${version}** (${date}) — ${note.trim().replace(/\s+/g, ' ')}`, 92, '  ');
+  const heading = /^## Changelog[ \t]*$/m.exec(guideSource);
+
+  if (!heading) return `${guideSource.trimEnd()}\n\n## Changelog\n\n${entry}\n`;
+
+  const after = heading.index + heading[0].length;
+  const rest = guideSource.slice(after).replace(/^\n+/, '');
+  return `${guideSource.slice(0, after)}\n\n${entry}\n${rest}`;
+}
