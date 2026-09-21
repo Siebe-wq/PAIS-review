@@ -177,8 +177,8 @@ publishing returns a clear "not configured" error rather than failing quietly.
 - A pilot banner on every page, set in `src/lib/site.ts` (`pilotNotice`; empty string removes it).
 - Search on the index over title, authors, journal, verdict, tags, strengths and weaknesses. Not
   the body — see `docs/roadmap.md`.
-- Each row on the index carries its comment count, the time of the latest comment, and the mean
-  reader rating as part-filled stars to one decimal. Sorts: Active, newest, oldest, highest or
+- Each row on the index stacks the reader's view under the grade badge: mean rating as
+  part-filled stars to one decimal, the comment count, and the time of the latest comment. Sorts: Active, newest, oldest, highest or
   lowest score, most comments, recently discussed, highest reader rating. Without a database the
   engagement sorts and the totals are simply absent.
 - **Active**, the default sort, blends three things (`src/lib/ranking.ts`): a live discussion

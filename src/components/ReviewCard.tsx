@@ -26,7 +26,34 @@ export function ReviewCard({
 
   return (
     <article className="card">
-      <ScoreBadge review={review} />
+      <div className="card-stats">
+        <ScoreBadge review={review} />
+        {engagement && (
+          <div className="card-engagement">
+            {engagement.ratingAverage !== null && (
+              <span
+                className="card-rating"
+                title={`${engagement.ratingAverage.toFixed(1)} out of 5, from ${engagement.ratingCount} reader rating${engagement.ratingCount === 1 ? '' : 's'}`}
+              >
+                <Stars value={engagement.ratingAverage} />
+                <span className="card-rating-n">
+                  {engagement.ratingAverage.toFixed(1)} ({engagement.ratingCount})
+                </span>
+              </span>
+            )}
+            <span>
+              {engagement.comments === 0
+                ? 'No comments'
+                : `${engagement.comments} comment${engagement.comments === 1 ? '' : 's'}`}
+            </span>
+            {engagement.lastCommentAt && (
+              <span title={`Latest comment ${timeAgo(engagement.lastCommentAt, now)}`}>
+                {timeAgo(engagement.lastCommentAt, now)}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
       <div className="card-main">
         <h2>{href ? <Link href={href}>{review.title}</Link> : review.title}</h2>
         {citation && <p className="cite">{citation}</p>}
@@ -43,25 +70,6 @@ export function ReviewCard({
             </span>
           ))}
         </div>
-        {engagement && (
-          <p className="card-meta">
-            <span>
-              {engagement.comments === 0
-                ? 'No comments yet'
-                : `${engagement.comments} comment${engagement.comments === 1 ? '' : 's'}`}
-            </span>
-            {engagement.lastCommentAt && <span>latest {timeAgo(engagement.lastCommentAt, now)}</span>}
-            {engagement.ratingAverage !== null && (
-              <span className="card-rating">
-                <Stars value={engagement.ratingAverage} />
-                {engagement.ratingAverage.toFixed(1)}
-                <span className="card-rating-n">
-                  ({engagement.ratingCount} rating{engagement.ratingCount === 1 ? '' : 's'})
-                </span>
-              </span>
-            )}
-          </p>
-        )}
       </div>
     </article>
   );

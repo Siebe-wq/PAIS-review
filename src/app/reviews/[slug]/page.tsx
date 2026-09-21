@@ -74,7 +74,7 @@ export default async function ReviewPage({ params }: Params) {
             <dd>{KIND_LABELS[review.kind]}</dd>
           </div>
           {review.studyType && (
-            <div>
+            <div className="wide">
               <dt>Design</dt>
               <dd>{review.studyType}</dd>
             </div>
@@ -82,13 +82,13 @@ export default async function ReviewPage({ params }: Params) {
           {review.confidence && (
             <div>
               <dt>Confidence in this grade</dt>
-              <dd>{review.confidence}</dd>
+              <dd className="cap">{review.confidence}</dd>
             </div>
           )}
           {review.importance && (
             <div>
               <dt>Importance if true</dt>
-              <dd>{review.importance}</dd>
+              <dd className="cap">{review.importance}</dd>
             </div>
           )}
           <div>
@@ -116,7 +116,7 @@ export default async function ReviewPage({ params }: Params) {
         {(review.strengths?.length || review.weaknesses?.length) && (
           <div className="two-col">
             {review.weaknesses && review.weaknesses.length > 0 && (
-              <section className="panel">
+              <section className="panel weaknesses">
                 <h3>Main weaknesses</h3>
                 <ul>
                   {review.weaknesses.map((w) => (
@@ -126,7 +126,7 @@ export default async function ReviewPage({ params }: Params) {
               </section>
             )}
             {review.strengths && review.strengths.length > 0 && (
-              <section className="panel">
+              <section className="panel strengths">
                 <h3>Main strengths</h3>
                 <ul>
                   {review.strengths.map((s) => (

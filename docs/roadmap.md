@@ -21,71 +21,78 @@ Both exist now. What they still lack, and what it would take:
 
 ### Grade last, shown first
 
-**The problem.** A review file starts with its frontmatter, and the frontmatter holds
-`score`, `verdict`, `strengths` and `weaknesses`. So the model writes the grade before it
-has written a word of the analysis. Everything after is written knowing the number it
-already committed to. The body then opens with `## Executive summary`, which has the same
-problem one level down. A model's output conditions its own continuation, so this is not a
-small effect: it turns the analysis into justification for a number picked early.
+**The problem.** A review file starts with its frontmatter — the block of `key: value`
+lines between two `---` markers at the top — and that block holds `score`, `verdict`,
+`strengths` and `weaknesses`. So the model writes the grade before it has written a word
+of the analysis. Everything after is written knowing the number it already committed to.
+The body then opens with `## Executive summary`, which has the same problem one level
+down. A model's output conditions its own continuation, so this is not a small effect: it
+turns the analysis into justification for a number picked early.
 
-**The change.** The judgement moves to the end of the body, where the model reaches it
-after doing the work, and the site lifts it to the top for the reader. Bibliographic
-frontmatter (title, authors, journal, DOI, `kind`) stays where it is — there is no
-judgement in it, so writing it first costs nothing.
+**The change.** The judgement is written last and displayed first. The executive summary
+stays where readers want it, near the top of the page, but the model writes it after the
+analysis rather than before, and it ends by stating the grade. Bibliographic frontmatter
+(title, authors, journal, DOI, `kind`) stays at the top of the file and is written first —
+there is no judgement in it, so writing it first costs nothing.
 
-So the body gains two closing sections:
+So the body's section order, as written, ends with:
 
 ```
-## Key points        <- 3-5 bullets; replaces the opening executive summary
-## Grade             <- the number, the verdict sentence, strengths, weaknesses
+## Final assessment
+## Executive summary   <- written last, ends with the grade
 ```
 
-and the publishing step reads them into the frontmatter, which every other part of the
-site already uses. Nothing downstream changes: the index, the search, the score bands and
-the sitemap keep reading frontmatter as they do now.
+and the publishing step reads the grade out of that closing section into the frontmatter,
+which every other part of the site already uses. The page then renders the executive
+summary above the body. Nothing downstream changes: the index, the search, the score bands
+and the sitemap keep reading frontmatter as they do now, and the strengths and weaknesses
+bullets stay exactly as they are.
+
+**The stored file keeps the writing order.** The summary stays last in the markdown and
+the page moves it, rather than the publish step rewriting the file. That keeps an honest
+record of the order the review was written in, and a model reading the raw `.md` gets the
+analysis before the conclusion, which is the better order for it too.
 
 **What it takes.**
 
-1. `content/instructions.md` and `.claude/skills/review/SKILL.md`: the section order, and
-   the rule that the grade is written last. Both carry the same body template, so both
-   change.
-2. A parser, roughly `src/lib/hoist.ts`, that finds the two trailing sections and returns
-   score, verdict, strengths and weaknesses. It fails with a named error on a malformed
-   grade line, the way the frontmatter parser already does, rather than guessing.
-3. `src/lib/publish.ts`: call it from `buildReviewFile`, so both `/admin` and the `/review`
-   skill get the same result, and the `/admin` preview shows what was extracted.
-4. `src/lib/normalise.ts`: the tidy-up model puts the grade and key points at the end too.
-   It still must never invent a grade.
-5. A methods version bump. This changes how a grade is arrived at, so it is a middle-number
+1. `content/instructions.md` and `.claude/skills/review/SKILL.md`: the section order, the
+   rule that the summary is written last, and the rule that it ends with the grade. Both
+   carry the same body template, so both change.
+2. A parser, roughly `src/lib/hoist.ts`, that finds the closing summary and reads the grade
+   out of its last line. It fails with a named error on a malformed grade, the way the
+   frontmatter parser already does, rather than guessing.
+3. `src/app/reviews/[slug]/page.tsx`: render that section above the body instead of in
+   place.
+4. `src/lib/publish.ts`: call the parser from `buildReviewFile`, so `/admin` and the
+   `/review` skill get the same result, and the `/admin` preview shows what was extracted.
+5. `src/lib/normalise.ts`: the tidy-up model puts the summary last too. It still must never
+   invent a grade.
+6. A methods version bump. This changes how a grade is arrived at, so it is a middle-number
    bump (0.3.1 to 0.4), not a patch, and the changelog should say why. Reviews already
    published keep their own version stamp, which is the point of having one.
-6. Tests: grade present, grade absent, malformed score, an old-format file, and a file
+7. Tests: grade present, grade absent, malformed grade, an old-format file, and a file
    where the body and the frontmatter disagree.
 
-**Back-compatibility.** Both published reviews have the old shape. The parser treats the
-trailing sections as optional and falls back to frontmatter, so old files keep working
-untouched. If a file has both and they disagree, it should fail loudly rather than pick
-one — a review whose displayed grade does not match its own text is the exact failure this
-site exists to point at.
+**Back-compatibility.** Both published reviews have the old shape, with the executive
+summary first and no grade line in it. The parser treats the closing section as optional
+and falls back to the frontmatter, so old files keep working untouched. If a file has both
+and they disagree, it should fail loudly rather than pick one — a review whose displayed
+grade does not match its own text is the exact failure this site exists to point at.
 
-**Decisions.** Three, all small:
+**Settled.** The executive summary stays as prose near the top and is not replaced by
+bullets. It is written last and ends with the grade.
 
-- Does `## Key points` at the end replace `## Executive summary` at the start? Recommend
-  yes. Keeping both means the model writes a summary before the analysis, which is the
-  problem restated.
-- Should the closing `## Grade` section stay visible at the bottom of the page, given the
-  number is already at the top? Recommend yes. It is the source of truth, and seeing the
-  reasoning arrive at it is worth two lines of repetition.
-- Fail or prefer one, when body and frontmatter disagree? Recommend fail.
+**Still open.** When the body and the frontmatter disagree about the grade, fail or prefer
+one? Recommend fail.
 
 **What it does not fix.** The model can still form a view early and write toward it in its
 hidden reasoning. This removes the anchor that is actually in the text and in the context
-for the rest of the generation, which is the part that is measurable. The
-"worst domain sets the ceiling" rule stays the guard against an analysis that finds a fatal
-flaw and then awards 6.5 anyway.
+for the rest of the generation, which is the part that is measurable. The "worst domain
+sets the ceiling" rule stays the guard against an analysis that finds a fatal flaw and then
+awards 6.5 anyway.
 
-**Effort.** About three hours here, mostly the parser and its tests. Your time is the three
-decisions and a read of the reworded instructions.
+**Effort.** About three hours here, mostly the parser and its tests. Your time is one
+decision and a read of the reworded instructions.
 
 ### Request a review
 
