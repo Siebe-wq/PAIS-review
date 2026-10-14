@@ -12,7 +12,7 @@ authors: >-
   Haapaniemi H, Ollila HM, Pollack B, Rosmalen J, Romppanen E, Saafi S, Saxena
   R, Sinnott-Armstrong N, Tervi A, Urpa L, Valliere J, van Heel DA, Chowdhury S,
   Devereux-Cooke A, Ponting CP
-journal: medRxiv (preprint)
+journal: "medRxiv"
 year: 2025
 doi: 10.1101/2025.08.06.25333109
 conditions:
@@ -78,6 +78,7 @@ guideNotes:
 reviewedOn: '2026-10-14'
 guideVersion: '0.5'
 model: claude-opus-5-5
+preprint: true
 ---
 ## Executive summary
 
