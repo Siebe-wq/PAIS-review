@@ -17,6 +17,7 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 - [ ] Which model wrote a review rests on its frontmatter; nothing verifies it.
 - [ ] Human input is "Not recorded" on the reviews published before it existed. Set it in the Reviews tab.
 - [ ] The abbreviation check is a rough heuristic: an unusual name can be flagged, and an abbreviation followed by a word like "study" can slip through.
+- [ ] No check to see what the model accessed (did it see full text? graphs? supplementary data? Which other sources did the model view?)
 
 ## Missing features
 
