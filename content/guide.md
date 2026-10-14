@@ -1,6 +1,6 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.6.3"
+version: "0.7"
 updated: 2026-10-14
 authors: Siebe Rozendal (main), Claude
 
@@ -12,11 +12,12 @@ authors: Siebe Rozendal (main), Claude
 
 Inclusion criteria:
 
-- Must include post-exertional malaise (PEM), ideally operationalised with a validated questionnaire (the DePaul Symptom Questionnaire, DSQ-2, is best).
-- International Consensus Criteria (ICC), Canadian Consensus Criteria (CCC), Institute of Medicine criteria (IOM) strongly preferred. The paper must state how this was operationalised or ascertained.
-- Fukuda/CDC'94 (the 1994 US Centers for Disease Control definition) is unacceptable, because it does not have PEM as necessary. It can inflate
-  the sample by 1.7x (Nacul, 2011), or much more if operationalised with low thresholds for
-  severity and frequency.
+- Is post-exertional malaise (PEM), necessary for inclusion? Ideally operationalised with a validated questionnaire (the DePaul Symptom Questionnaire, DSQ-2, is currently best).
+- Estimate f: the share of cases that truly have ME/CFS. An upper bound is true prevalence (about 0.2–0.9%) divided by the prevalence the case definition produces. Self-reported Fukuda: f = 0.3 or less (Johnston 2013). GP diagnosis alone: f = about 0.5–0.6 (Newton 2010).
+- Exclusion criteria raise that share, but only if they were applied through a clinical work-up (blood tests, sleep assessment, psychiatric interview), not just listed. Excluding comorbidities, such as depression, fibromyalgia or POTS, removes true cases.
+- Dilution: if misclassified cases look like controls, the effect shrinks to about f times the true effect. The needed sample size grows by 1/f². At f = 0.3, that is about 11 times as many people.
+- Wrongly included can also produce false ones, because they often have depression, sleep disorders or deconditioning. Controls who may have ME/CFS weaken effects the same way.
+- If a study uses several case definitions, a signal specific to ME/CFS should get stronger as the criteria get stricter.
 
 ### Long Covid
 
@@ -214,6 +215,7 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
+- **0.7** (2026-10-14) — More technical treatment of inclusion criteria
 - **0.6.3** (2026-10-14) — Wording: every abbreviation in the guide is now written out at
   its first mention, so it reads for people new to the field. No criteria changed.
 - **0.6.2** (2026-10-14) — Obvious abbreviations should be allowed
