@@ -167,10 +167,10 @@ in this order, skipping any that do not apply. Do not invent a section to fill a
 
 Quote the paper's own claims when assessing spin, so a reader can check the comparison.
 
-Write every abbreviation out in full at first use, with the abbreviation in brackets after
-it: "post-exertional malaise (PEM)". After that the abbreviation alone is fine. For a name
+Write every non-obvious abbreviation out in full at first use, with the abbreviation in brackets after
+it. After that the abbreviation alone is fine. For a name
 that is not really an abbreviation — a trial, a database, a gene — say what it is the first
-time: "the PACE trial", "STRING (a protein-interaction database)".
+time: "the PACE trial", "STRING (a protein-interaction database)". Obvious abbreviations are ME, POTS, PEM, etc.
 
 The executive summary is, with the frontmatter, what most readers will read. Be careful with
 introducing technical language there: if a term is needed, explain it in plain words.
