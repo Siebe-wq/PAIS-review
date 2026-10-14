@@ -1,6 +1,6 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.6.2"
+version: "0.6.3"
 updated: 2026-10-14
 authors: Siebe Rozendal (main), Claude
 
@@ -8,13 +8,13 @@ authors: Siebe Rozendal (main), Claude
 
 ## Sample selection
 
-### ME/CFS
+### Myalgic encephalomyelitis/chronic fatigue syndrome (ME/CFS)
 
 Inclusion criteria:
 
-- Must include PEM, ideally operationalised with a validated questionnaire (DSQ-2 is best).
-- ICC, CCC, IOM strongly preferred. The paper must state how this was operationalised or ascertained.
-- Fukuda/CDC'94 is unacceptable, because it does not have PEM as necessary. It can inflate
+- Must include post-exertional malaise (PEM), ideally operationalised with a validated questionnaire (the DePaul Symptom Questionnaire, DSQ-2, is best).
+- International Consensus Criteria (ICC), Canadian Consensus Criteria (CCC), Institute of Medicine criteria (IOM) strongly preferred. The paper must state how this was operationalised or ascertained.
+- Fukuda/CDC'94 (the 1994 US Centers for Disease Control definition) is unacceptable, because it does not have PEM as necessary. It can inflate
   the sample by 1.7x (Nacul, 2011), or much more if operationalised with low thresholds for
   severity and frequency.
 
@@ -22,24 +22,25 @@ Inclusion criteria:
 
 - At least 3 months, ideally more than 6 months.
 - Clarify hospitalisation status. Non-hospitalised cohorts are the most interesting.
-- Must say how COVID infection was confirmed: PCR > RAT > exposure to a confirmed case plus
+- Must say how COVID infection was confirmed: polymerase chain reaction (PCR) test > rapid antigen test (RAT) > exposure to a confirmed case plus
   symptoms > physician diagnosis > self-report.
 
 ### All studies
 
-All studies must note status on ME/CFS, POTS/OI and MCAS.
+All studies must note status on ME/CFS, postural orthostatic tachycardia syndrome or orthostatic
+intolerance (POTS/OI) and mast cell activation syndrome (MCAS).
 
 Also note:
 
 - Symptom severity.
 - Duration of illness, which may affect recovery rates and even biomarkers.
 - Whether the study population is severe enough and representative of the patient population.
-- Ideally severity is quantified with a scale such as FUNCAP or Bell. Not all of these scales
+- Ideally severity is quantified with a scale such as FUNCAP (a functional capacity questionnaire) or the Bell scale. Not all of these scales
   are equally good.
 
 Mental health screening: the questionnaire should be appropriate for a disabled population. A
 questionnaire that uses "sometimes I can't get out of bed" or "I don't have much hope for the
-future" to diagnose depression is not appropriate. PHQ-2 is supposedly good.
+future" to diagnose depression is not appropriate. The two-item Patient Health Questionnaire (PHQ-2) is supposedly good.
 
 Controls: sedentary or inactive is good, ideally even deconditioned. It is often helpful to
 also have controls with a different disease, to decide whether findings are disease-specific.
@@ -66,7 +67,8 @@ Lower but still some risk of effort or subjective effects:
 - Sleep data
 - Daily time upright
 - Arm movement
-- Probably some exercise metrics, such as the difference in VO2max on a 2-day CPET
+- Probably some exercise metrics, such as the difference in maximal oxygen uptake (VO2max) on a 2-day cardiopulmonary exercise test
+  (CPET)
 
 Actually objective:
 
@@ -78,7 +80,7 @@ Actually objective:
   clearly out of the participant's control
 
 Objective does not mean free from bias. A lean test does not take into account the exertion of
-getting to the testing site, so the delta HR is often lower because the resting HR is already
+getting to the testing site, so the change in heart rate (delta HR) is often lower because the resting HR is already
 somewhat elevated. Blood levels vary across the day. Images need to be interpreted.
 
 The reverse also holds: subjective, patient-reported outcomes are not automatically
@@ -105,10 +107,10 @@ For cerebral blood flow: was velocity measured, or volume?
 ### Noise in the primary outcome
 
 - Test-retest data in this population? Prefer standard error of
-  measurement or smallest detectable change over ICC alone.
-- Does the power calculation use a realistic SD of change?
+  measurement or smallest detectable change over the intraclass correlation coefficient alone.
+- Does the power calculation use a realistic standard deviation of change?
 - Responder thresholds above the smallest detectable change.
-- Baseline-adjusted (ANCOVA) rather than change scores?
+- Baseline-adjusted (analysis of covariance, ANCOVA) rather than change scores?
 
 ### Drug trials: target engagement
 
@@ -184,7 +186,7 @@ patients, did it produce the results the hypothesis predicts?
 ### In vitro and animal efficacy papers
 
 - Calculate whether the concentrations are clinically realistic. Can they be reached? Will
-  there be toxicity issues, and how close to CC50? Are the pharmacokinetics reasonable? You
+  there be toxicity issues, and how close to the 50% cytotoxic concentration (CC50)? Are the pharmacokinetics reasonable? You
   cannot continuously inhibit a function when the half-life is very short.
 - For animal models, note the mediocre predictive capacity of animal research.
 
@@ -212,6 +214,8 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
+- **0.6.3** (2026-10-14) — Wording: every abbreviation in the guide is now written out at
+  its first mention, so it reads for people new to the field. No criteria changed.
 - **0.6.2** (2026-10-14) — Obvious abbreviations should be allowed
 - **0.6.1** (2026-10-14) — Instructions: write abbreviations out in full at first use; none
   in the frontmatter except the title or ones as obvious as ME/CFS; be careful introducing
