@@ -20,7 +20,7 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 
 ## Missing features
 
-- [ ] Grade last, shown first: the summary written after the analysis, ending in the grade, and shown at the top.
+- [x] Grade last, shown first: the summary written after the analysis, ending in the grade, and shown at the top. (done 2026-10-14)
 - [ ] Bulk import of the reviews in the claude.ai project. Needs a data export or a connected browser, then one session.
 - [ ] Citations on the About page for how well models review. A session with web search can find and verify them.
 - [ ] Request a review, with a queue in admin.
