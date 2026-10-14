@@ -14,10 +14,10 @@ verdict: "Patients who knew their treatment rated themselves better after talkin
 confidence: "high"
 importance: "high"
 strengths:
-  - "Large, randomised, four arms, 95% followed up"
+  - "Large, randomised, four arms"
   - "Protocol published before results"
   - "Talk-based comparison arm with equal therapy time"
-  - "Harms judged by reviewers masked to treatment"
+  - "Low loss to follow-up and sound analysis"
 weaknesses:
   - "Unblinded, with self-rated main outcomes"
   - "Main outcomes changed after data collection ended"
@@ -191,12 +191,12 @@ It does not show:
 
 ## Critical missing elements
 
-- An objective primary outcome, or at least objective co-primary outcomes reported in the main paper: actigraphy at follow-up, step test, employment.
+- An objective primary outcome, or at least objective co-primary outcomes reported in the main paper: step test and employment, which were collected, and actigraphy at follow-up, which the design never included.
 - A comparison arm that controlled for what participants were told about their symptoms, not only for therapist time.
 - A case definition requiring PEM, with PEM measured by a validated instrument.
 - Primary outcomes as specified in the protocol, reported alongside the revised ones.
 - Inclusion of housebound patients, or a clear statement that safety claims do not apply to them.
-- Patient-level harm data with masked judgement of whether harms were treatment-related.
+- Masked judgement of whether serious adverse events were treatment-related. The scrutinisers judged seriousness masked, but were unmasked to decide whether events were reactions to treatment.
 - Release of the data. It came only after a tribunal order (see context).
 
 ## Recommendations
