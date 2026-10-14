@@ -100,6 +100,25 @@ export const FIELDS = {
   'label.writtenBy': line('Written by', 'Detail label on a review page.', 'Written by', 40),
   'label.guideVersion': line('Guide version', 'Detail label on a review page.', 'Guide version', 40),
   'label.topic': line('Topic', 'Detail label on a review page.', 'Topic', 40),
+  'label.humanInput': line('Human input', 'Detail label on a review page.', 'Human input', 40),
+  'label.preprint': line(
+    'Preprint marker',
+    'Small tag after the citation, on the index and on the review, for papers not yet peer reviewed.',
+    'Preprint',
+    30,
+  ),
+
+  // ---- what each level of human input means, shown under it on a review page
+  'humanInput.none': line('None', 'Under "Human input: None" on a review page.', 'published as the model wrote it', 120),
+  'humanInput.minor': line('Minor', 'Under "Human input: Minor".', 'light edits to wording, formatting or small errors', 120),
+  'humanInput.moderate': line('Moderate', 'Under "Human input: Moderate".', 'points added, removed or corrected by the editor', 120),
+  'humanInput.major': line('Major', 'Under "Human input: Major".', 'substantially rewritten or redirected by the editor', 120),
+  'humanInput.unrecorded': line(
+    'Not recorded',
+    'Shown for "Human input" on reviews published before it was recorded.',
+    'Not recorded',
+    60,
+  ),
 
   // ---- readers
   'rating.label': line('Rating prompt', 'Next to the stars under each review.', 'Rate this review', 60),
@@ -141,7 +160,8 @@ export const GROUPS: { title: string; open: boolean; keys: SiteTextKey[] }[] = [
   { title: 'Every page', open: true, keys: ['site.pilotBanner', 'site.footer', 'site.name', 'nav.reviews', 'nav.methods', 'nav.about', 'site.description', 'site.notFound'] },
   { title: 'Home page', open: true, keys: ['home.heading', 'home.intro', 'home.searchPlaceholder', 'home.empty', 'home.noMatches'] },
   { title: 'Review page', open: false, keys: ['review.weaknessesHeading', 'review.strengthsHeading', 'review.contextHeading', 'review.contextNote', 'review.guideNotesHeading', 'review.guideNotesIntro', 'review.provenance'] },
-  { title: 'Review page: detail labels', open: false, keys: ['label.type', 'label.design', 'label.confidence', 'label.importance', 'label.reviewed', 'label.writtenBy', 'label.guideVersion', 'label.topic'] },
+  { title: 'Review page: detail labels', open: false, keys: ['label.type', 'label.design', 'label.confidence', 'label.importance', 'label.reviewed', 'label.writtenBy', 'label.guideVersion', 'label.topic', 'label.humanInput', 'label.preprint'] },
+  { title: 'Human input levels', open: false, keys: ['humanInput.none', 'humanInput.minor', 'humanInput.moderate', 'humanInput.major', 'humanInput.unrecorded'] },
   { title: 'Ratings, comments and AI discussion', open: false, keys: ['rating.label', 'comments.intro', 'discuss.label', 'discuss.prompt'] },
   { title: 'Methods and About', open: false, keys: ['methods.promptSummary', 'methods.description', 'about.description'] },
 ];

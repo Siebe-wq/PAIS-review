@@ -58,6 +58,7 @@ doi: "10.xxxx/xxxxx"
 conditions: ["ME/CFS"]
 studyType: "RCT, n=240, 12 weeks"
 kind: paper
+preprint: true            # only if the paper is a preprint; leave out otherwise
 score: 6.5
 verdict: "<one sentence; stands alone on an index page>"
 confidence: "high"
@@ -80,15 +81,19 @@ model: "<the exact model ID writing this, e.g. claude-opus-5>"
 Omit any field you do not have rather than guessing. Never invent a DOI, a journal, or an
 author list.
 
+Never add `humanInput`. It records how much the editor changed your text, which only the
+editor knows, and it is set when the review is published.
+
 ### kind, and what grades it takes
 
-- **`kind: paper`** — a review of one study. Takes `score`, 0–10 in steps of 0.5.
+- **`kind: paper`** — a review of one study. Takes `score`, 0–10 in steps of 0.5. A preprint
+  is a paper: set `preprint: true` and grade it on the same scale.
 - **`kind: literature`** — a review of a body of work, several papers, or a field. Takes **no
   score and no signal**. The verdict carries it. Do not add a number; "how good is this body of
   evidence" is not the question the 0–10 scale was built to answer.
-- **`kind: preliminary`** — unpublished data, a conference abstract, an early preprint, a
-  company announcement. Takes `signal`, one of `promising`, `mixed`, `unconvincing`,
-  `too-early`. No score: a decimal grade on unpublished data is false precision.
+- **`kind: preliminary`** — unpublished data, a conference abstract, a company announcement.
+  Not a preprint. Takes `signal`, one of `promising`, `mixed`, `unconvincing`, `too-early`. No
+  score: a decimal grade on data that thin is false precision.
 
 ### The score, for papers
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { buildReviewFile } from '@/lib/publish';
 import { currentGuideVersion } from '@/lib/doc';
+import { isHumanInput } from '@/lib/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,7 +11,7 @@ export const dynamic = 'force-dynamic';
  * No password: it only reads the caller's own text and writes nothing.
  */
 export async function POST(request: Request) {
-  let input: { body?: string; slug?: string };
+  let input: { body?: string; slug?: string; humanInput?: string };
   try {
     input = await request.json();
   } catch {
@@ -18,7 +19,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { slug, review } = buildReviewFile(input.body ?? '', input.slug, currentGuideVersion());
+    const { slug, review } = buildReviewFile(input.body ?? '', input.slug, currentGuideVersion(), {
+      humanInput: isHumanInput(input.humanInput) ? input.humanInput : undefined,
+    });
     return NextResponse.json({ ok: true, slug, review });
   } catch (error) {
     return NextResponse.json(

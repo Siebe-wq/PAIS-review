@@ -1,6 +1,6 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.5"
+version: "0.6"
 updated: 2026-10-14
 authors: Siebe Rozendal (main), Claude
 
@@ -212,6 +212,9 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
+- **0.6** (2026-10-14) — Instructions: a preprint is now a paper (preprint: true) and is
+  graded 0–10, rather than given a preliminary signal. Reviews record how much the editor
+  changed them (humanInput), which the model never sets.
 - **0.5** (2026-10-14) — Trials: how to check blinding (assessed and prespecified at more
   than one point, Bang index per arm, reasons for guesses, active placebo) and noise in the
   primary outcome (test-retest, realistic SD of change, responder thresholds, ANCOVA).

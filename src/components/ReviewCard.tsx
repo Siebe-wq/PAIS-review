@@ -15,9 +15,12 @@ export function ReviewCard({
   href,
   engagement,
   now,
+  preprintLabel = 'Preprint',
 }: {
   review: ReviewFrontmatter;
   href?: string;
+  /** Editable site text; the admin preview falls back to the default. */
+  preprintLabel?: string;
   /** Left out where there is no database, and in the /admin preview. */
   engagement?: Engagement;
   now?: number;
@@ -56,7 +59,17 @@ export function ReviewCard({
       </div>
       <div className="card-main">
         <h2>{href ? <Link href={href}>{review.title}</Link> : review.title}</h2>
-        {citation && <p className="cite">{citation}</p>}
+        {(citation || review.preprint) && (
+          <p className="cite">
+            {citation}
+            {review.preprint && (
+              <>
+                {citation ? ' ' : ''}
+                <span className="tag-preprint">{preprintLabel}</span>
+              </>
+            )}
+          </p>
+        )}
         <p className="verdict">{review.verdict}</p>
         <div className="chip-row">
           {review.weaknesses?.slice(0, 3).map((weakness) => (

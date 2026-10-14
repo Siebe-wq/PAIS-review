@@ -25,6 +25,9 @@ const FrontmatterSchema = z.object({
   conditions: z.array(z.string()).describe('Topic tags such as "ME/CFS" or "Long Covid".'),
   studyType: z.string().describe('e.g. "RCT, n=240" or "Mouse knockout study". Empty string if unclear.'),
   kind: z.enum(REVIEW_KINDS as [string, ...string[]]),
+  preprint: z
+    .boolean()
+    .describe('Only for kind=paper: true if the paper is a preprint (medRxiv, bioRxiv, Research Square, etc.) not yet published in a journal.'),
   score: z
     .number()
     .describe(
@@ -60,9 +63,9 @@ You are a FORMATTER, not a reviewer. The judgements in the text you are given ar
 
 ## Choosing the kind
 
-- paper: a review of one study.
+- paper: a review of one study. This includes preprints: a preprint is a paper with preprint=true, and takes a score like any other paper.
 - literature: a review of a body of work, several papers, or a field. Takes no score at all.
-- preliminary: unpublished data, a conference abstract, a preprint of early findings, or a company announcement. Takes a coarse signal (${SIGNALS.join(', ')}) rather than a number, because a decimal grade on unpublished data is false precision.
+- preliminary: unpublished data, a conference abstract, or a company announcement — not a preprint. Takes a coarse signal (${SIGNALS.join(', ')}) rather than a number, because a decimal grade on data that thin is false precision.
 
 ## Body structure
 
@@ -146,7 +149,7 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
   const parsed = response.parsed_output;
   if (!parsed) throw new Error('The model did not return a usable conversion. Try again.');
 
-  const { body, score, signal, ...rest } = parsed;
+  const { body, score, signal, preprint, ...rest } = parsed;
   const scoreMissing = rest.kind === 'paper' && (typeof score !== 'number' || score < 0);
 
   const data: Record<string, unknown> = {
@@ -154,6 +157,7 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
     year: rest.year && rest.year > 0 ? rest.year : undefined,
     ...(rest.kind === 'paper' && !scoreMissing ? { score } : {}),
     ...(rest.kind === 'preliminary' && signal ? { signal } : {}),
+    ...(rest.kind === 'paper' && preprint ? { preprint: true } : {}),
     // Keep the original's provenance. Absent a recorded model, leave it absent: the page
     // says "unrecorded", which is true, rather than crediting the review to the tidier.
     guideVersion: carriedOver('guideVersion'),
@@ -161,6 +165,9 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
       ? original.guideNotes.map((note) => String(note).trim()).filter(Boolean)
       : undefined,
     model: carriedOver('model'),
+    // How much the editor changed the text: theirs to say, at publishing. Kept if the
+    // source already records it, never inferred.
+    humanInput: carriedOver('humanInput'),
     reviewedOn: carriedOver('reviewedOn') ?? new Date().toISOString().slice(0, 10),
   };
 

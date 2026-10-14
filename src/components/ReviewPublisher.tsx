@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { ReviewFrontmatter } from '@/lib/types';
+import { HUMAN_INPUT_LABELS, HUMAN_INPUT_LEVELS, type HumanInput, type ReviewFrontmatter } from '@/lib/types';
+import { DEFAULTS } from '@/lib/site-text-schema';
 import { ReviewCard } from './ReviewCard';
 
 interface Parsed {
@@ -24,6 +25,8 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
   const [slug, setSlug] = useState('');
   const [parsed, setParsed] = useState<Parsed | null>(null);
   const [overwrite, setOverwrite] = useState(false);
+  // Not defaulted: "none" is a claim about the review, so it has to be chosen.
+  const [humanInput, setHumanInput] = useState<HumanInput | ''>('');
   const [busy, setBusy] = useState(false);
   const [tidying, setTidying] = useState(false);
   const [tidyNote, setTidyNote] = useState<string | null>(null);
@@ -46,7 +49,10 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
       })
         .then((response) => response.json())
         .then((json: Parsed) => {
-          if (!cancelled) setParsed(json);
+          if (cancelled) return;
+          setParsed(json);
+          const stated = json.review?.humanInput;
+          if (stated) setHumanInput((current) => current || stated);
         })
         .catch(() => {
           if (!cancelled) setParsed({ error: 'Could not reach the server to check this.' });
@@ -104,7 +110,7 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
       const response = await fetch('/api/admin/publish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ body, slug: slug || undefined, overwrite }),
+        body: JSON.stringify({ body, slug: slug || undefined, overwrite, humanInput }),
       });
       if (response.status === 401) {
         onExpired();
@@ -117,6 +123,7 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
         setSlug('');
         setParsed(null);
         setOverwrite(false);
+        setHumanInput('');
         setTidyNote(null);
       }
     } catch {
@@ -126,7 +133,7 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
     }
   }
 
-  const ready = Boolean(parsed?.review);
+  const ready = Boolean(parsed?.review) && humanInput !== '';
 
   return (
     <form onSubmit={onSubmit}>
@@ -181,6 +188,27 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
               people — add a link, or remove the note.
             </p>
           )}
+
+          <div className="field">
+            <label htmlFor="human-input">How much did you change it?</label>
+            <select
+              id="human-input"
+              value={humanInput}
+              onChange={(event) => setHumanInput(event.target.value as HumanInput | '')}
+              required
+            >
+              <option value="">Choose…</option>
+              {HUMAN_INPUT_LEVELS.map((level) => (
+                <option key={level} value={level}>
+                  {HUMAN_INPUT_LABELS[level]} — {DEFAULTS[`humanInput.${level}`]}
+                </option>
+              ))}
+            </select>
+            <p className="hint">
+              Published on the review as &ldquo;Human input&rdquo;. Only you know this, so the
+              model never sets it.
+            </p>
+          </div>
 
           <div className="field-row">
             <div className="field">

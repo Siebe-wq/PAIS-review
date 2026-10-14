@@ -1,6 +1,16 @@
 import matter from 'gray-matter';
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { REVIEW_KINDS, SIGNALS, type ContextNote, type ReviewFrontmatter, type ReviewKind, type Signal } from './types';
+import {
+  HUMAN_INPUT_LEVELS,
+  REVIEW_KINDS,
+  SIGNALS,
+  isHumanInput,
+  type ContextNote,
+  type HumanInput,
+  type ReviewFrontmatter,
+  type ReviewKind,
+  type Signal,
+} from './types';
 
 const SLUG_MAX = 80;
 
@@ -50,8 +60,17 @@ const level = (value: unknown): 'high' | 'moderate' | 'low' | undefined => {
 const kindOf = (value: unknown): ReviewKind => {
   const out = typeof value === 'string' ? value.trim().toLowerCase() : '';
   if (!out) return 'paper';
+  // A preprint is a paper; "kind: preprint" is read as that rather than rejected.
+  if (out === 'preprint') return 'paper';
   if ((REVIEW_KINDS as string[]).includes(out)) return out as ReviewKind;
   throw new Error(`"kind" must be one of ${REVIEW_KINDS.join(', ')}, got ${String(value)}.`);
+};
+
+const humanInputOf = (value: unknown): HumanInput | undefined => {
+  if (value == null || value === '') return undefined;
+  const out = String(value).trim().toLowerCase();
+  if (isHumanInput(out)) return out;
+  throw new Error(`"humanInput" must be one of ${HUMAN_INPUT_LEVELS.join(', ')}, got ${String(value)}.`);
 };
 
 const signalOf = (value: unknown): Signal | undefined => {
@@ -97,6 +116,8 @@ export function buildReviewFile(
   raw: string,
   slugOverride?: string,
   fallbackGuideVersion?: string,
+  /** Set from the publish form, which takes precedence over anything in the frontmatter. */
+  options: { humanInput?: HumanInput } = {},
 ): BuiltReview {
   const source = (raw ?? '').trim();
   if (!source) throw new Error('Nothing pasted yet.');
@@ -122,6 +143,13 @@ export function buildReviewFile(
   if (!title) throw new Error('Frontmatter is missing "title".');
 
   const kind = kindOf(data.kind);
+  const preprint =
+    data.preprint === true ||
+    String(data.preprint ?? '').toLowerCase() === 'true' ||
+    String(data.kind ?? '').trim().toLowerCase() === 'preprint';
+  if (preprint && kind !== 'paper') {
+    throw new Error('"preprint: true" only applies to kind: paper. A preprint is graded as a paper, with a score.');
+  }
 
   // The verdict field depends on the kind, so that a literature review is never
   // forced into a number that would not mean anything.
@@ -142,7 +170,7 @@ export function buildReviewFile(
   } else if (kind === 'preliminary') {
     if (data.score != null) {
       throw new Error(
-        'Preliminary findings take "signal", not "score" — a decimal grade on unpublished data is false precision.',
+        'Preliminary findings take "signal", not "score" — a decimal grade on unpublished data is false precision. If this is a preprint, use kind: paper with preprint: true instead; preprints are graded.',
       );
     }
     signal = signalOf(data.signal);
@@ -182,6 +210,7 @@ export function buildReviewFile(
     conditions: strings(data.conditions),
     studyType: text(data.studyType),
     kind,
+    ...(preprint ? { preprint: true } : {}),
     score,
     signal,
     verdict,
@@ -194,6 +223,7 @@ export function buildReviewFile(
     reviewedOn,
     guideVersion: text(data.guideVersion) ?? fallbackGuideVersion,
     model: text(data.model),
+    humanInput: options.humanInput ?? humanInputOf(data.humanInput),
   };
 
   const out: Record<string, unknown> = { ...review };

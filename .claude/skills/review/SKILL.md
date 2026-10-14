@@ -27,12 +27,13 @@ A short review of a sound paper is a correct outcome.
 
 ## Kind
 
-- `paper` — one study. Takes `score`.
+- `paper` — one study. Takes `score`. A preprint is a paper: add `preprint: true` and grade it
+  on the same scale.
 - `literature` — a body of work, several papers, a field. Takes **no score and no signal**; the
   verdict sentence carries it. "How good is this body of evidence" is not the question the 0–10
   scale was built to answer, and forcing a number on it invents precision.
-- `preliminary` — unpublished data, a conference abstract, an early preprint, a company
-  announcement. Takes `signal`: one of `promising`, `mixed`, `unconvincing`, `too-early`.
+- `preliminary` — unpublished data, a conference abstract, a company announcement. Not a
+  preprint. Takes `signal`: one of `promising`, `mixed`, `unconvincing`, `too-early`.
 
 Supplying the wrong verdict field for the kind is rejected at publish time.
 
@@ -110,6 +111,8 @@ url: ""
 conditions: ["ME/CFS"]        # or ["Long Covid"], both, or another topic tag
 studyType: "RCT, n=240, 12 weeks"
 kind: paper                   # paper | literature | preliminary
+preprint: true                # papers only, if it is a preprint; otherwise leave out
+humanInput: none              # set from the user's answer, never by you
 score: 6.5                    # papers only
 verdict: "<one sentence; the single most useful thing a reader can take away>"
 confidence: "high"            # high | moderate | low
@@ -171,4 +174,6 @@ hyphenated. For example `2024-lidocaine-hpbcd-post-covid.md`.
 
 1. Run `npm run build` to confirm the frontmatter parses and the site still builds.
 2. Show the user the verdict, score, strengths and weaknesses before committing.
-3. Commit and push only when they say so.
+3. Ask the user how much they changed the review — none, minor, moderate or major — and set
+   `humanInput` to their answer. Never choose it yourself: only they know.
+4. Commit and push only when they say so.

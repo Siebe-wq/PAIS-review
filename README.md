@@ -68,7 +68,8 @@ url: ""                     # optional; used in preference to the DOI
 conditions: ["ME/CFS"]      # becomes the index filters
 studyType: "RCT, n=240"
 kind: paper                 # paper | literature | preliminary
-score: 6.5                  # papers only, 0–10 in steps of 0.5
+preprint: true              # papers only, if not yet peer reviewed; leave out otherwise
+score: 6.5                  # papers only, preprints included, 0–10 in steps of 0.5
 verdict: "One sentence. Shows on the index under the title."
 confidence: "high"          # optional: high | moderate | low
 importance: "moderate"      # optional: high | moderate | low
@@ -82,6 +83,7 @@ guideNotes:                 # optional: points the guide doesn't cover, for the 
 reviewedOn: 2026-09-16
 guideVersion: "0.2"
 model: "claude-opus-5"      # the exact model, not a generic "Claude"
+humanInput: minor           # none | minor | moderate | major — set by the editor, never the model
 draft: false                # true keeps it off the site
 ---
 ```
@@ -95,14 +97,22 @@ The body starts at `##`. The page supplies the H1.
 
 | kind | verdict field | why |
 |---|---|---|
-| `paper` (default) | `score`, 0–10 | A single study can be graded on whether its evidence carries its claims. |
+| `paper` (default) | `score`, 0–10 | A single study can be graded on whether its evidence carries its claims. Preprints are papers, marked `preprint: true`, graded the same way and tagged "Preprint" on the site. |
 | `literature` | neither | "How good is this body of evidence" is not the question the 0–10 scale answers. The verdict sentence carries it. |
-| `preliminary` | `signal` | Unpublished data, abstracts, preprints. One of `promising`, `mixed`, `unconvincing`, `too-early` — a decimal grade here would be false precision. |
+| `preliminary` | `signal` | Unpublished data, conference abstracts, company announcements — not preprints. One of `promising`, `mixed`, `unconvincing`, `too-early` — a decimal grade here would be false precision. |
 
 Supplying the wrong one is rejected with an explanation, rather than silently accepted.
 
 Score bands for papers, used for the colour and the label under the number: 8+ Strong,
 6.5–7.9 Solid, 5–6.4 Borderline, 3–4.9 Fails, below 3 Fatal flaws.
+
+### humanInput
+
+How much the editor changed the model's text: `none`, `minor`, `moderate` or `major`. Only the
+editor knows this, so the model never sets it. The `/admin` publish form asks for it and will
+not publish without it; the Reviews tab sets it on reviews published before it existed. The
+review page shows it with a short explanation of the level, editable under Site text. A
+review without it says "Not recorded".
 
 ### context
 

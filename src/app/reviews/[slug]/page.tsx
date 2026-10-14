@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllReviews, getReview, paperLink } from '@/lib/reviews';
-import { KIND_LABELS } from '@/lib/types';
+import { HUMAN_INPUT_LABELS, KIND_LABELS } from '@/lib/types';
 import { extractToc } from '@/lib/toc';
 import { TableOfContents } from '@/components/TableOfContents';
 import { Authors } from '@/components/Authors';
@@ -56,6 +56,12 @@ export default async function ReviewPage({ params }: Params) {
           {review.authors && <Authors authors={review.authors} />}
           {review.authors && (review.journal || review.year) ? ' · ' : ''}
           {[review.journal, review.year].filter(Boolean).join(' · ')}
+          {review.preprint && (
+            <>
+              {' '}
+              <span className="tag-preprint">{text['label.preprint']}</span>
+            </>
+          )}
           {link && (
             <>
               {' · '}
@@ -74,7 +80,10 @@ export default async function ReviewPage({ params }: Params) {
         <dl className="facts">
           <div>
             <dt>{text['label.type']}</dt>
-            <dd>{KIND_LABELS[review.kind]}</dd>
+            <dd>
+              {KIND_LABELS[review.kind]}
+              {review.preprint ? ` · ${text['label.preprint']}` : ''}
+            </dd>
           </div>
           {review.studyType && (
             <div className="wide">
@@ -108,6 +117,19 @@ export default async function ReviewPage({ params }: Params) {
               <dd>v{review.guideVersion}</dd>
             </div>
           )}
+          <div className={review.humanInput ? 'wide' : undefined}>
+            <dt>{text['label.humanInput']}</dt>
+            <dd>
+              {review.humanInput ? (
+                <>
+                  {HUMAN_INPUT_LABELS[review.humanInput]}
+                  <span className="fact-note"> — {text[`humanInput.${review.humanInput}`]}</span>
+                </>
+              ) : (
+                <span className="fact-note">{text['humanInput.unrecorded']}</span>
+              )}
+            </dd>
+          </div>
           {review.conditions && review.conditions.length > 0 && (
             <div>
               <dt>{text['label.topic']}</dt>
@@ -116,7 +138,7 @@ export default async function ReviewPage({ params }: Params) {
           )}
         </dl>
 
-        {(review.strengths?.length || review.weaknesses?.length) && (
+        {((review.strengths?.length ?? 0) > 0 || (review.weaknesses?.length ?? 0) > 0) && (
           <div className="two-col">
             {review.weaknesses && review.weaknesses.length > 0 && (
               <section className="panel weaknesses">

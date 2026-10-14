@@ -45,6 +45,7 @@ export default async function HomePage() {
           searchPlaceholder: text['home.searchPlaceholder'],
           empty: text['home.empty'],
           noMatches: text['home.noMatches'],
+          preprint: text['label.preprint'],
         }}
       />
     </>

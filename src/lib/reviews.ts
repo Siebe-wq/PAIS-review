@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
-import { REVIEW_KINDS, SIGNALS, type ContextNote, type Review, type ReviewFrontmatter, type ReviewKind, type Signal } from './types';
+import { HUMAN_INPUT_LEVELS, REVIEW_KINDS, SIGNALS, isHumanInput, type ContextNote, type Review, type ReviewFrontmatter, type ReviewKind, type Signal } from './types';
 
 const REVIEWS_DIR = path.join(process.cwd(), 'content', 'reviews');
 
@@ -32,6 +32,20 @@ function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter 
       throw new Error(`${slug}: "signal" must be one of ${SIGNALS.join(', ')}, got ${rawSignal}`);
     }
     signal = rawSignal as Signal;
+  }
+
+  if (data.preprint != null && data.preprint !== false && kind !== 'paper') {
+    throw new Error(`${slug}: "preprint: true" only applies to kind: paper — a preprint is graded as a paper`);
+  }
+  const preprint = data.preprint === true;
+
+  let humanInput: ReviewFrontmatter['humanInput'];
+  if (data.humanInput != null) {
+    const raw = String(data.humanInput).trim().toLowerCase();
+    if (!isHumanInput(raw)) {
+      throw new Error(`${slug}: "humanInput" must be one of ${HUMAN_INPUT_LEVELS.join(', ')}, got ${raw}`);
+    }
+    humanInput = raw;
   }
 
   const verdict = typeof data.verdict === 'string' ? data.verdict.trim() : '';
@@ -76,6 +90,7 @@ function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter 
     conditions: strings(data.conditions),
     studyType: typeof data.studyType === 'string' ? data.studyType : undefined,
     kind,
+    ...(preprint ? { preprint } : {}),
     score,
     signal,
     verdict,
@@ -88,6 +103,7 @@ function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter 
     reviewedOn,
     guideVersion: data.guideVersion != null ? String(data.guideVersion) : undefined,
     model: typeof data.model === 'string' ? data.model : undefined,
+    humanInput,
     draft: data.draft === true,
   };
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { HUMAN_INPUT_LABELS, HUMAN_INPUT_LEVELS, type HumanInput } from '@/lib/types';
 
 interface Row {
   slug: string;
@@ -10,6 +11,8 @@ interface Row {
   reviewedOn: string;
   guideVersion: string | null;
   guideNotes: string[];
+  humanInput: HumanInput | null;
+  preprint: boolean;
 }
 
 export function ReviewManager({ onExpired }: { onExpired: () => void }) {
@@ -34,7 +37,7 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
       .catch(() => setError('Could not load reviews.'));
   }, [onExpired]);
 
-  async function act(slug: string, action: 'withdraw' | 'restore') {
+  async function act(slug: string, action: 'withdraw' | 'restore' | 'humanInput', humanInput?: HumanInput) {
     if (action === 'withdraw' && !window.confirm('Withdraw this review from the site? It can be restored later.')) return;
     setBusy(slug);
     setError(null);
@@ -42,16 +45,27 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
       const response = await fetch('/api/admin/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, action }),
+        body: JSON.stringify({ slug, action, humanInput }),
       });
       if (response.status === 401) {
         onExpired();
         return;
       }
-      const json = (await response.json()) as { ok?: boolean; draft?: boolean; error?: string };
+      const json = (await response.json()) as {
+        ok?: boolean;
+        draft?: boolean;
+        humanInput?: HumanInput | null;
+        error?: string;
+      };
       if (json.ok) {
         setRows((current) =>
-          current ? current.map((row) => (row.slug === slug ? { ...row, draft: Boolean(json.draft) } : row)) : current,
+          current
+            ? current.map((row) =>
+                row.slug === slug
+                  ? { ...row, draft: Boolean(json.draft), humanInput: json.humanInput ?? row.humanInput }
+                  : row,
+              )
+            : current,
         );
       } else {
         setError(json.error ?? 'Could not update the review.');
@@ -83,9 +97,28 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
               <a href={`/reviews/${row.slug}`}>{row.title}</a>
               <span className="manage-meta">
                 {row.reviewedOn} · {row.kind}
+                {row.preprint ? ' (preprint)' : ''}
                 {row.guideVersion ? ` · guide v${row.guideVersion}` : ' · no guide version'}
                 {row.draft ? ' · withdrawn' : ''}
               </span>
+              <label className="manage-input">
+                Human input{' '}
+                <select
+                  value={row.humanInput ?? ''}
+                  disabled={busy === row.slug}
+                  onChange={(event) => {
+                    const value = event.target.value as HumanInput;
+                    if (value) act(row.slug, 'humanInput', value);
+                  }}
+                >
+                  {!row.humanInput && <option value="">Not recorded</option>}
+                  {HUMAN_INPUT_LEVELS.map((level) => (
+                    <option key={level} value={level}>
+                      {HUMAN_INPUT_LABELS[level]}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
             <button
               type="button"

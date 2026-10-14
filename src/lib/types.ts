@@ -3,10 +3,11 @@ export type Importance = 'high' | 'moderate' | 'low';
 
 /**
  * What is being reviewed. This decides how the verdict is expressed:
- * a single paper gets a 0–10 score; preliminary findings get a coarse ordinal,
- * because a decimal grade on unpublished data is false precision; a literature
- * review gets neither, because "how good is this body of evidence" is not the
- * same question the score was built to answer.
+ * a single paper gets a 0–10 score — a preprint is a paper, marked `preprint: true`;
+ * preliminary findings (abstracts, unpublished data, announcements) get a coarse
+ * ordinal, because a decimal grade on that is false precision; a literature review
+ * gets neither, because "how good is this body of evidence" is not the same question
+ * the score was built to answer.
  */
 export type ReviewKind = 'paper' | 'literature' | 'preliminary';
 
@@ -17,6 +18,25 @@ export const KIND_LABELS: Record<ReviewKind, string> = {
   literature: 'Literature review',
   preliminary: 'Preliminary findings',
 };
+
+/**
+ * How much a person changed the review after the model wrote it. Set by the editor at
+ * publishing, never by the model, which cannot know.
+ */
+export type HumanInput = 'none' | 'minor' | 'moderate' | 'major';
+
+export const HUMAN_INPUT_LEVELS: HumanInput[] = ['none', 'minor', 'moderate', 'major'];
+
+export const HUMAN_INPUT_LABELS: Record<HumanInput, string> = {
+  none: 'None',
+  minor: 'Minor',
+  moderate: 'Moderate',
+  major: 'Major',
+};
+
+export function isHumanInput(value: unknown): value is HumanInput {
+  return typeof value === 'string' && (HUMAN_INPUT_LEVELS as string[]).includes(value);
+}
 
 /** The coarse ordinal used for preliminary findings. */
 export type Signal = 'promising' | 'mixed' | 'unconvincing' | 'too-early';
@@ -52,6 +72,8 @@ export interface ReviewFrontmatter {
   conditions?: string[];
   studyType?: string;
   kind: ReviewKind;
+  /** Papers only: not yet peer reviewed. Graded like any other paper, and marked as such. */
+  preprint?: boolean;
   /** 0–10, in 0.5 steps. Papers only. */
   score?: number;
   /** Coarse ordinal. Preliminary findings only. */
@@ -74,6 +96,8 @@ export interface ReviewFrontmatter {
   reviewedOn: string;
   guideVersion?: string;
   model?: string;
+  /** How much the editor changed the model's text. Absent on reviews published before it was recorded. */
+  humanInput?: HumanInput;
   /** Set true while drafting; excluded from the site. */
   draft?: boolean;
 }

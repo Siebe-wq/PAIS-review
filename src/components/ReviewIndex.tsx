@@ -22,7 +22,7 @@ export function ReviewIndex({
   /** Absent when the site has no database; the engagement sorts are then hidden. */
   engagement?: Record<string, Engagement>;
   serverNow: number;
-  labels: { searchPlaceholder: string; empty: string; noMatches: string };
+  labels: { searchPlaceholder: string; empty: string; noMatches: string; preprint: string };
 }) {
   const hasEngagement = Boolean(engagement);
   const [active, setActive] = useState<string[]>([]);
@@ -38,7 +38,7 @@ export function ReviewIndex({
   const shown = useMemo(() => {
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
     const haystack = (r: ReviewSummary) =>
-      [r.title, r.authors, r.journal, r.studyType, r.verdict, r.conditions, r.strengths, r.weaknesses, r.year]
+      [r.title, r.authors, r.journal, r.studyType, r.verdict, r.conditions, r.strengths, r.weaknesses, r.year, r.preprint ? 'preprint' : '']
         .flat()
         .filter(Boolean)
         .join(' ')
@@ -146,6 +146,7 @@ export function ReviewIndex({
                 href={`/reviews/${review.slug}`}
                 engagement={engagement?.[review.slug]}
                 now={now}
+                preprintLabel={labels.preprint}
               />
             </li>
           ))}

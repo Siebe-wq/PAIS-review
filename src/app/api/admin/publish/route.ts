@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { buildReviewFile } from '@/lib/publish';
 import { currentGuideVersion } from '@/lib/doc';
+import { isHumanInput } from '@/lib/types';
 import { isSignedIn } from '@/lib/session';
 import { GithubError, getFileSha, getGithubConfig, putFile } from '@/lib/github';
 
@@ -22,16 +23,22 @@ export async function POST(request: Request) {
     );
   }
 
-  let input: { body?: string; slug?: string; overwrite?: boolean };
+  let input: { body?: string; slug?: string; overwrite?: boolean; humanInput?: string };
   try {
     input = await request.json();
   } catch {
     return fail('Could not read the request.', 400);
   }
 
+  if (!isHumanInput(input.humanInput)) {
+    return fail('Choose how much human input this review had before publishing.', 400);
+  }
+
   let built;
   try {
-    built = buildReviewFile(input.body ?? '', input.slug, currentGuideVersion());
+    built = buildReviewFile(input.body ?? '', input.slug, currentGuideVersion(), {
+      humanInput: isHumanInput(input.humanInput) ? input.humanInput : undefined,
+    });
   } catch (error) {
     return fail(error instanceof Error ? error.message : 'Could not build the review.', 400);
   }
