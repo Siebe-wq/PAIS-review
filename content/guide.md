@@ -1,6 +1,6 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.6.1"
+version: "0.6.2"
 updated: 2026-10-14
 authors: Siebe Rozendal (main), Claude
 
@@ -212,6 +212,7 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
+- **0.6.2** (2026-10-14) — Obvious abbreviations should be allowed
 - **0.6.1** (2026-10-14) — Instructions: write abbreviations out in full at first use; none
   in the frontmatter except the title or ones as obvious as ME/CFS; be careful introducing
   technical language in the frontmatter and executive summary.
