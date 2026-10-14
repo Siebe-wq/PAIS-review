@@ -106,6 +106,15 @@ Supplying the wrong one is rejected with an explanation, rather than silently ac
 Score bands for papers, used for the colour and the label under the number: 8+ Strong,
 6.5–7.9 Solid, 5–6.4 Borderline, 3–4.9 Fails, below 3 Fatal flaws.
 
+### Abbreviations and technical language
+
+House rule: every abbreviation is written out in full at first use, and the frontmatter has
+none, except in the title or ones as familiar as ME/CFS. The frontmatter and the executive
+summary are what most readers see, so they introduce technical language with care. The
+`/admin` preview warns about both, and `npm run check:abbreviations` checks any review file
+from the command line. It is a heuristic (`src/lib/abbreviations.ts`): a name such as a
+trial or a database passes when a word next to it says what it is ("the PACE trial").
+
 ### humanInput
 
 How much the editor changed the model's text: `none`, `minor`, `moderate` or `major`. Only the
@@ -237,7 +246,14 @@ publishing returns a clear "not configured" error rather than failing quietly.
 - The `.md` endpoint for a review appends its comment thread, so a model reading the review
   sees the discussion too.
 
-Things not built yet, and what each would take, are in `docs/roadmap.md`.
+## Backlog
+
+`/admin` → Backlog is the site's own list of weaknesses, missing features, bugs and ideas,
+kept in `content/backlog.md` (not served publicly, though the repository is public). Add an
+item in two taps from a phone and tick items off; each change is a one-line commit. To
+reword or reorder, edit it as text under Edit a page → Backlog.
+
+Longer write-ups of things not built yet, and what each would take, are in `docs/roadmap.md`.
 
 ## Editorial notes
 

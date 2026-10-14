@@ -15,7 +15,9 @@ Both exist now. What they still lack, and what it would take:
   account is enough for everyone else. Not worth building until there are enough votes for
   the weighting to matter.
 - **A real spam filter.** The current defences (honeypot, rate limits, link cap, duplicate
-  rejection) stop bots and repeats, not a person. Akismet is cheap if it becomes a problem.
+  rejection) stop bots and repeats, not a person. When that matters, a small model can read
+  each new comment before it shows — spam, abuse, off-topic — for a fraction of a cent each, and
+  hold doubtful ones for you. Akismet is the off-the-shelf alternative.
 - **Notifications.** Nobody is told when someone replies to them. Needs an email on the
   comment, which is a small privacy decision.
 
@@ -106,19 +108,29 @@ may not want to be held to at four hours a week.
 
 ### Bulk import of two years of reviews
 
-**Blocked on export, not build.** The reviews are in a claude.ai project, which nothing
-can read from outside. Once they are files — copy-paste, or claude.ai's data export
-unzipped — the path is: drop them in a Drive folder, and a session here reads each one,
-runs it through the normaliser, and publishes. The normaliser refuses to invent a score,
-so each imported paper review still needs you to set one; literature and preliminary
-reviews need none. Budget an hour of your time per twenty reviews for scores.
+**Needs one action from you; after that it is a session's work.** Two ways in:
+
+- **The claude.ai data export.** Settings → Privacy → Export data emails you a zip of every
+  conversation. Put it in Google Drive (sessions here can read Drive) or attach it to a session.
+  The session finds the review conversations, takes the final version of each review, runs it
+  through the normaliser, and publishes the batch as withdrawn drafts for you to release. If the
+  export does not record which project a chat came from, reviews are easy to recognise by content.
+- **Your own logged-in browser.** With Claude in Chrome, or the Claude desktop app's browser,
+  connected to a session, it can open the project and read each conversation directly. No
+  export needed.
+
+**Scores.** Reviews that state a grade keep it. For the rest, a model can propose one against the
+guide, with its reasoning, stored as a proposal that the review page does not show until you
+accept or change it. That turns grading a backlog into checking one, which takes minutes per
+review rather than a re-read. It needs a "proposed score" field and a button in the Reviews
+tab — an afternoon.
 
 ### Citations on the About page for how well Claude reviews
 
-**Needs the references.** The notes name "the Litvak error injection paper" and "that paper
-on the distribution of scores given by various models". I won't cite papers I can't verify
-exist — that's exactly the failure mode this site is about. Give me the DOIs or links and
-this is a ten-minute edit to `content/about.md`.
+**A session can do this end to end.** The notes name "the Litvak error injection paper" and "that
+paper on the distribution of scores given by various models". A session with web search finds
+both, checks each against its DOI and abstract so nothing unverified is cited, and drafts the
+paragraph for `content/about.md`. Your part is approving the wording.
 
 ### Full-text search
 

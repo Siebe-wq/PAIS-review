@@ -27,7 +27,7 @@ guideVersion: "0.2"
 
 ## Executive summary
 
-This observational study of 103 patients examined subcutaneous lidocaine-HP-β-CD for treating
+This observational study of 103 patients examined subcutaneous lidocaine–hydroxypropyl-β-cyclodextrin (lidocaine-HP-β-CD) for treating
 post-COVID symptoms. The intervention is biologically plausible and the study documents
 improvement in quality-of-life metrics. But the methodology has flaws that prevent any
 meaningful conclusion about treatment efficacy. The lack of a control group, the high risk of
@@ -54,10 +54,10 @@ is adequate. But COVID confirmation is not specified in the available materials,
 hospitalisation status is not clearly specified. An average duration of 2.5 years suggests a
 moderate-to-severe cohort.
 
-**Symptom characterisation — moderate concern.** The study mentions PEM and other ME/CFS-like
+**Symptom characterisation — moderate concern.** The study mentions post-exertional malaise (PEM) and other ME/CFS-like
 symptoms, but there is no clear statement about PEM assessment methodology and no use of
-validated PEM questionnaires such as the DSQ-2. The proportion with ME/CFS overlap is unknown,
-and there is no characterisation of POTS/OI or MCAS comorbidities.
+validated PEM questionnaires such as the DePaul Symptom Questionnaire (DSQ-2). The proportion with ME/CFS overlap is unknown,
+and there is no characterisation of postural orthostatic tachycardia syndrome or orthostatic intolerance (POTS/OI) or mast cell activation syndrome (MCAS) comorbidities.
 
 **Sample characteristics.** n=103, adequate for an observational study but insufficient without
 controls. Mean age 48. Mean duration 2.5 years, so a very chronic cohort. The claim that
@@ -65,7 +65,7 @@ patients had "no improvement" prior to treatment is impossible to verify.
 
 ## Outcome measures — critical flaw
 
-**SF-12 Physical Component Score.** Small effect at 24 weeks, improving from about 30 to about
+**Physical Component Score of the 12-item Short Form Health Survey (SF-12).** Small effect at 24 weeks, improving from about 30 to about
 33 points. This is almost entirely subjective, and so highly susceptible to expectation and
 placebo effects. Performance bias applies too: patients may try harder at activities because
 they expect to do better.
@@ -118,7 +118,7 @@ factors — seasonal changes, pandemic phase changes, other treatments, life cha
 confounded with treatment. The 36-week follow-up spans multiple seasons.
 
 **Selection bias.** Who self-selects to travel to a private Dutch clinic for experimental
-treatment? Likely a higher-SES, more health-literate, more motivated group, which may have a
+treatment? Likely a higher-socioeconomic-status, more health-literate, more motivated group, which may have a
 different trajectory from the general Long Covid population. There is no data on patients who
 were screened but not included.
 
@@ -129,7 +129,7 @@ why. How many dropped out? Were dropouts due to adverse events or lack of effica
 
 Lidocaine has documented anti-inflammatory properties, immune dysregulation is implicated in
 post-COVID, targeting lymph nodes for immune modulation is conceptually reasonable, and there is
-some pre-clinical evidence for lidocaine effects on NETs and cytokines.
+some pre-clinical evidence for lidocaine effects on neutrophil extracellular traps (NETs) and cytokines.
 
 But: is subcutaneous administration actually achieving therapeutic levels systemically? No
 pharmacokinetic data is provided. There is no measurement of inflammation markers to show target
@@ -197,7 +197,7 @@ unproven treatment should be considered carefully. Wait for properly controlled 
 **For researchers.** Run a randomised placebo-controlled trial with adequate blinding (saline
 injections as placebo), pre-registered primary outcomes, a mix of subjective and objective
 measures, independent funding, and longer follow-up to assess durability. Add mechanistic
-studies: measure inflammatory markers before, during and after treatment; do PK/PD analysis;
+studies: measure inflammatory markers before, during and after treatment; do pharmacokinetic and pharmacodynamic (PK/PD) analysis;
 identify responder characteristics. And phenotype better: separate PEM-predominant from other
 phenotypes, assess POTS/OI and MCAS systematically, and check whether mechanism differs by
 subgroup.
@@ -230,7 +230,7 @@ cannot support conclusions about efficacy. No control group, no blinding, only s
 outcomes and severe conflicts of interest together produce an evidence base that is close to
 worthless for clinical decision-making.
 
-The biological rationale is reasonable enough to justify a proper RCT, but patients and insurers
+The biological rationale is reasonable enough to justify a proper randomised controlled trial (RCT), but patients and insurers
 should not be making treatment decisions on this data. The enthusiastic media coverage and
 clinical promotion ahead of adequate evidence is concerning, and potentially harmful to the
 field's credibility.

@@ -165,6 +165,18 @@ Quote the paper's own claims when assessing spin, so a reader can check the comp
 Write in plain English and short sentences. Say what is wrong without sneering. The reviews name
 real researchers, so criticise the evidence and the framing, never the people.
 
+## Abbreviations and technical language
+
+- Write every abbreviation out in full at first use, abbreviation in brackets after it:
+  "post-exertional malaise (PEM)". For a name that is not an abbreviation (a trial, a
+  database, a gene), say what it is the first time.
+- No abbreviations in the frontmatter, except in the title or ones as obvious as ME/CFS.
+- The frontmatter and the executive summary are what most readers see. Be careful with
+  introducing technical language there; explain a needed term in plain words.
+- Check it: `npm run check:abbreviations -- content/reviews/<file>.md` lists anything not
+  written out at first use and any abbreviation in the frontmatter. It is a heuristic; fix
+  what it finds, or say what a name is where it is a name.
+
 ## Filename
 
 `content/reviews/<year>-<first-author-or-topic>-<short-descriptor>.md`, lowercase and

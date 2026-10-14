@@ -26,7 +26,7 @@ strengths:
 weaknesses:
   - Cases and most controls from different sources
   - Sample counts inconsistent across the paper
-  - No case definition; PEM not assessed
+  - No case definition; post-exertional malaise not assessed
   - Healthy controls only; no disease controls
   - Tiny validation set; wide confidence intervals
   - Pathway and therapy claims rest on gene proximity
@@ -46,7 +46,7 @@ context:
   - note: >-
       In an August 2026 company blog post, the company's Chief Scientific
       Officer described a planned prospective study (EMERGE) of 840 participants
-      across seven NHS sites. No trial registration or named funder was found at
+      across seven UK National Health Service sites. No trial registration or named funder was found at
       the time of review.
     source: >-
       https://intheloop.oxfordbiodynamics.com/blog/beyond-linear-dna-unlocking-the-mystery-of-me-cfs-through-3d-genomics
@@ -62,9 +62,9 @@ model: claude-opus-5
 ---
 ## Executive summary
 
-The authors measured 3D DNA folding (chromosome conformations) in blood from 47 people with severe ME/CFS and 61 healthy controls. They trained a 200-marker machine-learning model and report 92% sensitivity and 98% specificity on a held-out set. They then map the markers to nearby genes and propose IL-2 signalling as a therapeutic target.
+The authors measured 3D DNA folding (chromosome conformations) in blood from 47 people with severe ME/CFS and 61 healthy controls. They trained a 200-marker machine-learning model and report 92% sensitivity and 98% specificity on a held-out set. They then map the markers to nearby genes and propose interleukin-2 (IL-2) signalling as a therapeutic target.
 
-The headline result cannot yet be trusted as an estimate of diagnostic accuracy. All patient samples came from one biobank. Most control samples came from the company's own repository. A classifier can learn to tell the two sources apart instead of telling patients from healthy people. The paper also gives conflicting numbers for the training and validation sets. Patients were not defined by a named case definition, and PEM was not assessed. The mechanistic and therapeutic sections rest on assumptions the data do not test.
+The headline result cannot yet be trusted as an estimate of diagnostic accuracy. All patient samples came from one biobank. Most control samples came from the company's own repository. A classifier can learn to tell the two sources apart instead of telling patients from healthy people. The paper also gives conflicting numbers for the training and validation sets. Patients were not defined by a named case definition, and post-exertional malaise (PEM) was not assessed. The mechanistic and therapeutic sections rest on assumptions the data do not test.
 
 The study is best read as a hypothesis-generating pilot.
 
@@ -72,13 +72,13 @@ The study is best read as a hypothesis-generating pilot.
 
 This is a retrospective case-control study with a train/test split. The authors state that they split the data before any analysis and selected markers only within the training set. That is the right way to avoid the most common form of data leakage.
 
-The assay measures DNA, not RNA. Blood is fixed with formaldehyde, cut with TaqI, and re-ligated, so that DNA regions lying close together are joined. The joined fragments are then read on an array of about 1 million probes. Each marker is a DNA loop, not a measure of gene expression.
+The assay measures DNA, not RNA. Blood is fixed with formaldehyde, cut with a restriction enzyme (TaqI), and re-ligated, so that DNA regions lying close together are joined. The joined fragments are then read on an array of about 1 million probes. Each marker is a DNA loop, not a measure of gene expression.
 
-The paper is inconsistent about which blood fraction was used. The abstract and introduction refer to PBMCs. The methods describe whole blood collected in EDTA tubes and frozen. Whole blood contains many neutrophils, so differences in cell-type mix could drive part of the signal.
+The paper is inconsistent about which blood fraction was used. The abstract and introduction refer to peripheral blood mononuclear cells (PBMCs). The methods describe whole blood collected in EDTA (anticoagulant) tubes and frozen. Whole blood contains many neutrophils, so differences in cell-type mix could drive part of the signal.
 
 ## Sample selection
 
-**Cases.** The inclusion criteria are only age 20–80 and "severe CFS – housebound". No case definition is named. The samples came from the London School of Hygiene & Tropical Medicine biobank. The UK ME/CFS Biobank's published protocol recruits using CDC-1994 and/or Canadian Consensus Criteria, so PEM may not have been required for every case. This matters because the guide treats Fukuda-only cases as unacceptable. PEM status at the time of the blood draw is not reported. Illness duration, POTS/OI and MCAS status are not reported either. Severity is described only as "housebound", with no validated scale such as Bell or FUNCAP.
+**Cases.** The inclusion criteria are only age 20–80 and "severe CFS – housebound". No case definition is named. The samples came from the London School of Hygiene & Tropical Medicine biobank. The UK ME/CFS Biobank's published protocol recruits using the 1994 US Centers for Disease Control criteria (CDC-1994) and/or Canadian Consensus Criteria, so PEM may not have been required for every case. This matters because the guide treats Fukuda-only cases as unacceptable. PEM status at the time of the blood draw is not reported. Illness duration, postural orthostatic tachycardia syndrome or orthostatic intolerance (POTS/OI) and mast cell activation syndrome (MCAS) status are not reported either. Severity is described only as "housebound", with no validated scale such as the Bell scale or FUNCAP (a functional capacity questionnaire).
 
 **Controls.** Only 20 controls came from the same biobank. The other 41 came from the Oxford BioDynamics repository. This is the central problem of the paper. Differences in collection, transport, freezing time and storage between two sources can change a DNA-crosslinking assay. The authors corrected for processing batch using ComBat, but that does not remove confounding between sample source and diagnosis. When batch and group are unbalanced, ComBat can even exaggerate group differences.
 
@@ -123,13 +123,13 @@ A validation group of exactly 41 controls would match the size of the company re
 A DNA-folding signal in blood cells is plausible in principle. But the biological interpretation is weakly supported.
 
 - The markers were assigned to the three nearest protein-coding genes. No RNA or protein was measured, so it is unknown whether these genes are actually affected.
-- Gene sets drawn from blood cells will tend to look immune-related. STRING networks favour well-connected hubs such as IL-2 and TNF regardless of disease.
+- Gene sets drawn from blood cells will tend to look immune-related. Networks from STRING (a protein-interaction database) favour well-connected hubs such as IL-2 and tumour necrosis factor (TNF) regardless of disease.
 - The overlap with rituximab and glatiramer acetate networks is expected for any immune gene list. The phase III rituximab trial in ME/CFS was negative.
 - Hierarchical clustering always produces clusters. The 18/29 split is not evidence of a treatment-responsive subgroup. Relating it to earlier rituximab response rates is not a test.
 
 The paper does not address how its findings relate to the defining features of PEM: its many different triggers, its delayed onset, or its typical duration. That is acceptable for a diagnostic paper, but it limits the mechanistic claims.
 
-The table of 12 candidate therapies, including methotrexate, azathioprine, mycophenolate and tofacitinib, is derived from literature on IL-2 and CD4 suppression. None of it is supported by data in this study, and some of these drugs carry serious risks.
+The table of 12 candidate therapies, including methotrexate, azathioprine, mycophenolate and tofacitinib, is derived from literature on IL-2 and CD4 (helper T cell) suppression. None of it is supported by data in this study, and some of these drugs carry serious risks.
 
 ## Interpretation and spin
 
@@ -155,7 +155,7 @@ It does not show that the test works in mild or moderate patients. It does not s
 - Cases and controls collected and processed under the same protocol at the same sites.
 - A breakdown of sample source within the training and validation sets.
 - A check of whether the classifier can predict sample source among controls alone.
-- Sedentary or deconditioned controls, and disease controls (for example MS, depression and other causes of fatigue).
+- Sedentary or deconditioned controls, and disease controls (for example multiple sclerosis, depression and other causes of fatigue).
 - Mild and moderate patients.
 - A clear, consistent account of sample flow.
 - Confidence intervals for all accuracy estimates.

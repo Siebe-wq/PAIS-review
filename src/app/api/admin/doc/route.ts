@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /** Standalone pages editable from /admin. Reviews go through /api/admin/publish instead. */
-const EDITABLE_PAGES = new Set(['about', 'methods', 'guide', 'instructions', 'prompt']);
+const EDITABLE_PAGES = new Set(['about', 'methods', 'guide', 'instructions', 'prompt', 'backlog']);
 
 /**
  * The three documents that together are "the method". They share one version number,

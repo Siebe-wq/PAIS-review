@@ -60,6 +60,7 @@ You are a FORMATTER, not a reviewer. The judgements in the text you are given ar
 3. Never add facts. Every claim in your output must be traceable to the text you were given. This includes the context field: only record a circumstance if the source states it.
 4. Never append a section summarising changes, a note about the conversion, a disclaimer, or an "Additional considerations" / "Further notes" / "Final thoughts" section. If information arrived through discussion, fold it into the section where it belongs.
 5. Preserve the author's wording wherever it already works. Rewrite only to fit the structure.
+6. House style on abbreviations: the frontmatter fields (verdict, strengths, weaknesses, studyType, context notes) contain no abbreviations except ones as obvious as ME/CFS — write them out. In the body, write each abbreviation out in full at its first use, abbreviation in brackets after it, but only where the source makes the meaning certain. If you are not sure what an abbreviation stands for, leave it as it is; never guess an expansion.
 
 ## Choosing the kind
 

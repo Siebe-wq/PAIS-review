@@ -84,6 +84,11 @@ author list.
 Never add `humanInput`. It records how much the editor changed your text, which only the
 editor knows, and it is set when the review is published.
 
+No abbreviations in the frontmatter, except in the title or ones as obvious as ME/CFS. Write
+"post-exertional malaise not assessed", not "PEM not assessed". The verdict, strengths and
+weaknesses are what the index shows, to readers who may not be researchers: be careful with
+introducing technical language there.
+
 ### kind, and what grades it takes
 
 - **`kind: paper`** — a review of one study. Takes `score`, 0–10 in steps of 0.5. A preprint
@@ -161,6 +166,14 @@ in this order, skipping any that do not apply. Do not invent a section to fill a
 ```
 
 Quote the paper's own claims when assessing spin, so a reader can check the comparison.
+
+Write every abbreviation out in full at first use, with the abbreviation in brackets after
+it: "post-exertional malaise (PEM)". After that the abbreviation alone is fine. For a name
+that is not really an abbreviation — a trial, a database, a gene — say what it is the first
+time: "the PACE trial", "STRING (a protein-interaction database)".
+
+The executive summary is, with the frontmatter, what most readers will read. Be careful with
+introducing technical language there: if a term is needed, explain it in plain words.
 
 Write in plain English and short sentences. Say what is wrong without sneering. These reviews
 name real researchers: criticise the evidence and the framing, never the people.

@@ -14,6 +14,7 @@ const PAGES = [
   { value: 'guide', label: 'Review guide' },
   { value: 'instructions', label: 'Reviewing instructions' },
   { value: 'prompt', label: 'Project prompt' },
+  { value: 'backlog', label: 'Backlog (admin only)' },
 ];
 
 interface Result {

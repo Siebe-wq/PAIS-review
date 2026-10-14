@@ -8,6 +8,7 @@ import { ReviewCard } from './ReviewCard';
 interface Parsed {
   slug?: string;
   review?: ReviewFrontmatter;
+  abbreviations?: { frontmatter: { where: string; terms: string[] }[]; body: string[] };
   error?: string;
 }
 
@@ -179,6 +180,24 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
               No <code>model</code> in the frontmatter. Add the model that wrote this
               (e.g. <code>claude-opus-5</code>) — it publishes either way, but the review page
               will say the model is unrecorded.
+            </p>
+          )}
+
+          {parsed.abbreviations && parsed.abbreviations.frontmatter.length > 0 && (
+            <p className="hint warn">
+              Abbreviations in the frontmatter, which readers see on the index:{' '}
+              {parsed.abbreviations.frontmatter
+                .map((warning) => `${warning.terms.join(', ')} in ${warning.where}`)
+                .join('; ')}
+              . Write them out, unless they are as familiar as ME/CFS.
+            </p>
+          )}
+
+          {parsed.abbreviations && parsed.abbreviations.body.length > 0 && (
+            <p className="hint warn">
+              Not written out at first use: {parsed.abbreviations.body.join(', ')}. Put the full
+              term first with the abbreviation in brackets, or say what a name is. This is a
+              rough check — names can show up here too.
             </p>
           )}
 

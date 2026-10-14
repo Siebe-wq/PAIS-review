@@ -118,7 +118,7 @@ The authors know this and took serious steps. They imputed cases and controls to
 
 Some checks were applied unequally. The allele-frequency check against the imputation reference panel was applied to controls but not cases. Thresholds for Hardy-Weinberg equilibrium, a standard test for genotyping errors, differed between the groups. Cluster inspection focused on cases, and in controls it covered only one UK Biobank batch. Each choice has a stated reason. Together they mean cases and controls did not pass through identical filters.
 
-Genomic inflation is low (the inflation factor λ is 1.003–1.066, where 1 means no inflation), which is reassuring. The LD score regression (LDSC) intercept is not reported. LDSC uses linkage disequilibrium (LD), the tendency of nearby variants to be inherited together, to separate real polygenic signal from artefact. In a study that cannot be externally replicated, this is the most important missing check.
+Genomic inflation is low (the inflation factor λ is 1.003–1.066, where 1 means no inflation), which is reassuring. The linkage disequilibrium (LD) score regression (LDSC) intercept is not reported. LDSC uses linkage disequilibrium (LD), the tendency of nearby variants to be inherited together, to separate real polygenic signal from artefact. In a study that cannot be externally replicated, this is the most important missing check.
 
 **Participation bias.** Both groups are volunteers, but different kinds. Controls come from UK Biobank's healthy-volunteer cohort. Cases responded to a patient-led recruitment campaign. Willingness to take part in research is partly heritable. This could create weak genome-wide differences. It is unlikely to produce sharp single-locus signals.
 
