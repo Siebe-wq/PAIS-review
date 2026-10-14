@@ -7,8 +7,8 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 
 ## Weaknesses
 
-- [ ] Saving the About, Methods, instructions or prompt page from a tab opened before another save overwrites that save. Only the guide, site text and backlog check for this.
 - [ ] No automated tests in the repository. Every check so far was run by hand in a session, so nothing stops a change from quietly breaking publishing.
+- [ ] Saving the About, Methods, instructions or prompt page from a tab opened before another save overwrites that save. Only the guide, site text and backlog check for this.
 - [x] Reviews write the grade before the analysis, so the analysis can become justification for an early number. Fix written up in the roadmap: grade last, shown first. (done 2026-10-14)
 - [ ] Search covers the title, verdict, strengths and weaknesses, not the text of the review.
 - [ ] Ratings are one per browser, so clearing cookies allows another vote.
