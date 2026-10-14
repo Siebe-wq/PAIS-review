@@ -1,7 +1,7 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.4"
-updated: 2026-09-21
+version: "0.5"
+updated: 2026-10-14
 authors: Siebe Rozendal (main), Claude
 
 ---
@@ -94,6 +94,21 @@ For cerebral blood flow: was velocity measured, or volume?
 
 - Was it pre-registered?
 - Has the protocol been adhered to? Has the protocol been changed?
+
+### Blinding
+
+- Was blinding assessed, prespecified, at more than one time point?
+- Bang index per arm, not just James.
+- Were reasons for guesses recorded?
+- Would side effects reveal the arm? Was an active placebo used?
+
+### Noise in the primary outcome
+
+- Test-retest data in this population? Prefer standard error of
+  measurement or smallest detectable change over ICC alone.
+- Does the power calculation use a realistic SD of change?
+- Responder thresholds above the smallest detectable change.
+- Baseline-adjusted (ANCOVA) rather than change scores?
 
 ### Drug trials: target engagement
 
@@ -197,6 +212,9 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
+- **0.5** (2026-10-14) — Trials: how to check blinding (assessed and prespecified at more
+  than one point, Bang index per arm, reasons for guesses, active placebo) and noise in the
+  primary outcome (test-retest, realistic SD of change, responder thresholds, ANCOVA).
 - **0.4** (2026-09-21) — Study design: drug trials must show evidence of target engagement —
   exposure, binding and a downstream effect — not just a moved outcome.
 - **0.3.1** (2026-09-16) - Edited out some AI additions to this guide.
