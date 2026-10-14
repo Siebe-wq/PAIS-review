@@ -1,13 +1,8 @@
-/** Single place to change the site's name and blurb. */
+/**
+ * Code-level site settings. The visible text — name, description, banner, footer and the
+ * rest — lives in content/site-text.json and is edited from /admin; see site-text-schema.ts.
+ */
 export const site = {
-  name: 'PAIS Review',
-  tagline: 'Claude-written reviews of research on post-acute infection syndromes',
-  description:
-    'Rigorous, openly published reviews of papers on ME/CFS, Long Covid and other post-acute infection syndromes (PAIS). Each review is written by Claude against a published guide and checked before publication.',
-  editor: 'Siebe Rozendal',
-  /** Shown as a banner under the header on every page. Set to '' to remove it. */
-  pilotNotice:
-    'Early pilot. These reviews are AI-written and lightly checked — expect rough edges, and treat any single review as one reading, not a verdict.',
   /**
    * Only needs setting if the site moves to a custom domain. `||` rather than `??` because
    * Vercel's env-var autodetect creates blank entries rather than leaving a variable absent,

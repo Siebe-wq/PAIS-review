@@ -1,12 +1,11 @@
-import Link from 'next/link';
+import { getSiteText } from '@/lib/site-text';
+import { RichText } from '@/components/RichText';
 
 export default function NotFound() {
   return (
     <div className="lede">
       <h1>Not found</h1>
-      <p>
-        There is no page here. <Link href="/">Back to the reviews</Link>.
-      </p>
+      <RichText text={getSiteText()['site.notFound']} />
     </div>
   );
 }

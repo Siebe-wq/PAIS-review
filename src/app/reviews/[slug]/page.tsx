@@ -12,6 +12,8 @@ import { Comments } from '@/components/Comments';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { Markdown } from '@/components/Markdown';
 import { site } from '@/lib/site';
+import { getSiteText } from '@/lib/site-text';
+import { RichText } from '@/components/RichText';
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -33,6 +35,7 @@ export default async function ReviewPage({ params }: Params) {
   const review = getReview((await params).slug);
   if (!review) notFound();
 
+  const text = getSiteText();
   const link = paperLink(review);
   const toc = extractToc(review.body);
   const reviewedOn = new Date(`${review.reviewedOn}T00:00:00Z`).toLocaleDateString('en-GB', {
@@ -70,44 +73,44 @@ export default async function ReviewPage({ params }: Params) {
 
         <dl className="facts">
           <div>
-            <dt>Type</dt>
+            <dt>{text['label.type']}</dt>
             <dd>{KIND_LABELS[review.kind]}</dd>
           </div>
           {review.studyType && (
             <div className="wide">
-              <dt>Design</dt>
+              <dt>{text['label.design']}</dt>
               <dd>{review.studyType}</dd>
             </div>
           )}
           {review.confidence && (
             <div>
-              <dt>Confidence in this grade</dt>
+              <dt>{text['label.confidence']}</dt>
               <dd className="cap">{review.confidence}</dd>
             </div>
           )}
           {review.importance && (
             <div>
-              <dt>Importance if true</dt>
+              <dt>{text['label.importance']}</dt>
               <dd className="cap">{review.importance}</dd>
             </div>
           )}
           <div>
-            <dt>Reviewed</dt>
+            <dt>{text['label.reviewed']}</dt>
             <dd>{reviewedOn}</dd>
           </div>
           <div>
-            <dt>Written by</dt>
+            <dt>{text['label.writtenBy']}</dt>
             <dd>{review.model ?? 'an unrecorded model'}</dd>
           </div>
           {review.guideVersion && (
             <div>
-              <dt>Guide version</dt>
+              <dt>{text['label.guideVersion']}</dt>
               <dd>v{review.guideVersion}</dd>
             </div>
           )}
           {review.conditions && review.conditions.length > 0 && (
             <div>
-              <dt>Topic</dt>
+              <dt>{text['label.topic']}</dt>
               <dd>{review.conditions.join(', ')}</dd>
             </div>
           )}
@@ -117,7 +120,7 @@ export default async function ReviewPage({ params }: Params) {
           <div className="two-col">
             {review.weaknesses && review.weaknesses.length > 0 && (
               <section className="panel weaknesses">
-                <h3>Main weaknesses</h3>
+                <h3>{text['review.weaknessesHeading']}</h3>
                 <ul>
                   {review.weaknesses.map((w) => (
                     <li key={w}>{w}</li>
@@ -127,7 +130,7 @@ export default async function ReviewPage({ params }: Params) {
             )}
             {review.strengths && review.strengths.length > 0 && (
               <section className="panel strengths">
-                <h3>Main strengths</h3>
+                <h3>{text['review.strengthsHeading']}</h3>
                 <ul>
                   {review.strengths.map((s) => (
                     <li key={s}>{s}</li>
@@ -147,7 +150,7 @@ export default async function ReviewPage({ params }: Params) {
 
       {review.context && review.context.length > 0 && (
         <section className="context-panel">
-          <h3>Context beyond the paper</h3>
+          <h3>{text['review.contextHeading']}</h3>
           <ul>
             {review.context.map((item) => (
               <li key={item.note}>
@@ -162,21 +165,16 @@ export default async function ReviewPage({ params }: Params) {
               </li>
             ))}
           </ul>
-          <p className="context-note">
-            These are facts about the circumstances around the work, not part of the
-            assessment of its methods. They are listed so readers can weigh them
-            themselves, not as a claim that the findings are wrong.
-          </p>
+          <div className="context-note">
+            <RichText text={text['review.contextNote']} />
+          </div>
         </section>
       )}
 
       {review.guideNotes && review.guideNotes.length > 0 && (
         <aside className="guide-notes">
-          <h3>Notes for the guide</h3>
-          <p>
-            Points this paper raised that the <Link href="/methods">guide</Link> does not yet cover.
-            They are not applied to this review; the editor decides what goes into the next version.
-          </p>
+          <h3>{text['review.guideNotesHeading']}</h3>
+          <RichText text={text['review.guideNotesIntro']} />
           <ul>
             {review.guideNotes.map((note) => (
               <li key={note}>{note}</li>
@@ -185,19 +183,24 @@ export default async function ReviewPage({ params }: Params) {
         </aside>
       )}
 
-      <Rating slug={review.slug} />
+      <Rating slug={review.slug} label={text['rating.label']} />
 
-      <DiscussWithAI rawUrl={`${site.url}/reviews/${review.slug}.md`} title={review.title} doi={review.doi} />
+      <DiscussWithAI
+        rawUrl={`${site.url}/reviews/${review.slug}.md`}
+        title={review.title}
+        doi={review.doi}
+        label={text['discuss.label']}
+        instruction={text['discuss.prompt']}
+      />
 
-      <Comments type="review" slug={review.slug} />
+      <Comments type="review" slug={review.slug} intro={<RichText text={text['comments.intro']} inline />} />
 
       <aside className="provenance">
         <p>
           Written by {review.model ?? 'an unrecorded Claude model'} against{' '}
           <Link href="/methods">the guide</Link>
-          {review.guideVersion ? ` (v${review.guideVersion})` : ''}, then read and published by{' '}
-          {site.editor}. The grade is a judgement about this paper&rsquo;s evidence, not a
-          statement about the researchers.
+          {review.guideVersion ? ` (v${review.guideVersion})` : ''}.{' '}
+          <RichText text={text['review.provenance']} inline />
         </p>
       </aside>
     </article>

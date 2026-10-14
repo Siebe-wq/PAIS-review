@@ -11,7 +11,7 @@ interface Summary {
 }
 
 /** One-to-five stars from anyone. One rating per browser; changing it replaces it. */
-export function Rating({ slug }: { slug: string }) {
+export function Rating({ slug, label }: { slug: string; label: string }) {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
@@ -31,7 +31,7 @@ export function Rating({ slug }: { slug: string }) {
   if (summary.error) {
     return (
       <div className="rating">
-        <span className="rating-label">Rate this review</span>
+        <span className="rating-label">{label}</span>
         <span className="rating-summary">Unavailable right now. {summary.error}</span>
       </div>
     );
@@ -55,7 +55,7 @@ export function Rating({ slug }: { slug: string }) {
 
   return (
     <div className="rating">
-      <span className="rating-label">Rate this review</span>
+      <span className="rating-label">{label}</span>
       <span className="stars" onMouseLeave={() => setHover(null)}>
         {[1, 2, 3, 4, 5].map((n) => (
           <button

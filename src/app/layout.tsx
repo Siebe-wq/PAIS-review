@@ -1,15 +1,20 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { site } from '@/lib/site';
+import { getSiteText } from '@/lib/site-text';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { RichText } from '@/components/RichText';
 import './globals.css';
 
-export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: { default: site.name, template: `%s · ${site.name}` },
-  description: site.description,
-  openGraph: { title: site.name, description: site.description, type: 'website' },
-};
+export function generateMetadata(): Metadata {
+  const text = getSiteText();
+  return {
+    metadataBase: new URL(site.url),
+    title: { default: text['site.name'], template: `%s · ${text['site.name']}` },
+    description: text['site.description'],
+    openGraph: { title: text['site.name'], description: text['site.description'], type: 'website' },
+  };
+}
 
 /**
  * Runs before first paint so the page never flashes the wrong theme. Dark unless this
@@ -18,6 +23,7 @@ export const metadata: Metadata = {
 const themeScript = `(function(){var t;try{t=localStorage.getItem('theme')}catch(e){}document.documentElement.dataset.theme=(t==='light')?'light':'dark'})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const text = getSiteText();
   return (
     // suppressHydrationWarning: data-theme is set by the script above, before React runs.
     <html lang="en" data-theme="dark" suppressHydrationWarning>
@@ -28,20 +34,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="site-header">
           <div className="wrap">
             <Link className="site-title" href="/">
-              {site.name}
+              {text['site.name']}
             </Link>
             <nav className="site-nav">
-              <Link href="/">Reviews</Link>
-              <Link href="/methods">Methods</Link>
-              <Link href="/about">About</Link>
+              <Link href="/">{text['nav.reviews']}</Link>
+              <Link href="/methods">{text['nav.methods']}</Link>
+              <Link href="/about">{text['nav.about']}</Link>
               <ThemeToggle />
             </nav>
           </div>
         </header>
 
-        {site.pilotNotice && (
+        {text['site.pilotBanner'] && (
           <div className="pilot-banner" role="note">
-            <div className="wrap">{site.pilotNotice}</div>
+            <div className="wrap">
+              <RichText text={text['site.pilotBanner']} inline />
+            </div>
           </div>
         )}
 
@@ -49,16 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <footer className="site-footer">
           <div className="wrap">
-            <p>
-              Reviews are written by Claude against a published{' '}
-              <Link href="/methods">method</Link>, then read and published by {site.editor}. They
-              are one considered opinion, not a journal decision or a consensus view, and they
-              can be wrong.
-            </p>
-            <p>
-              Think a review is wrong? Say so in the comments under it — that is where it gets
-              argued out.
-            </p>
+            <RichText text={text['site.footer']} />
           </div>
         </footer>
       </body>

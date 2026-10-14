@@ -1,9 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CHANGE_KINDS, CHANGE_LABELS, bumpVersion, type ChangeKind } from '@/lib/version';
+import { SiteTextEditor } from './SiteTextEditor';
+
+/** Not a markdown page: a form with one box per piece of site text. */
+const SITE_TEXT = 'site-text';
 
 const PAGES = [
+  { value: SITE_TEXT, label: 'Site text: banner, footer, headings, labels' },
   { value: 'about', label: 'About page' },
   { value: 'methods', label: 'Methods page' },
   { value: 'guide', label: 'Review guide' },
@@ -21,7 +26,8 @@ interface Result {
 }
 
 export function DocEditor({ onExpired }: { onExpired: () => void }) {
-  const [name, setName] = useState('about');
+  const [name, setName] = useState(SITE_TEXT);
+  const siteTextDirty = useRef(false);
   const [content, setContent] = useState('');
   const [versioned, setVersioned] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<string | null>(null);
@@ -32,6 +38,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
   const [result, setResult] = useState<Result | null>(null);
 
   useEffect(() => {
+    if (name === SITE_TEXT) return;
     let cancelled = false;
     setLoading(true);
     setResult(null);
@@ -100,18 +107,50 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
 
   const nextVersion = bumpVersion(currentVersion, change);
 
+  function choosePage(next: string) {
+    if (
+      name === SITE_TEXT &&
+      siteTextDirty.current &&
+      !window.confirm('You have unsaved changes to the site text. Leave without publishing them?')
+    ) {
+      return;
+    }
+    siteTextDirty.current = false;
+    setName(next);
+  }
+
+  const pagePicker = (
+    <div className="field">
+      <label htmlFor="doc-name">Page</label>
+      <select id="doc-name" value={name} onChange={(event) => choosePage(event.target.value)}>
+        {PAGES.map((page) => (
+          <option key={page.value} value={page.value}>
+            {page.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+
+  // Its own component, outside the form below: Enter in one of its boxes must not
+  // submit a markdown page save.
+  if (name === SITE_TEXT) {
+    return (
+      <div>
+        {pagePicker}
+        <SiteTextEditor
+          onExpired={onExpired}
+          onDirtyChange={(dirty) => {
+            siteTextDirty.current = dirty;
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={onSubmit}>
-      <div className="field">
-        <label htmlFor="doc-name">Page</label>
-        <select id="doc-name" value={name} onChange={(event) => setName(event.target.value)}>
-          {PAGES.map((page) => (
-            <option key={page.value} value={page.value}>
-              {page.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      {pagePicker}
 
       {versioned && (
         <p className="hint warn">

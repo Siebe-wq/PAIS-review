@@ -20,7 +20,16 @@ interface Loaded {
  * agree/disagree (do you think it is right?). Anyone can post with a self-chosen
  * username; no account. Each comment records the guide version it was written against.
  */
-export function Comments({ type, slug }: { type: TargetType; slug: string }) {
+export function Comments({
+  type,
+  slug,
+  intro,
+}: {
+  type: TargetType;
+  slug: string;
+  /** Editable site text, rendered by the server page. */
+  intro: React.ReactNode;
+}) {
   const [data, setData] = useState<Loaded | null>(null);
   const [username, setUsername] = useState('');
   const [replyTo, setReplyTo] = useState<number | null>(null);
@@ -110,10 +119,7 @@ export function Comments({ type, slug }: { type: TargetType; slug: string }) {
       <h2>
         {count === 0 ? 'Comments' : `${count} comment${count === 1 ? '' : 's'}`}
       </h2>
-      <p className="comments-intro">
-        Think the review is wrong, or missed something? Say so here. Votes are open to anyone;
-        each comment shows which version of the method it was written against.
-      </p>
+      <p className="comments-intro">{intro}</p>
 
       {replyTo === null && (
         <CommentForm

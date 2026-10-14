@@ -38,6 +38,17 @@ For reviews written in a claude.ai project, point that project at
 The "Edit a page" tab does the same for the About and Methods pages, the guide, the
 instructions and the prompt: it loads the current markdown, you edit it, publishing commits it.
 
+It also has **Site text**: one labelled box for each piece of public text that is not a page —
+the pilot banner, the footer, the home page heading and intro, section headings and labels on
+review pages, the comment and rating prompts, the instruction sent with "Discuss with AI", and
+the search-engine descriptions. Each box says where the text appears, which ones differ from
+the default, and which have unsaved edits; "Reset to default" restores the original. Longer
+boxes take markdown, so links and bold work. Publishing commits `content/site-text.json`, which
+stores only the fields that differ from their defaults; the fields themselves and their
+defaults are defined in `src/lib/site-text-schema.ts`. A save made from a tab that is out of
+date is refused rather than overwriting the newer text. A broken file falls back to the
+defaults instead of breaking the site.
+
 The "Reviews" tab lists every review, drafts included, with a Withdraw / Restore button, and
 collects the `guideNotes` that reviews have flagged for the next guide version. Withdrawing sets
 `draft: true` — the review and its raw URL vanish from the site at once and it can be put back;
@@ -185,7 +196,7 @@ publishing returns a clear "not configured" error rather than failing quietly.
 ## Other things the site does
 
 - Dark by default, with a toggle in the header that is remembered per device.
-- A pilot banner on every page, set in `src/lib/site.ts` (`pilotNotice`; empty string removes it).
+- A pilot banner on every page, edited under Site text in `/admin`; empty removes it.
 - Search on the index over title, authors, journal, verdict, tags, strengths and weaknesses. Not
   the body — see `docs/roadmap.md`.
 - Each row on the index stacks the reader's view under the grade badge: mean rating as

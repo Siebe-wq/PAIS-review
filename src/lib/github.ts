@@ -58,7 +58,7 @@ export async function putFile(
   content: string,
   message: string,
   sha?: string,
-): Promise<{ replaced: boolean; commitUrl?: string }> {
+): Promise<{ replaced: boolean; commitUrl?: string; sha?: string }> {
   const response = await githubFetch(`/repos/${config.repo}/contents/${path}`, config.token, {
     method: 'PUT',
     body: JSON.stringify({
@@ -71,11 +71,18 @@ export async function putFile(
 
   if (!response.ok) {
     const detail = await response.text();
+    // 409: the file changed since the sha was read. 422 naming the sha: it exists but no
+    // sha was sent. Both mean someone else saved first, which the caller should report as
+    // "reload", not as a server fault.
+    if (response.status === 409 || (response.status === 422 && /sha/i.test(detail))) {
+      throw new GithubError(409, 'This file was changed after you opened it. Reload to see the current version, then make your change again.');
+    }
     throw new GithubError(502, `GitHub rejected the commit (${response.status}): ${detail.slice(0, 300)}`);
   }
 
-  const result = (await response.json()) as { commit?: { html_url?: string } };
-  return { replaced: Boolean(sha), commitUrl: result.commit?.html_url };
+  const result = (await response.json()) as { commit?: { html_url?: string }; content?: { sha?: string } };
+  // The new file's sha, so a caller can make a second save without re-reading it.
+  return { replaced: Boolean(sha), commitUrl: result.commit?.html_url, sha: result.content?.sha };
 }
 
 /** A file's current content and sha, or undefined if it does not exist. */

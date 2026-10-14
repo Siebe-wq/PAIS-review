@@ -1,0 +1,215 @@
+/**
+ * Every piece of public site text that can be edited from /admin, with its default.
+ *
+ * The code decides which text is editable; the content file only holds the values the
+ * editor has changed. A field nobody has touched keeps following its default here, so a
+ * default improved in code still reaches the site. No fs imports: the admin editor is a
+ * client component and reads this too.
+ */
+
+export type FieldKind = 'line' | 'text' | 'markdown';
+
+export interface FieldDef {
+  label: string;
+  /** Where on the site it appears. Shown under the label in the editor. */
+  where: string;
+  kind: FieldKind;
+  default: string;
+  /** Empty is allowed, and means "show nothing" rather than "use the default". */
+  optional?: boolean;
+  max: number;
+}
+
+const line = (label: string, where: string, value: string, max = 80): FieldDef => ({
+  label, where, kind: 'line', default: value, max,
+});
+const text = (label: string, where: string, value: string, max = 400): FieldDef => ({
+  label, where, kind: 'text', default: value, max,
+});
+const md = (label: string, where: string, value: string, extra: Partial<FieldDef> = {}): FieldDef => ({
+  label, where, kind: 'markdown', default: value, max: 1200, ...extra,
+});
+
+export const FIELDS = {
+  // ---- every page
+  'site.name': line('Site name', 'Header, and the browser tab on every page.', 'PAIS Review', 40),
+  'site.description': text(
+    'Site description',
+    'Search results and link previews when someone shares the site. Not shown on the page.',
+    'Rigorous, openly published reviews of papers on ME/CFS, Long Covid and other post-acute infection syndromes (PAIS). Each review is written by Claude against a published guide and checked before publication.',
+    300,
+  ),
+  'nav.reviews': line('Menu: reviews', 'First link in the header menu.', 'Reviews', 24),
+  'nav.methods': line('Menu: methods', 'Second link in the header menu.', 'Methods', 24),
+  'nav.about': line('Menu: about', 'Third link in the header menu.', 'About', 24),
+  'site.pilotBanner': md(
+    'Pilot banner',
+    'Coloured strip under the header on every page. Leave empty to remove it.',
+    'Early pilot. These reviews are AI-written and lightly checked — expect rough edges, and treat any single review as one reading, not a verdict.',
+    { optional: true, max: 400 },
+  ),
+  'site.footer': md(
+    'Footer',
+    'Bottom of every page. A blank line starts a new paragraph.',
+    'Reviews are written by Claude against a published [method](/methods), then read and published by Siebe Rozendal. They are one considered opinion, not a journal decision or a consensus view, and they can be wrong.\n\nThink a review is wrong? Say so in the comments under it — that is where it gets argued out.',
+  ),
+  'site.notFound': md('Page not found', 'Shown for a link to a page that does not exist.', 'There is no page here. [Back to the reviews](/).', { max: 300 }),
+
+  // ---- home page
+  'home.heading': line('Heading', 'Large heading at the top of the home page.', 'Claude-written reviews of research on post-acute infection syndromes', 120),
+  'home.intro': md(
+    'Introduction',
+    'Paragraph under the heading on the home page.',
+    'Each paper is reviewed against a published guide, graded out of 10, and summarised by its main strengths and weaknesses. Scores are a judgement, not a measurement — read the review.',
+    { max: 600 },
+  ),
+  'home.searchPlaceholder': line('Search box placeholder', 'Grey text inside the empty search box.', 'Search reviews', 40),
+  'home.empty': line('No reviews yet', 'Shown on the home page while nothing is published.', 'No reviews published yet.', 120),
+  'home.noMatches': line('No search results', 'Shown when a search or filter matches nothing.', 'No reviews match those filters.', 120),
+
+  // ---- review page
+  'review.weaknessesHeading': line('Weaknesses heading', 'Title of the tinted weaknesses panel.', 'Main weaknesses', 40),
+  'review.strengthsHeading': line('Strengths heading', 'Title of the tinted strengths panel.', 'Main strengths', 40),
+  'review.contextHeading': line('Context heading', 'Title of the panel of facts outside the paper.', 'Context beyond the paper', 60),
+  'review.contextNote': md(
+    'Context disclaimer',
+    'Small print under the context panel.',
+    'These are facts about the circumstances around the work, not part of the assessment of its methods. They are listed so readers can weigh them themselves, not as a claim that the findings are wrong.',
+    { max: 500 },
+  ),
+  'review.guideNotesHeading': line('Guide notes heading', 'Title of the box listing points the guide does not cover yet.', 'Notes for the guide', 60),
+  'review.guideNotesIntro': md(
+    'Guide notes explanation',
+    'Sentence at the top of that box.',
+    'Points this paper raised that the [guide](/methods) does not yet cover. They are not applied to this review; the editor decides what goes into the next version.',
+    { max: 500 },
+  ),
+  'review.provenance': md(
+    'Closing note',
+    'Last line of every review, after "Written by <model> against the guide".',
+    'Read and published by Siebe Rozendal. The grade is a judgement about this paper’s evidence, not a statement about the researchers.',
+    { max: 500 },
+  ),
+
+  // ---- review page: the small labels above the details
+  'label.type': line('Type', 'Detail label on a review page.', 'Type', 40),
+  'label.design': line('Design', 'Detail label on a review page.', 'Design', 40),
+  'label.confidence': line('Confidence', 'Detail label on a review page.', 'Confidence in this grade', 40),
+  'label.importance': line('Importance', 'Detail label on a review page.', 'Importance if true', 40),
+  'label.reviewed': line('Reviewed', 'Detail label on a review page.', 'Reviewed', 40),
+  'label.writtenBy': line('Written by', 'Detail label on a review page.', 'Written by', 40),
+  'label.guideVersion': line('Guide version', 'Detail label on a review page.', 'Guide version', 40),
+  'label.topic': line('Topic', 'Detail label on a review page.', 'Topic', 40),
+
+  // ---- readers
+  'rating.label': line('Rating prompt', 'Next to the stars under each review.', 'Rate this review', 60),
+  'comments.intro': md(
+    'Comments introduction',
+    'Above the comment box, under reviews and under the guide.',
+    'Think the review is wrong, or missed something? Say so here. Votes are open to anyone; each comment shows which version of the method it was written against.',
+    { max: 500 },
+  ),
+  'discuss.label': line('Discuss with AI label', 'Before the Claude and ChatGPT buttons under each review.', 'Discuss this review with an AI', 60),
+  'discuss.prompt': text(
+    'Discuss with AI instruction',
+    'Sent to Claude or ChatGPT after the link to the review. Tells the model what to do with it.',
+    'Then discuss it with me. Where is the review right, where might it be wrong or unfair, and what evidence would change its verdict? Do not just summarise it.',
+    600,
+  ),
+
+  // ---- methods and about
+  'methods.promptSummary': line('Prompt expander', 'The fold-out on the Methods page that shows the prompt.', 'The prompt, word for word', 60),
+  'methods.description': text(
+    'Methods page description',
+    'Search results and link previews for the Methods page.',
+    'How every review here is made: the guide it is graded against, and the prompt that starts it.',
+    300,
+  ),
+  'about.description': text(
+    'About page description',
+    'Search results and link previews for the About page.',
+    'How these reviews are made, what they are for, and what they are not.',
+    300,
+  ),
+} satisfies Record<string, FieldDef>;
+
+export type SiteTextKey = keyof typeof FIELDS;
+export type SiteText = Record<SiteTextKey, string>;
+
+/** How the editor lays the fields out. Every key appears in exactly one group. */
+export const GROUPS: { title: string; open: boolean; keys: SiteTextKey[] }[] = [
+  { title: 'Every page', open: true, keys: ['site.pilotBanner', 'site.footer', 'site.name', 'nav.reviews', 'nav.methods', 'nav.about', 'site.description', 'site.notFound'] },
+  { title: 'Home page', open: true, keys: ['home.heading', 'home.intro', 'home.searchPlaceholder', 'home.empty', 'home.noMatches'] },
+  { title: 'Review page', open: false, keys: ['review.weaknessesHeading', 'review.strengthsHeading', 'review.contextHeading', 'review.contextNote', 'review.guideNotesHeading', 'review.guideNotesIntro', 'review.provenance'] },
+  { title: 'Review page: detail labels', open: false, keys: ['label.type', 'label.design', 'label.confidence', 'label.importance', 'label.reviewed', 'label.writtenBy', 'label.guideVersion', 'label.topic'] },
+  { title: 'Ratings, comments and AI discussion', open: false, keys: ['rating.label', 'comments.intro', 'discuss.label', 'discuss.prompt'] },
+  { title: 'Methods and About', open: false, keys: ['methods.promptSummary', 'methods.description', 'about.description'] },
+];
+
+export const KEYS = Object.keys(FIELDS) as SiteTextKey[];
+
+export const DEFAULTS = Object.fromEntries(KEYS.map((key) => [key, FIELDS[key].default])) as SiteText;
+
+export function isKey(key: string): key is SiteTextKey {
+  return Object.prototype.hasOwnProperty.call(FIELDS, key);
+}
+
+/** Line endings normalised and outer whitespace trimmed, so "changed" means changed. */
+export function normalise(value: string): string {
+  return value.replace(/\r\n?/g, '\n').trim();
+}
+
+/** Why a value cannot be saved, or null. */
+export function checkValue(key: SiteTextKey, value: string): string | null {
+  const field = FIELDS[key];
+  if (!value && !field.optional) return 'This cannot be empty. Use "Reset to default" to restore the original.';
+  if (value.length > field.max) return `Keep this under ${field.max} characters (it is ${value.length}).`;
+  if (field.kind === 'line' && value.includes('\n')) return 'This must be a single line.';
+  return null;
+}
+
+/**
+ * The stored overrides from whatever the content file holds. Anything unusable — an
+ * unknown key, a wrong type, a value that fails its check — is skipped with a reason,
+ * so a bad edit falls back to the default instead of breaking the page.
+ */
+export function parseOverrides(raw: unknown): { overrides: Partial<SiteText>; problems: string[] } {
+  const overrides: Partial<SiteText> = {};
+  const problems: string[] = [];
+  if (raw === undefined || raw === null) return { overrides, problems };
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    return { overrides, problems: ['The site text file is not a JSON object.'] };
+  }
+  for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
+    if (!isKey(key)) {
+      problems.push(`Unknown field "${key}" ignored.`);
+      continue;
+    }
+    if (typeof value !== 'string') {
+      problems.push(`"${key}" is not text; using the default.`);
+      continue;
+    }
+    const clean = normalise(value);
+    const problem = checkValue(key, clean);
+    if (problem) {
+      problems.push(`"${key}": ${problem} Using the default.`);
+      continue;
+    }
+    overrides[key] = clean;
+  }
+  return { overrides, problems };
+}
+
+export function resolve(overrides: Partial<SiteText>): SiteText {
+  return { ...DEFAULTS, ...overrides };
+}
+
+/** The file as it should be stored: only fields that differ from their default, in schema order. */
+export function serialiseOverrides(values: Partial<SiteText>): string {
+  const stored: Partial<SiteText> = {};
+  for (const key of KEYS) {
+    const value = values[key];
+    if (value !== undefined && value !== DEFAULTS[key]) stored[key] = value;
+  }
+  return `${JSON.stringify(stored, null, 2)}\n`;
+}

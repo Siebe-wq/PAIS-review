@@ -15,12 +15,14 @@ export function ReviewIndex({
   conditions,
   engagement,
   serverNow,
+  labels,
 }: {
   reviews: ReviewSummary[];
   conditions: string[];
   /** Absent when the site has no database; the engagement sorts are then hidden. */
   engagement?: Record<string, Engagement>;
   serverNow: number;
+  labels: { searchPlaceholder: string; empty: string; noMatches: string };
 }) {
   const hasEngagement = Boolean(engagement);
   const [active, setActive] = useState<string[]>([]);
@@ -97,8 +99,8 @@ export function ReviewIndex({
         <input
           type="search"
           className="search"
-          placeholder="Search reviews"
-          aria-label="Search reviews"
+          placeholder={labels.searchPlaceholder}
+          aria-label={labels.searchPlaceholder}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -133,9 +135,7 @@ export function ReviewIndex({
 
       {shown.length === 0 ? (
         <p className="empty">
-          {reviews.length === 0
-            ? 'No reviews published yet.'
-            : 'No reviews match those filters.'}
+          {reviews.length === 0 ? labels.empty : labels.noMatches}
         </p>
       ) : (
         <ul className="review-list">

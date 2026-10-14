@@ -4,17 +4,19 @@ import { getDoc, renderTemplate } from '@/lib/doc';
 import { site } from '@/lib/site';
 import { Markdown } from '@/components/Markdown';
 import { Comments } from '@/components/Comments';
+import { RichText } from '@/components/RichText';
+import { getSiteText } from '@/lib/site-text';
 
-export const metadata: Metadata = {
-  title: 'Methods',
-  description: 'How every review here is made: the guide it is graded against, and the prompt that starts it.',
-};
+export function generateMetadata(): Metadata {
+  return { title: 'Methods', description: getSiteText()['methods.description'] };
+}
 
 export default function MethodsPage() {
   const methods = getDoc('methods');
   const guide = getDoc('guide');
   const prompt = getDoc('prompt');
   if (!methods || !guide) notFound();
+  const text = getSiteText();
 
   return (
     <article>
@@ -31,7 +33,7 @@ export default function MethodsPage() {
 
       {prompt && (
         <details className="prompt-details">
-          <summary>The prompt, word for word</summary>
+          <summary>{text['methods.promptSummary']}</summary>
           <pre className="prompt-block">
             <code>{renderTemplate(prompt.body, site.url)}</code>
           </pre>
@@ -47,7 +49,7 @@ export default function MethodsPage() {
         <Markdown>{guide.body}</Markdown>
       </section>
 
-      <Comments type="guide" slug="guide" />
+      <Comments type="guide" slug="guide" intro={<RichText text={text['comments.intro']} inline />} />
     </article>
   );
 }

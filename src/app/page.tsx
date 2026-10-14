@@ -2,7 +2,8 @@ import { getAllConditions, getAllReviews } from '@/lib/reviews';
 import { listEngagement, NO_ENGAGEMENT, type Engagement } from '@/lib/comments';
 import { dbConfigured } from '@/lib/db';
 import { ReviewIndex } from '@/components/ReviewIndex';
-import { site } from '@/lib/site';
+import { getSiteText } from '@/lib/site-text';
+import { RichText } from '@/components/RichText';
 
 // Comment counts and ratings change between deploys, so the index cannot be fully
 // static. A minute of cache is plenty: nothing here is to-the-second.
@@ -12,6 +13,7 @@ export default async function HomePage() {
   const reviews = getAllReviews();
   const conditions = getAllConditions(reviews);
   const summaries = reviews.map(({ body: _body, ...rest }) => rest);
+  const text = getSiteText();
 
   let engagement: Record<string, Engagement> | undefined;
   if (dbConfigured()) {
@@ -31,17 +33,19 @@ export default async function HomePage() {
   return (
     <>
       <div className="lede">
-        <h1>{site.tagline}</h1>
-        <p>
-          Each paper is reviewed against a published guide, graded out of 10, and summarised by its
-          main strengths and weaknesses. Scores are a judgement, not a measurement — read the review.
-        </p>
+        <h1>{text['home.heading']}</h1>
+        <RichText text={text['home.intro']} />
       </div>
       <ReviewIndex
         reviews={summaries}
         conditions={conditions}
         engagement={engagement}
         serverNow={Date.now()}
+        labels={{
+          searchPlaceholder: text['home.searchPlaceholder'],
+          empty: text['home.empty'],
+          noMatches: text['home.noMatches'],
+        }}
       />
     </>
   );
