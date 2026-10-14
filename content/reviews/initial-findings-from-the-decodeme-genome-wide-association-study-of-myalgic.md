@@ -79,7 +79,7 @@ reviewedOn: '2026-10-14'
 guideVersion: '0.5'
 model: claude-opus-5-5
 preprint: true
-humanInput: minor
+humanInput: moderate
 ---
 ## Executive summary
 
