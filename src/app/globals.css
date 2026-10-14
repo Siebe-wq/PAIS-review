@@ -272,7 +272,7 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
   .review-body {
     display: grid; grid-template-columns: 1fr 13rem; gap: 40px; align-items: start;
   }
-  .review-body .prose { grid-column: 1; min-width: 0; }
+  .review-body .prose, .review-body > .toc-main { grid-column: 1; min-width: 0; }
 
   .toc {
     grid-column: 2; grid-row: 1; position: sticky; top: 28px; margin: 0; padding: 0;
@@ -665,6 +665,79 @@ button.secondary {
 
 /* ---------- admin: backlog ---------- */
 
+.backlog-add { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 6px; }
+.backlog-add select { flex: 0 1 10rem; }
+.backlog-add input { flex: 1 1 12rem; min-width: 0; }
+.backlog-status { min-height: 1.2em; margin: 0 0 10px; font-size: 0.78rem; color: var(--muted); }
+
+.backlog-section { margin: 0 0 14px; }
+.backlog-section h3 { margin: 0 0 4px; font-size: 0.95rem; }
+.backlog-fold {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 0;
+  font: inherit; font-weight: 600; color: var(--text); text-align: left;
+  background: none; border: 0; cursor: pointer;
+}
+.backlog-chevron {
+  width: 7px; height: 7px; flex: none; margin: 0 3px 0 2px;
+  border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted);
+  transform: rotate(45deg); transition: transform 120ms ease;
+}
+.backlog-fold[aria-expanded='false'] .backlog-chevron { transform: rotate(-45deg); }
+.backlog-count { font-weight: 400; font-size: 0.78rem; color: var(--muted); }
+
+.backlog-section ul { list-style: none; margin: 0; padding: 0; }
+.backlog-section li {
+  border-top: 1px solid var(--border); background: var(--bg);
+  transition: transform 150ms ease;
+}
+.backlog-section li:last-child { border-bottom: 1px solid var(--border); }
+.backlog-section li.dragging {
+  background: var(--surface); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  border-radius: 6px; border-color: var(--border-strong);
+}
+.backlog-row { display: flex; gap: 8px; align-items: flex-start; padding: 8px 0; font-size: 0.9rem; }
+.backlog-row input[type='checkbox'] { margin-top: 3px; width: 18px; height: 18px; flex: none; }
+.backlog-text { flex: 1; min-width: 0; overflow-wrap: break-word; }
+.backlog-section li.done .backlog-text { color: var(--muted); text-decoration: line-through; }
+.backlog-date { font-size: 0.78rem; }
+.backlog-edit { flex: none; font-size: 0.8rem; padding: 2px 6px; min-height: 28px; }
+
+/* The handle owns the gesture: no page scroll while dragging it, and a tap target of 32px. */
+.backlog-handle {
+  flex: none; width: 28px; min-height: 32px; margin: -6px 0 -6px 0; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  font: inherit; font-size: 0.9rem; letter-spacing: -3px; line-height: 1;
+  color: var(--muted); background: none; border: 0; border-radius: 4px;
+  cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+}
+.backlog-handle:active { cursor: grabbing; }
+.backlog-handle:focus-visible { outline: 2px solid var(--text); }
+
+.priority {
+  display: inline-block; margin-right: 6px; padding: 0 6px; border-radius: 999px;
+  font-size: 0.68rem; font-weight: 650; letter-spacing: 0.02em; vertical-align: 1px;
+  border: 1px solid;
+}
+.priority-high { color: var(--fatal-fg); background: var(--fatal-bg); border-color: var(--fatal-br); }
+.priority-medium { color: var(--borderline-fg); background: var(--borderline-bg); border-color: var(--borderline-br); }
+.priority-low { color: var(--muted); background: var(--surface-2); border-color: var(--border-strong); }
+
+.backlog-editor {
+  margin: 0 0 10px 34px; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--surface);
+}
+.backlog-editor textarea { width: 100%; }
+.backlog-editor-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-top: 8px; }
+.backlog-editor-row label { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--muted); }
+.backlog-editor-row .hint { margin: 0; }
+button.secondary.small { padding: 5px 12px; font-size: 0.82rem; }
+button.secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.manage-input { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+.manage-input select { font-size: 0.82rem; padding: 3px 6px; }
+
+/* ---------- admin: backlog ---------- */
+
 .backlog-add { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 18px; }
 .backlog-add select { flex: 0 1 11rem; }
 .backlog-add input { flex: 1 1 12rem; min-width: 0; }
@@ -678,3 +751,8 @@ button.secondary {
 .backlog-section input[type='checkbox'] { margin-top: 3px; width: 18px; height: 18px; flex: none; }
 .backlog-section li.done span { color: var(--muted); text-decoration: line-through; }
 .backlog-date { text-decoration: none; font-size: 0.78rem; }
+
+/* Methods page: anchors that are not markdown headings land clear of the sticky contents bar. */
+#prompt, #guide, #changelog, #comments { scroll-margin-top: 72px; }
+.changelog-details { margin-top: 28px; }
+.changelog-details .prose { margin-top: 10px; }

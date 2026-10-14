@@ -249,9 +249,13 @@ publishing returns a clear "not configured" error rather than failing quietly.
 ## Backlog
 
 `/admin` → Backlog is the site's own list of weaknesses, missing features, bugs and ideas,
-kept in `content/backlog.md` (not served publicly, though the repository is public). Add an
-item in two taps from a phone and tick items off; each change is a one-line commit. To
-reword or reorder, edit it as text under Edit a page → Backlog.
+kept in `content/backlog.md` (not served publicly, though the repository is public). Add items
+with an optional priority (high, medium, low); edit, reprioritise, move to another category or
+delete them; tick them off with undo; drag the ⋮⋮ handle to reorder (works by touch; arrow keys
+and Top / Up / Down in the editor do the same). Categories fold, and stay folded on that device.
+Edits apply at once and are saved together a moment later, so a run of drags is one commit.
+Priority is stored in the line as `- [ ] [high] Item`, so the file still reads as a task list
+and can be edited as text under Edit a page → Backlog; notes typed under a heading are kept.
 
 Longer write-ups of things not built yet, and what each would take, are in `docs/roadmap.md`.
 

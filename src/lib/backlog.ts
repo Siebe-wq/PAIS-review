@@ -1,100 +1,145 @@
 /**
- * The site's own to-do list: content/backlog.md, a markdown file with one "## " heading per
- * kind of item and a GitHub-style task list under each. Readable in the repository, editable
- * as text, and edited here one line at a time so each change is a one-line diff.
+ * The site's own to-do list: content/backlog.md. One "## " heading per category, a
+ * GitHub-style task list under each, items in priority order as the editor arranged them.
+ *
+ *   - [ ] [high] Item text
+ *   - [x] Item text (done 2026-10-14)
+ *
+ * Kept as markdown so it reads fine in the repository and can be edited as text. The admin
+ * panel edits a parsed copy and writes the whole list back in this one canonical form, so a
+ * reorder shows in the history as lines moving, not as a rewrite.
  */
 
 export const BACKLOG_PATH = 'content/backlog.md';
 export const BACKLOG_SECTIONS = ['Weaknesses', 'Missing features', 'Bugs', 'Ideas'] as const;
+export const PRIORITIES = ['high', 'medium', 'low'] as const;
+export type Priority = (typeof PRIORITIES)[number];
+
+export const LIMITS = { itemText: 500, sectionTitle: 60, items: 500 };
 
 export interface BacklogItem {
   text: string;
   done: boolean;
   /** Date ticked off, if recorded. */
   doneOn?: string;
+  priority?: Priority;
 }
 
 export interface BacklogSection {
   title: string;
   items: BacklogItem[];
+  /** Lines under the heading that are not items — notes typed by hand. Kept as they are. */
+  notes: string[];
 }
 
-const ITEM = /^- \[( |x|X)\] (.*)$/;
+export interface Backlog {
+  /** Everything above the first section: frontmatter and the intro. Kept as it is. */
+  head: string;
+  sections: BacklogSection[];
+}
+
+const ITEM = /^- \[( |x|X)\] (?:\[(high|medium|low)\] )?(.*)$/i;
 const DONE_SUFFIX = / \(done (\d{4}-\d{2}-\d{2})\)$/;
 
-export function parseBacklog(source: string): BacklogSection[] {
+export function isPriority(value: unknown): value is Priority {
+  return typeof value === 'string' && (PRIORITIES as readonly string[]).includes(value);
+}
+
+export function parseBacklog(source: string): Backlog {
+  const lines = source.replace(/\r\n?/g, '\n').split('\n');
+  const first = lines.findIndex((line) => /^## /.test(line));
+  const head = (first === -1 ? lines : lines.slice(0, first)).join('\n').trimEnd();
   const sections: BacklogSection[] = [];
-  let current: BacklogSection | undefined;
-  for (const line of source.split('\n')) {
+
+  for (const line of first === -1 ? [] : lines.slice(first)) {
     const heading = /^## (.+?)\s*$/.exec(line);
     if (heading) {
-      current = { title: heading[1], items: [] };
-      sections.push(current);
+      sections.push({ title: heading[1], items: [], notes: [] });
       continue;
     }
+    const current = sections[sections.length - 1];
     const item = ITEM.exec(line);
-    if (item && current) {
-      const done = item[1] !== ' ';
-      const suffix = DONE_SUFFIX.exec(item[2]);
+    if (item) {
+      const suffix = DONE_SUFFIX.exec(item[3]);
+      const priority = item[2]?.toLowerCase();
       current.items.push({
-        text: suffix ? item[2].slice(0, suffix.index) : item[2],
-        done,
+        text: suffix ? item[3].slice(0, suffix.index) : item[3],
+        done: item[1] !== ' ',
         ...(suffix ? { doneOn: suffix[1] } : {}),
+        ...(isPriority(priority) ? { priority } : {}),
       });
+    } else if (line.trim()) {
+      current.notes.push(line);
     }
   }
-  return sections;
+  return { head, sections };
+}
+
+export function itemLine(item: BacklogItem): string {
+  const box = item.done ? '[x]' : '[ ]';
+  const priority = item.priority ? `[${item.priority}] ` : '';
+  const done = item.done && item.doneOn ? ` (done ${item.doneOn})` : '';
+  return `- ${box} ${priority}${item.text}${done}`;
+}
+
+export function serializeBacklog(backlog: Backlog): string {
+  const parts = [backlog.head.trimEnd()];
+  for (const section of backlog.sections) {
+    const block = [`## ${section.title}`];
+    if (section.notes.length) block.push('', ...section.notes);
+    if (section.items.length) block.push('', ...section.items.map(itemLine));
+    parts.push(block.join('\n'));
+  }
+  return `${parts.filter(Boolean).join('\n\n')}\n`;
 }
 
 export function cleanItemText(text: string): string {
   return text.replace(/\s+/g, ' ').trim();
 }
 
-/** Appends an item at the end of its section, creating the section if needed. */
-export function addBacklogItem(source: string, section: string, text: string): string {
-  const item = cleanItemText(text);
-  if (!item) throw new Error('Write what the item is.');
-  if (item.length > 500) throw new Error('Keep an item under 500 characters; put detail in docs/roadmap.md.');
-
-  const lines = source.replace(/\n+$/, '').split('\n');
-  const start = lines.findIndex((line) => line.trim() === `## ${section}`);
-  if (start === -1) return `${lines.join('\n')}\n\n## ${section}\n\n- [ ] ${item}\n`;
-
-  // After the last item in the section, or straight after the heading if it has none.
-  let insertAt = start + 1;
-  for (let i = start + 1; i < lines.length && !lines[i].startsWith('## '); i++) {
-    if (ITEM.test(lines[i])) insertAt = i + 1;
-  }
-  const block = insertAt === start + 1 ? ['', `- [ ] ${item}`] : [`- [ ] ${item}`];
-  lines.splice(insertAt, 0, ...block);
-  return `${lines.join('\n')}\n`;
+/**
+ * Checks a list sent from the admin panel and returns it in clean form, or throws with a
+ * reason a person can act on. Notes and the head are not taken from the client; the
+ * server keeps whatever the file already has.
+ */
+export function validateSections(input: unknown): Omit<BacklogSection, 'notes'>[] {
+  if (!Array.isArray(input)) throw new Error('The list is malformed.');
+  let count = 0;
+  const seen = new Set<string>();
+  return input.map((raw) => {
+    const section = raw as { title?: unknown; items?: unknown };
+    const title = cleanItemText(String(section.title ?? ''));
+    if (!title || title.length > LIMITS.sectionTitle) throw new Error('A category needs a name of up to 60 characters.');
+    if (seen.has(title)) throw new Error(`The category "${title}" appears twice.`);
+    seen.add(title);
+    if (!Array.isArray(section.items)) throw new Error(`"${title}" has no item list.`);
+    const items = section.items.map((rawItem): BacklogItem => {
+      const item = rawItem as Record<string, unknown>;
+      const text = cleanItemText(String(item.text ?? ''));
+      if (!text) throw new Error(`An item in "${title}" is empty.`);
+      if (text.length > LIMITS.itemText) throw new Error(`Keep items under ${LIMITS.itemText} characters; detail goes in docs/roadmap.md.`);
+      const done = item.done === true;
+      const doneOn = typeof item.doneOn === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item.doneOn) ? item.doneOn : undefined;
+      return {
+        text,
+        done,
+        ...(done && doneOn ? { doneOn } : {}),
+        ...(isPriority(item.priority) ? { priority: item.priority } : {}),
+      };
+    });
+    count += items.length;
+    if (count > LIMITS.items) throw new Error(`The backlog is limited to ${LIMITS.items} items.`);
+    return { title, items };
+  });
 }
 
-/**
- * Ticks an item off, or back on. Found by section and exact text, so an item edited
- * elsewhere since the list was loaded is reported as missing rather than guessed at.
- */
-export function setBacklogItemDone(
-  source: string,
-  section: string,
-  text: string,
-  done: boolean,
-  today: string,
-): string {
-  const lines = source.split('\n');
-  let inSection = false;
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].startsWith('## ')) {
-      inSection = lines[i].trim() === `## ${section}`;
-      continue;
-    }
-    if (!inSection) continue;
-    const match = ITEM.exec(lines[i]);
-    if (!match) continue;
-    const bare = match[2].replace(DONE_SUFFIX, '');
-    if (bare !== text) continue;
-    lines[i] = done ? `- [x] ${bare} (done ${today})` : `- [ ] ${bare}`;
-    return lines.join('\n');
-  }
-  throw new Error('That item has changed since the list was loaded. Reload and try again.');
+/** The edited sections, with the notes and head the file already had. */
+export function mergeIntoBacklog(current: Backlog, sections: Omit<BacklogSection, 'notes'>[]): Backlog {
+  return {
+    head: current.head,
+    sections: sections.map((section) => ({
+      ...section,
+      notes: current.sections.find((s) => s.title === section.title)?.notes ?? [],
+    })),
+  };
 }

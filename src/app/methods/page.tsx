@@ -6,6 +6,22 @@ import { Markdown } from '@/components/Markdown';
 import { Comments } from '@/components/Comments';
 import { RichText } from '@/components/RichText';
 import { getSiteText } from '@/lib/site-text';
+import { dbConfigured } from '@/lib/db';
+import { extractToc, type TocEntry } from '@/lib/toc';
+import { TableOfContents } from '@/components/TableOfContents';
+
+/**
+ * The guide's changelog is long and only some readers want it, so it is split off and
+ * shown folded. Everything from its "## Changelog" heading onward goes in the fold.
+ */
+function splitChangelog(body: string): { main: string; changelog: string | null } {
+  const match = /^## Changelog[ \t]*$/m.exec(body);
+  if (!match) return { main: body, changelog: null };
+  return {
+    main: body.slice(0, match.index).trimEnd(),
+    changelog: body.slice(match.index + match[0].length).trim(),
+  };
+}
 
 export function generateMetadata(): Metadata {
   return { title: 'Methods', description: getSiteText()['methods.description'] };
@@ -17,6 +33,18 @@ export default function MethodsPage() {
   const prompt = getDoc('prompt');
   if (!methods || !guide) notFound();
   const text = getSiteText();
+  const methodsBody = renderTemplate(methods.body, site.url);
+  const { main: guideBody, changelog } = splitChangelog(guide.body);
+  const hasComments = dbConfigured();
+
+  // The same contents list as a review page, built from everything on this page in order.
+  const toc: TocEntry[] = [
+    ...extractToc(methodsBody),
+    ...(prompt ? [{ id: 'prompt', text: text['methods.promptSummary'] }] : []),
+    ...extractToc(guideBody),
+    ...(changelog ? [{ id: 'changelog', text: 'Changelog' }] : []),
+    ...(hasComments ? [{ id: 'comments', text: 'Comments' }] : []),
+  ];
 
   return (
     <article>
@@ -26,13 +54,22 @@ export default function MethodsPage() {
           {[guide.version && `Version ${guide.version}`, guide.updated && `Updated ${guide.updated}`]
             .filter(Boolean)
             .join(' · ')}
+          {hasComments && (
+            <>
+              {' · '}
+              <a href="#comments">Go to comments</a>
+            </>
+          )}
         </p>
       </header>
 
-      <Markdown>{renderTemplate(methods.body, site.url)}</Markdown>
+      <div className="review-body">
+        <TableOfContents entries={toc} />
+        <div className="toc-main">
+      <Markdown>{methodsBody}</Markdown>
 
       {prompt && (
-        <details className="prompt-details">
+        <details className="prompt-details" id="prompt">
           <summary>{text['methods.promptSummary']}</summary>
           <pre className="prompt-block">
             <code>{renderTemplate(prompt.body, site.url)}</code>
@@ -46,8 +83,16 @@ export default function MethodsPage() {
 
       <section className="guide-section" id="guide">
         <h2 className="guide-title">{guide.title}</h2>
-        <Markdown>{guide.body}</Markdown>
+        <Markdown>{guideBody}</Markdown>
+        {changelog && (
+          <details className="prompt-details changelog-details" id="changelog">
+            <summary>Changelog</summary>
+            <Markdown>{changelog}</Markdown>
+          </details>
+        )}
       </section>
+        </div>
+      </div>
 
       <Comments type="guide" slug="guide" intro={<RichText text={text['comments.intro']} inline />} />
     </article>

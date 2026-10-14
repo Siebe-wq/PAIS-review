@@ -14,9 +14,29 @@ import type { TocEntry } from '@/lib/toc';
  * anything. That avoids a JS media query, which would need the viewport width during
  * render and mismatch between server and client.
  */
+/** A section inside a folded <details> cannot be scrolled to until it is unfolded. */
+function unfold(id: string) {
+  const target = document.getElementById(id);
+  const fold = target?.closest('details');
+  if (fold && !fold.open) fold.open = true;
+}
+
 export function TableOfContents({ entries }: { entries: TocEntry[] }) {
   const [active, setActive] = useState<string | null>(entries[0]?.id ?? null);
   const [open, setOpen] = useState(false);
+
+  // Arriving at, or following a link to, a folded section opens it.
+  useEffect(() => {
+    const fromHash = () => {
+      const id = decodeURIComponent(window.location.hash.slice(1));
+      if (!id) return;
+      unfold(id);
+      document.getElementById(id)?.scrollIntoView();
+    };
+    if (window.location.hash) fromHash();
+    window.addEventListener('hashchange', fromHash);
+    return () => window.removeEventListener('hashchange', fromHash);
+  }, []);
 
   useEffect(() => {
     const ids = entries.map((entry) => entry.id);
@@ -77,7 +97,10 @@ export function TableOfContents({ entries }: { entries: TocEntry[] }) {
             <a
               href={`#${entry.id}`}
               aria-current={active === entry.id ? 'true' : undefined}
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                unfold(entry.id);
+                setOpen(false);
+              }}
             >
               {entry.text}
             </a>
