@@ -16,25 +16,17 @@ and versioned. Every review records which version it was written under.
 ## About the score
 
 Each review carries a grade out of 10. It is a considered judgement about how much the
-paper's evidence can carry its claims, not a measurement. Small differences between
-scores are not meaningful — a 6.5 and a 7 are the same verdict in practice. Anything
-below 5 means the paper does not support its main claim.
+paper's evidence can carry its claims, not a measurement. Anything below 5 means the paper does not support its main claim.
 
-A low score is not an accusation of bad faith. Most papers that score badly here are
-ordinary work with design limits that its authors may well acknowledge; the problem is
-usually how the result then gets used.
+A low score is not an accusation of bad faith. Most papers that score badly here are ordinary work with design limits that its authors may well acknowledge; the problem is usually how the result then gets used.
 
 ## What this is not
 
-These are not journal peer reviews, and no journal has commissioned them. They are not
-a consensus position, and they are not medical advice. They are one careful reading,
-published openly so it can be argued with. Claude can be confidently wrong, and so can
-the guide.
+These are not journal peer reviews, and no journal has commissioned them. They are not a consensus position, and they are not medical advice. They are one careful reading, published openly so it can be argued with. Claude can be confidently wrong, and so can the guide.
 
 ## If you disagree
 
 Every review has a comment section, and so does the guide. If a review misreads a paper,
 misses something in a supplement, or is unfair, say so there — that is where it gets
 argued out first, in the open, where the people who wrote the paper and the people who
-read it can both see it. Reviews may get corrected; when they do, the edit history is
-public in the site's repository.
+read it can both see it. Reviews may get corrected; when they do, the edit history is public in the site's repository.
