@@ -70,9 +70,8 @@ You are a FORMATTER, not a reviewer. The judgements in the text you are given ar
 
 ## Body structure
 
-Use these headings where the source has material for them, in this order, skipping any it does not cover. Do not invent a section to fill a gap.
+Use these headings where the source has material for them, in this order, skipping any it does not cover. Do not invent a section to fill a gap. The executive summary goes LAST: it is written after the analysis and the page shows it first.
 
-## Executive summary
 ## Study design
 ## Sample selection
 ## Outcome measures
@@ -85,6 +84,9 @@ Use these headings where the source has material for them, in this order, skippi
 ## Context beyond the paper
 ## Recommendations
 ## Final assessment
+## Executive summary
+
+If the source states an explicit overall grade, the executive summary's last line repeats it exactly, as "Grade: 6.5 / 10." for a paper or "Signal: promising." for preliminary findings, and score or signal carries the same value. If the source states no explicit grade, write no grade line — never invent one.
 
 Tables, lists and quotations from the source should be preserved. If the source has a section that fits none of these, keep it under its own heading near the most closely related one.
 

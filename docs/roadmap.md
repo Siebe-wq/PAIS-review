@@ -21,7 +21,14 @@ Both exist now. What they still lack, and what it would take:
 - **Notifications.** Nobody is told when someone replies to them. Needs an email on the
   comment, which is a small privacy decision.
 
-### Grade last, shown first
+### Grade last, shown first — built 2026-10-16 (methods 0.7)
+
+Built as described below, with two differences. The judgement fields in the frontmatter
+(score, verdict, strengths, weaknesses) are also written last, after the summary: the
+`/review` skill writes the analysis to the file first and adds the frontmatter at the end, and
+the claude.ai instructions have the first draft in the chat come without frontmatter. And the
+"worst domain sets the ceiling" rule mentioned at the end is gone: the grade is now holistic.
+The parser is `src/lib/hoist.ts`, with tests in `tests/hoist.test.mjs` (`npm test`).
 
 **The problem.** A review file starts with its frontmatter — the block of `key: value`
 lines between two `---` markers at the top — and that block holds `score`, `verdict`,
@@ -89,9 +96,11 @@ one? Recommend fail.
 
 **What it does not fix.** The model can still form a view early and write toward it in its
 hidden reasoning. This removes the anchor that is actually in the text and in the context
-for the rest of the generation, which is the part that is measurable. The "worst domain
-sets the ceiling" rule stays the guard against an analysis that finds a fatal flaw and then
-awards 6.5 anyway.
+for the rest of the generation, which is the part that is measurable. (When this was
+written, the "worst domain sets the ceiling" rule was the guard against an analysis that
+finds a fatal flaw and then awards 6.5 anyway. Methods 0.7 replaced it with a holistic grade,
+explained both ways in the final assessment; the blind fact check and the editor are the
+remaining guards.)
 
 **Effort.** About three hours here, mostly the parser and its tests. Your time is one
 decision and a read of the reworded instructions.

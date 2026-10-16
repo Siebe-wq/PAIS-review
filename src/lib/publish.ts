@@ -11,6 +11,7 @@ import {
   type ReviewKind,
   type Signal,
 } from './types';
+import { reconcileGrade } from './hoist';
 
 const SLUG_MAX = 80;
 
@@ -151,6 +152,18 @@ export function buildReviewFile(
     throw new Error('"preprint: true" only applies to kind: paper. A preprint is graded as a paper, with a score.');
   }
 
+  // The grade is written last, as the closing line of the executive summary, and read
+  // from there into the frontmatter. If the frontmatter also states one, they must agree.
+  const stated = reconcileGrade(parsed.content, data, SIGNALS);
+  if (stated && 'score' in stated && kind !== 'paper') {
+    throw new Error(`The executive summary ends with a grade, but a ${kind} review takes no score.`);
+  }
+  if (stated && 'signal' in stated && kind !== 'preliminary') {
+    throw new Error(`The executive summary ends with a signal, but only preliminary findings take one.`);
+  }
+  if (stated && 'score' in stated && data.score == null) data.score = stated.score;
+  if (stated && 'signal' in stated && data.signal == null) data.signal = stated.signal;
+
   // The verdict field depends on the kind, so that a literature review is never
   // forced into a number that would not mean anything.
   let score: number | undefined;
@@ -162,7 +175,7 @@ export function buildReviewFile(
     if (!Number.isFinite(parsedScore) || parsedScore < 0 || parsedScore > 10) {
       throw new Error(
         data.score == null
-          ? 'Frontmatter is missing "score". A paper review is graded 0–10.'
+          ? 'No grade found. End the executive summary with "Grade: 6.5 / 10." (or set score in the frontmatter).'
           : `"score" must be a number from 0 to 10, got ${String(data.score)}.`,
       );
     }

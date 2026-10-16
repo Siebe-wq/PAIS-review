@@ -1,11 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
+import { reconcileGrade } from './hoist';
 import { HUMAN_INPUT_LEVELS, REVIEW_KINDS, SIGNALS, isHumanInput, type ContextNote, type Review, type ReviewFrontmatter, type ReviewKind, type Signal } from './types';
 
 const REVIEWS_DIR = path.join(process.cwd(), 'content', 'reviews');
 
-function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter {
+function coerce(data: Record<string, unknown>, slug: string, body: string): ReviewFrontmatter {
   const title = typeof data.title === 'string' ? data.title.trim() : '';
   if (!title) throw new Error(`${slug}: frontmatter is missing "title"`);
 
@@ -14,6 +15,23 @@ function coerce(data: Record<string, unknown>, slug: string): ReviewFrontmatter 
     throw new Error(`${slug}: "kind" must be one of ${REVIEW_KINDS.join(', ')}, got ${rawKind}`);
   }
   const kind = rawKind as ReviewKind;
+
+  // A grade stated at the end of a closing executive summary must match the frontmatter,
+  // and stands in for it when the frontmatter has none.
+  let stated;
+  try {
+    stated = reconcileGrade(body, data, SIGNALS);
+  } catch (error) {
+    throw new Error(`${slug}: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  if (stated && 'score' in stated && kind !== 'paper') {
+    throw new Error(`${slug}: the executive summary ends with a grade, but a ${kind} review takes no score`);
+  }
+  if (stated && 'signal' in stated && kind !== 'preliminary') {
+    throw new Error(`${slug}: the executive summary ends with a signal, but only preliminary findings take one`);
+  }
+  if (stated && 'score' in stated && data.score == null) data = { ...data, score: stated.score };
+  if (stated && 'signal' in stated && data.signal == null) data = { ...data, signal: stated.signal };
 
   let score: number | undefined;
   if (kind === 'paper') {
@@ -118,7 +136,7 @@ export function getAllReviews(options: { includeDrafts?: boolean } = {}): Review
       const slug = file.replace(/\.md$/, '');
       const raw = fs.readFileSync(path.join(REVIEWS_DIR, file), 'utf8');
       const { data, content } = matter(raw);
-      return { ...coerce(data, slug), slug, body: content.trim() };
+      return { ...coerce(data, slug, content), slug, body: content.trim() };
     })
     .filter((review) => options.includeDrafts || !review.draft)
     .sort((a, b) => b.reviewedOn.localeCompare(a.reviewedOn) || a.title.localeCompare(b.title));

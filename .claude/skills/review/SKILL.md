@@ -24,6 +24,27 @@ A short review of a sound paper is a correct outcome.
 4. Where it matters, verify claims against primary sources: trial registry entries for
    pre-registration and outcome switching, the supplement for methods the main text skips,
    cited papers where a claim leans on them. Note what you could not check.
+5. Save the text of every source you rely on — the paper, the supplement, the protocol, cited
+   papers — as plain-text files in your scratchpad, one per source. The fact check after
+   writing reads these, not your memory of them.
+
+## Order of writing
+
+**The judgement is written last.** Your output conditions what you write next: a grade, a
+verdict or a list of weaknesses written before the analysis turns the analysis into
+justification for them. So:
+
+1. **Write the analysis first**, to `content/reviews/<slug>.md`, with no frontmatter: every
+   body section from `## Study design` to `## Final assessment`. Do not decide on a number or
+   a verdict while reading or before this is written, not even provisionally.
+2. **Then write the executive summary**, as the last section of the body. It summarises the
+   analysis you have written, and its last line states the grade: `Grade: 6.5 / 10.` for a
+   paper, `Signal: promising.` for preliminary findings, nothing for literature. The page
+   shows this section at the top; the file keeps it last, as a record of the order.
+3. **Add the frontmatter last**, at the top of the file: the bibliographic fields, then the
+   judgement fields (score, verdict, confidence, importance, strengths, weaknesses), taken
+   from what the body already says. The score must match the summary's grade line; the build
+   fails if they differ.
 
 ## Kind
 
@@ -81,15 +102,17 @@ its own claims, not about how interesting the topic is or how much you like the 
 - **0–2.9** — Fatally flawed. The data contradict the claim, or the method cannot produce the
   stated result at all.
 
-Two rules:
+**Grade holistically.** Weigh the paper as a whole: how far its evidence carries its main
+claim. Do not score domains and average them, and do not apply a mechanical ceiling. A single
+serious flaw can outweigh many strengths, and often will — a missing control group for a
+subjective outcome is hard to make up for with sample size — but that is a judgement to make
+and explain, not a rule to apply.
 
-- **Worst domain sets the ceiling.** Do not average sub-scores. A missing control group is fatal
-  no matter how good the sample size and follow-up are. The guide is built around fatal flaws.
-- **Separate trustworthiness from importance.** A small careful study is not a bad study. Put
-  "how much would this matter if true" in `importance`, never in the score.
+**Separate trustworthiness from importance.** A small careful study is not a bad study. Put
+"how much would this matter if true" in `importance`, never in the score.
 
-In the final section, state explicitly what prevents a higher score and what prevents a lower
-one. That is what makes the grade auditable.
+In the final assessment, state explicitly what prevents a higher score and what prevents a
+lower one. That is what makes the grade auditable.
 
 Set `confidence` honestly. If the paper does not describe how PEM was assessed, or the
 supplement is unavailable, or the statistics cannot be checked from what is reported, say
@@ -97,8 +120,10 @@ supplement is unavailable, or the statistics cannot be checked from what is repo
 
 ## Output
 
-Write the file with this frontmatter. Omit fields you genuinely do not have rather than
-guessing — never invent a DOI, a journal or an author list.
+The finished file has this frontmatter, added last (see **Order of writing**). Omit fields you
+genuinely do not have rather than guessing — never invent a DOI, a journal or an author list.
+
+Bibliographic fields — no judgement in them:
 
 ```yaml
 ---
@@ -113,7 +138,16 @@ studyType: "RCT, n=240, 12 weeks"
 kind: paper                   # paper | literature | preliminary
 preprint: true                # papers only, if it is a preprint; otherwise leave out
 humanInput: none              # set from the user's answer, never by you
-score: 6.5                    # papers only
+reviewedOn: <today, YYYY-MM-DD>
+guideVersion: "<version from content/guide.md frontmatter>"
+model: "claude-opus-5"   # the model actually writing this, not a generic "Claude"
+```
+
+Judgement fields — **fill in last**, from the body you have already written, after the
+executive summary:
+
+```yaml
+score: 6.5                    # papers only; must match the summary's "Grade:" line
 verdict: "<one sentence; the single most useful thing a reader can take away>"
 confidence: "high"            # high | moderate | low
 importance: "moderate"        # high | moderate | low
@@ -121,16 +155,15 @@ strengths:
   - "<short clause, not a sentence>"
 weaknesses:
   - "<short clause, not a sentence>"
-context:                      # optional, see below
+context:                      # optional, see above
   - note: "<a fact outside the paper that bears on reading it>"
     source: "<url>"
-guideNotes:                   # optional, see below
+guideNotes:                   # optional, see above
   - "<a point the guide does not cover>"
-reviewedOn: <today, YYYY-MM-DD>
-guideVersion: "<version from content/guide.md frontmatter>"
-model: "claude-opus-5"   # the model actually writing this, not a generic "Claude"
 ---
 ```
+
+Both blocks go in the one frontmatter at the top of the file, bibliographic fields first.
 
 `verdict` appears on the index page under the title, so it must stand alone. "No control group,
 no blinding and only subjective outcomes, so the reported improvement cannot be separated from
@@ -147,7 +180,6 @@ cannot tell which model you are, leave the field out rather than guessing.
 The body starts at `##`, because the page supplies the H1. Cover the guide's domains that apply
 to this paper, in roughly this order, skipping any that do not apply:
 
-- Executive summary
 - Study design
 - Sample selection — case definition, PEM ascertainment, controls, severity, comorbidity status
 - Outcome measures — and specifically where each sits on the objective/performance-bias scale
@@ -158,7 +190,8 @@ to this paper, in roughly this order, skipping any that do not apply:
 - What the study actually demonstrates, and what it does not
 - Critical missing elements
 - Recommendations, split by audience where useful
-- Final assessment, with the grade and the reasoning both ways
+- Final assessment, with the reasoning both ways
+- Executive summary — written last, ending with the grade line; shown first on the page
 
 Quote the paper's own claims when assessing spin, so a reader can check the comparison.
 
@@ -173,6 +206,8 @@ real researchers, so criticise the evidence and the framing, never the people.
 - No abbreviations in the frontmatter, except in the title or ones as obvious as ME/CFS.
 - The frontmatter and the executive summary are what most readers see. Be careful with
   introducing technical language there; explain a needed term in plain words.
+- First use means first in the file, which is the analysis, not the summary. The summary is
+  read first on the page, so write terms out in it again, in plain words.
 - Check it: `npm run check:abbreviations -- content/reviews/<file>.md` lists anything not
   written out at first use and any abbreviation in the frontmatter. It is a heuristic; fix
   what it finds, or say what a name is where it is a name.
@@ -184,8 +219,19 @@ hyphenated. For example `2024-lidocaine-hpbcd-post-covid.md`.
 
 ## After writing
 
-1. Run `npm run build` to confirm the frontmatter parses and the site still builds.
-2. Show the user the verdict, score, strengths and weaknesses before committing.
-3. Ask the user how much they changed the review — none, minor, moderate or major — and set
+1. **Blind fact check.** Spawn one fresh agent with the Agent tool. Give it only the path to
+   the review file and the paths to the source files you saved, and tell it: check every
+   factual claim in the review — numbers, quotes, who said or did what, what a source does or
+   does not report — against those files; do not judge the grade, the framing or the
+   argument; do not use the web or its own memory of the paper; report each claim that is
+   wrong, unsupported by the files, or internally inconsistent with another part of the
+   review, quoting the review and the source. Do not give it your conversation, your
+   reasoning or your view of the paper. Fix what it finds that is right. If a fix changes the
+   analysis enough to change the grade, change the summary and the frontmatter together.
+   Tell the user what it found and what you changed.
+2. Run `npm run build` to confirm the frontmatter parses, the grade line matches the score,
+   and the site still builds.
+3. Show the user the verdict, score, strengths and weaknesses before committing.
+4. Ask the user how much they changed the review — none, minor, moderate or major — and set
    `humanInput` to their answer. Never choose it yourself: only they know.
-4. Commit and push only when they say so.
+5. Commit and push only when they say so.

@@ -1,7 +1,7 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.6.2"
-updated: 2026-10-14
+version: "0.7"
+updated: 2026-10-16
 authors: Siebe Rozendal (main), Claude
 
 ---
@@ -212,6 +212,13 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
+- **0.7** (2026-10-16) — Instructions: the judgement is written last. The analysis comes
+  first, then the executive summary, which ends with the grade; the frontmatter's judgement
+  fields are filled in from those. The page still shows the summary first. The grade is now
+  holistic: the rule that the worst domain sets a ceiling is replaced by weighing the paper as
+  a whole and explaining the weighting. Reviews written in Claude Code get a blind fact check
+  by a separate agent before publishing. A middle-number change because it changes how a
+  grade is arrived at.
 - **0.6.2** (2026-10-14) — Obvious abbreviations should be allowed
 - **0.6.1** (2026-10-14) — Instructions: write abbreviations out in full at first use; none
   in the frontmatter except the title or ones as obvious as ME/CFS; be careful introducing

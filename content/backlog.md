@@ -7,9 +7,10 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 
 ## Weaknesses
 
-- [ ] No automated tests in the repository. Every check so far was run by hand in a session, so nothing stops a change from quietly breaking publishing.
+- [ ] Almost no automated tests. Only the grade parser has any (`npm test`); nothing else stops a change from quietly breaking publishing.
+- [ ] The blind fact check only runs for reviews written with the `/review` skill in Claude Code. Reviews from the claude.ai project get none.
 - [ ] Saving the About, Methods, instructions or prompt page from a tab opened before another save overwrites that save. Only the guide, site text and backlog check for this.
-- [x] Reviews write the grade before the analysis, so the analysis can become justification for an early number. Fix written up in the roadmap: grade last, shown first. (done 2026-10-14)
+- [x] Reviews write the grade before the analysis, so the analysis can become justification for an early number. Fixed by grade last, shown first, in methods 0.7. It was first ticked on 2026-10-14 when only the roadmap write-up existed, and the PACE review was written under the old order as a result. (done 2026-10-16)
 - [ ] Search covers the title, verdict, strengths and weaknesses, not the text of the review.
 - [ ] Ratings are one per browser, so clearing cookies allows another vote.
 - [ ] Spam defences stop bots and repeats, not a determined person.
@@ -21,7 +22,7 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 
 ## Missing features
 
-- [x] Grade last, shown first: the summary written after the analysis, ending in the grade, and shown at the top. (done 2026-10-14)
+- [x] Grade last, shown first: the summary written after the analysis, ending in the grade, and shown at the top. (done 2026-10-16)
 - [ ] Bulk import of the reviews in the claude.ai project. Needs a data export or a connected browser, then one session.
 - [ ] Citations on the About page for how well models review. A session with web search can find and verify them.
 - [ ] Request a review, with a queue in admin.

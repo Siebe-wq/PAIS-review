@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getAllReviews, getReview, paperLink } from '@/lib/reviews';
 import { HUMAN_INPUT_LABELS, KIND_LABELS } from '@/lib/types';
 import { extractToc } from '@/lib/toc';
+import { displayOrder } from '@/lib/hoist';
 import { TableOfContents } from '@/components/TableOfContents';
 import { Authors } from '@/components/Authors';
 import { DiscussWithAI } from '@/components/DiscussWithAI';
@@ -37,7 +38,9 @@ export default async function ReviewPage({ params }: Params) {
 
   const text = getSiteText();
   const link = paperLink(review);
-  const toc = extractToc(review.body);
+  // The executive summary is written last and shown first.
+  const body = displayOrder(review.body);
+  const toc = extractToc(body);
   const reviewedOn = new Date(`${review.reviewedOn}T00:00:00Z`).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'long',
@@ -167,7 +170,7 @@ export default async function ReviewPage({ params }: Params) {
 
       <div className="review-body">
         <TableOfContents entries={toc} />
-        <Markdown>{review.body}</Markdown>
+        <Markdown>{body}</Markdown>
       </div>
 
       {review.context && review.context.length > 0 && (

@@ -30,6 +30,13 @@ written under.
 Expect me to ask questions about your first draft. Answer them in conversation. Do not rewrite
 the review after every exchange.
 
+**Write the judgement last.** What you write conditions what you write next: a grade, a verdict
+or a list of weaknesses written before the analysis turns the analysis into justification for
+them. So the first draft is the analysis, section by section, then the executive summary,
+which ends with the grade. No frontmatter, no score and no verdict before that. Do not settle
+on a number while reading, not even provisionally. The frontmatter comes only when I ask for
+the file, and its judgement fields are taken from what the draft already says.
+
 ## When I ask for the file
 
 When I say "write the review file", or anything equivalent, output one markdown file in a code
@@ -48,6 +55,10 @@ you say what research, and why it would settle something.
 
 ## The file
 
+The frontmatter sits at the top of the file, but its judgement fields — score, verdict,
+confidence, importance, strengths, weaknesses — are filled in from the analysis and the
+executive summary already written, never the other way round.
+
 ```yaml
 ---
 title: "<paper title, or the review's own title if it is not about one paper>"
@@ -59,7 +70,7 @@ conditions: ["ME/CFS"]
 studyType: "RCT, n=240, 12 weeks"
 kind: paper
 preprint: true            # only if the paper is a preprint; leave out otherwise
-score: 6.5
+score: 6.5                # must match the executive summary's "Grade:" line
 verdict: "<one sentence; stands alone on an index page>"
 confidence: "high"
 importance: "moderate"
@@ -112,9 +123,12 @@ the topic is, and not whether you agree with the conclusion.
   the mean or natural history.
 - **0–2.9** — The data contradict the claim, or the method cannot produce the stated result.
 
-Two rules. **Worst domain sets the ceiling** — do not average sub-scores; a missing control
-group is fatal however good the sample size is. And **keep importance out of the score** — a
-small careful study is not a bad study; put "would this matter if true" in `importance`.
+**Grade holistically.** Weigh the paper as a whole: how far its evidence carries its main
+claim. Do not score domains and average them, and do not apply a mechanical ceiling. A single
+serious flaw can outweigh many strengths, and often will — a missing control group for a
+subjective outcome is hard to make up for with sample size — but that is a judgement to make
+and explain, not a rule to apply. And **keep importance out of the score** — a small careful
+study is not a bad study; put "would this matter if true" in `importance`.
 
 In the final section, state what prevents a higher score and what prevents a lower one.
 
@@ -150,7 +164,6 @@ Starts at `##` — the page supplies the H1. Use these headings where there is m
 in this order, skipping any that do not apply. Do not invent a section to fill a gap.
 
 ```
-## Executive summary
 ## Study design
 ## Sample selection
 ## Outcome measures
@@ -163,7 +176,13 @@ in this order, skipping any that do not apply. Do not invent a section to fill a
 ## Context beyond the paper
 ## Recommendations
 ## Final assessment
+## Executive summary
 ```
+
+The executive summary is written last and its last line states the grade: `Grade: 6.5 / 10.`
+for a paper, `Signal: promising.` for preliminary findings, nothing for literature. The page
+shows it at the top; the file keeps it last. The site rejects a file whose grade line and
+`score` disagree.
 
 Quote the paper's own claims when assessing spin, so a reader can check the comparison.
 
