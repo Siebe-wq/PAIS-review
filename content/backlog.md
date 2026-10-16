@@ -24,10 +24,17 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 
 - [ ] [high] Bulk import of the reviews in the claude.ai project. Needs a data export or a connected browser, then one session.
 - [ ] [medium] Citations on the About page for how well models review. A session with web search can find and verify them.
-- [ ] [medium] Email updates or Bluesky posts when a review is published.
-- [ ] [low] Request a review, with a queue in admin.
+- [ ] [medium] Bluesky posts when a review is published.
+- [ ] [medium] Weekly email digest that readers sign up for, with filters (condition, tag, type of review, score band). Needs the site to send email.
+- [ ] [medium] Request a review: paste a DOI or link; the site checks whether a review already exists and whether the full text is openly available, and asks for a PDF if not. Requests go in a public queue others can upvote; needs an account; the requester is emailed when the review is up. See the roadmap.
+- [ ] [medium] Accounts by email with one-time codes: required to comment, vote and request reviews. Needs a domain of our own and an email-sending service first.
+- [ ] [medium] Tags on reviews (treatment trial, diagnostic test, genetics…), from one controlled list, with filters on the index and a page per tag.
 - [ ] [low] A "report an error" link on each review.
 - [ ] [low] Full-text search across review bodies.
+- [ ] [low] Verified scientists: a badge for accounts that confirm a professional (university or research institute) email address, with ORCID and manual approval as other routes.
+- [ ] [low] User karma: upvotes received on comments, shown next to the name. Agree/disagree votes do not count towards it.
+- [ ] [low] A heart reaction on comments, alongside the upvote and the agree/disagree votes.
+- [ ] [low] Post new reviews to X.
 - [x] Grade last, shown first: the summary written after the analysis, ending in the grade, and shown at the top. (done 2026-10-14)
 
 ## Bugs
@@ -39,4 +46,3 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 - [ ] [medium] A weekly scheduled Claude session that checks the site (build, mobile layout, abbreviations, broken links, new comments reporting problems) and adds what it finds here.
 - [ ] [low] Extract structured claims from each review, so the whole collection can be asked "what does the evidence say about X?".
 - [ ] [low] Re-generate a review with its comment thread as extra input, and show what changed.
-- [ ] [low] ORCID sign-in for researchers, so votes and ratings can be weighted by expertise.
