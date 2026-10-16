@@ -1,6 +1,6 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.7"
+version: "0.8"
 updated: 2026-10-16
 authors: Siebe Rozendal (main), Claude
 
@@ -8,38 +8,40 @@ authors: Siebe Rozendal (main), Claude
 
 ## Sample selection
 
-### ME/CFS
+### Myalgic encephalomyelitis/chronic fatigue syndrome (ME/CFS)
 
 Inclusion criteria:
 
-- Must include PEM, ideally operationalised with a validated questionnaire (DSQ-2 is best).
-- ICC, CCC, IOM strongly preferred. The paper must state how this was operationalised or ascertained.
-- Fukuda/CDC'94 is unacceptable, because it does not have PEM as necessary. It can inflate
-  the sample by 1.7x (Nacul, 2011), or much more if operationalised with low thresholds for
-  severity and frequency.
+- Is post-exertional malaise (PEM), necessary for inclusion? Ideally operationalised with a validated questionnaire (the DePaul Symptom Questionnaire, DSQ-2, is currently best).
+- Estimate f: the share of cases that truly have ME/CFS. An upper bound is true prevalence (about 0.2–0.9%) divided by the prevalence the case definition produces. Self-reported Fukuda: f = 0.3 or less (Johnston 2013). GP diagnosis alone: f = about 0.5–0.6 (Newton 2010).
+- Exclusion criteria raise that share, but only if they were applied through a clinical work-up (blood tests, sleep assessment, psychiatric interview), not just listed. Excluding comorbidities, such as depression, fibromyalgia or POTS, removes true cases.
+- Dilution: if misclassified cases look like controls, the effect shrinks to about f times the true effect. The needed sample size grows by 1/f². At f = 0.3, that is about 11 times as many people.
+- Wrongly included cases can also produce false ones, because they often have depression, sleep disorders or deconditioning. Controls who may have ME/CFS weaken effects the same way.
+- If a study uses several case definitions, a signal specific to ME/CFS should get stronger as the criteria get stricter.
 
 ### Long Covid
 
 - At least 3 months, ideally more than 6 months.
 - Clarify hospitalisation status. Non-hospitalised cohorts are the most interesting.
-- Must say how COVID infection was confirmed: PCR > RAT > exposure to a confirmed case plus
+- Must say how COVID infection was confirmed: polymerase chain reaction (PCR) test > rapid antigen test (RAT) > exposure to a confirmed case plus
   symptoms > physician diagnosis > self-report.
 
 ### All studies
 
-All studies must note status on ME/CFS, POTS/OI and MCAS.
+All studies must note status on ME/CFS, postural orthostatic tachycardia syndrome or orthostatic
+intolerance (POTS/OI) and mast cell activation syndrome (MCAS).
 
 Also note:
 
 - Symptom severity.
 - Duration of illness, which may affect recovery rates and even biomarkers.
 - Whether the study population is severe enough and representative of the patient population.
-- Ideally severity is quantified with a scale such as FUNCAP or Bell. Not all of these scales
+- Ideally severity is quantified with a scale such as FUNCAP (a functional capacity questionnaire) or the Bell scale. Not all of these scales
   are equally good.
 
 Mental health screening: the questionnaire should be appropriate for a disabled population. A
 questionnaire that uses "sometimes I can't get out of bed" or "I don't have much hope for the
-future" to diagnose depression is not appropriate. PHQ-2 is supposedly good.
+future" to diagnose depression is not appropriate. The two-item Patient Health Questionnaire (PHQ-2) is supposedly good.
 
 Controls: sedentary or inactive is good, ideally even deconditioned. It is often helpful to
 also have controls with a different disease, to decide whether findings are disease-specific.
@@ -66,7 +68,8 @@ Lower but still some risk of effort or subjective effects:
 - Sleep data
 - Daily time upright
 - Arm movement
-- Probably some exercise metrics, such as the difference in VO2max on a 2-day CPET
+- Probably some exercise metrics, such as the difference in maximal oxygen uptake (VO2max) on a 2-day cardiopulmonary exercise test
+  (CPET)
 
 Actually objective:
 
@@ -78,7 +81,7 @@ Actually objective:
   clearly out of the participant's control
 
 Objective does not mean free from bias. A lean test does not take into account the exertion of
-getting to the testing site, so the delta HR is often lower because the resting HR is already
+getting to the testing site, so the change in heart rate (delta HR) is often lower because the resting HR is already
 somewhat elevated. Blood levels vary across the day. Images need to be interpreted.
 
 The reverse also holds: subjective, patient-reported outcomes are not automatically
@@ -105,10 +108,10 @@ For cerebral blood flow: was velocity measured, or volume?
 ### Noise in the primary outcome
 
 - Test-retest data in this population? Prefer standard error of
-  measurement or smallest detectable change over ICC alone.
-- Does the power calculation use a realistic SD of change?
+  measurement or smallest detectable change over the intraclass correlation coefficient alone.
+- Does the power calculation use a realistic standard deviation of change?
 - Responder thresholds above the smallest detectable change.
-- Baseline-adjusted (ANCOVA) rather than change scores?
+- Baseline-adjusted (analysis of covariance, ANCOVA) rather than change scores?
 
 ### Drug trials: target engagement
 
@@ -184,7 +187,7 @@ patients, did it produce the results the hypothesis predicts?
 ### In vitro and animal efficacy papers
 
 - Calculate whether the concentrations are clinically realistic. Can they be reached? Will
-  there be toxicity issues, and how close to CC50? Are the pharmacokinetics reasonable? You
+  there be toxicity issues, and how close to the 50% cytotoxic concentration (CC50)? Are the pharmacokinetics reasonable? You
   cannot continuously inhibit a function when the half-life is very short.
 - For animal models, note the mediocre predictive capacity of animal research.
 
@@ -212,13 +215,17 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
-- **0.7** (2026-10-16) — Instructions: the judgement is written last. The analysis comes
+- **0.8** (2026-10-16) — Instructions: the judgement is written last. The analysis comes
   first, then the executive summary, which ends with the grade; the frontmatter's judgement
   fields are filled in from those. The page still shows the summary first. The grade is now
   holistic: the rule that the worst domain sets a ceiling is replaced by weighing the paper as
   a whole and explaining the weighting. Reviews written in Claude Code get a blind fact check
   by a separate agent before publishing. A middle-number change because it changes how a
   grade is arrived at.
+- **0.7.1** (2026-10-14) — added a word that was missing "wrongly included [cases]"
+- **0.7** (2026-10-14) — More technical treatment of inclusion criteria
+- **0.6.3** (2026-10-14) — Wording: every abbreviation in the guide is now written out at
+  its first mention, so it reads for people new to the field. No criteria changed.
 - **0.6.2** (2026-10-14) — Obvious abbreviations should be allowed
 - **0.6.1** (2026-10-14) — Instructions: write abbreviations out in full at first use; none
   in the frontmatter except the title or ones as obvious as ME/CFS; be careful introducing
