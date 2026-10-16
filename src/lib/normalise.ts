@@ -168,6 +168,7 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
       ? original.guideNotes.map((note) => String(note).trim()).filter(Boolean)
       : undefined,
     model: carriedOver('model'),
+    effort: carriedOver('effort'),
     // How much the editor changed the text: theirs to say, at publishing. Kept if the
     // source already records it, never inferred.
     humanInput: carriedOver('humanInput'),

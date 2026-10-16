@@ -121,6 +121,7 @@ function coerce(data: Record<string, unknown>, slug: string, body: string): Revi
     reviewedOn,
     guideVersion: data.guideVersion != null ? String(data.guideVersion) : undefined,
     model: typeof data.model === 'string' ? data.model : undefined,
+    effort: typeof data.effort === 'string' && data.effort.trim() ? data.effort.trim().toLowerCase() : undefined,
     humanInput,
     draft: data.draft === true,
   };

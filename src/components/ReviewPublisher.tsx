@@ -183,6 +183,13 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
             </p>
           )}
 
+          {parsed.review.model && !parsed.review.effort && (
+            <p className="hint">
+              No <code>effort</code> in the frontmatter. If you know the effort level the model ran
+              at (e.g. <code>high</code>), add it — the page shows it next to the model.
+            </p>
+          )}
+
           {parsed.abbreviations && parsed.abbreviations.frontmatter.length > 0 && (
             <p className="hint warn">
               Abbreviations in the frontmatter, which readers see on the index:{' '}

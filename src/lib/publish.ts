@@ -236,6 +236,7 @@ export function buildReviewFile(
     reviewedOn,
     guideVersion: text(data.guideVersion) ?? fallbackGuideVersion,
     model: text(data.model),
+    effort: text(data.effort)?.toLowerCase(),
     humanInput: options.humanInput ?? humanInputOf(data.humanInput),
   };
 

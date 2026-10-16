@@ -96,6 +96,11 @@ export interface ReviewFrontmatter {
   reviewedOn: string;
   guideVersion?: string;
   model?: string;
+  /**
+   * The reasoning effort the model ran at (e.g. "high"), where the tool exposes one. The same
+   * model can review quite differently at different efforts, so it is part of who wrote it.
+   */
+  effort?: string;
   /** How much the editor changed the model's text. Absent on reviews published before it was recorded. */
   humanInput?: HumanInput;
   /** Set true while drafting; excluded from the site. */
@@ -164,4 +169,10 @@ export function verdictOf(review: Pick<ReviewFrontmatter, 'kind' | 'score' | 'si
   }
 
   return { headline: 'Review', label: 'Literature', tone: 'neutral', showDenominator: false };
+}
+
+/** "claude-opus-5-5 (high effort)", or the model alone when no effort was recorded. */
+export function modelLabel(review: { model?: string; effort?: string }, fallback: string): string {
+  if (!review.model) return fallback;
+  return review.effort ? `${review.model} (${review.effort} effort)` : review.model;
 }

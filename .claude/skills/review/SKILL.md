@@ -141,6 +141,7 @@ humanInput: none              # set from the user's answer, never by you
 reviewedOn: <today, YYYY-MM-DD>
 guideVersion: "<version from content/guide.md frontmatter>"
 model: "claude-opus-5"   # the model actually writing this, not a generic "Claude"
+effort: "high"           # the reasoning effort you ran at, if you can find it out
 ```
 
 Judgement fields — **fill in last**, from the body you have already written, after the
@@ -176,6 +177,13 @@ Two to four of each.
 the review page. Reviews will eventually be written by more than one model, and two reviews
 disagreeing is only interpretable if a reader can see what wrote each one. If you genuinely
 cannot tell which model you are, leave the field out rather than guessing.
+
+`effort` records the reasoning effort you ran at — `low`, `medium`, `high`, `xhigh` or `max`
+— because the same model reviews differently at different efforts. In a Claude Code cloud
+session, call the `get_session` tool (claude-code-remote) with no session ID and read
+`session_context.model` and `external_metadata.effort_level`; the effort can change during a
+session, so read it when you write the frontmatter. If you cannot find it, leave the field
+out rather than guessing. The page shows it as "claude-opus-5-5 (high effort)".
 
 The body starts at `##`, because the page supplies the H1. Cover the guide's domains that apply
 to this paper, in roughly this order, skipping any that do not apply:

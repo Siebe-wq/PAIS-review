@@ -86,11 +86,15 @@ guideNotes:
 reviewedOn: <today, YYYY-MM-DD>
 guideVersion: "{{GUIDE_VERSION}}"
 model: "<the exact model ID writing this, e.g. claude-opus-5>"
+effort: "<the reasoning effort you ran at, e.g. high — only if you know it>"
 ---
 ```
 
 Omit any field you do not have rather than guessing. Never invent a DOI, a journal, or an
 author list.
+
+Only add `effort` if you actually know the reasoning effort or thinking setting you are
+running at. If you cannot tell, leave it out; the editor can add it.
 
 Never add `humanInput`. It records how much the editor changed your text, which only the
 editor knows, and it is set when the review is published.

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllReviews, getReview, paperLink } from '@/lib/reviews';
-import { HUMAN_INPUT_LABELS, KIND_LABELS } from '@/lib/types';
+import { HUMAN_INPUT_LABELS, KIND_LABELS, modelLabel } from '@/lib/types';
 import { extractToc } from '@/lib/toc';
 import { displayOrder } from '@/lib/hoist';
 import { TableOfContents } from '@/components/TableOfContents';
@@ -112,7 +112,7 @@ export default async function ReviewPage({ params }: Params) {
           </div>
           <div>
             <dt>{text['label.writtenBy']}</dt>
-            <dd>{review.model ?? 'an unrecorded model'}</dd>
+            <dd>{modelLabel(review, 'an unrecorded model')}</dd>
           </div>
           {review.guideVersion && (
             <div>
@@ -222,7 +222,7 @@ export default async function ReviewPage({ params }: Params) {
 
       <aside className="provenance">
         <p>
-          Written by {review.model ?? 'an unrecorded Claude model'} against{' '}
+          Written by {modelLabel(review, 'an unrecorded Claude model')} against{' '}
           <Link href="/methods">the guide</Link>
           {review.guideVersion ? ` (v${review.guideVersion})` : ''}.{' '}
           <RichText text={text['review.provenance']} inline />
