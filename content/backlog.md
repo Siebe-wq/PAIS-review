@@ -27,7 +27,7 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 - [ ] [medium] Citations on the About page for how well models review. A session with web search can find and verify them.
 - [ ] [medium] Bluesky posts when a review is published.
 - [ ] [medium] Weekly email digest that readers sign up for, with filters (condition, tag, type of review, score band). Needs the site to send email.
-- [ ] [medium] Request a review: paste a DOI or link; the site checks whether a review already exists and whether the full text is openly available, and asks for a PDF if not. Requests go in a public queue others can upvote; needs an account; the requester is emailed when the review is up. See the roadmap.
+- [ ] [medium] Request a review: paste a DOI or link; the site checks whether a review already exists and whether the full text is openly available, and asks for a PDF if not. Requests go in a public queue others can upvote; needs an account; the requester is emailed when the review is up. Reviews written by a scheduled Claude Code session, rate-limited, saved as drafts for the editor. See the roadmap.
 - [ ] [medium] Accounts by email with one-time codes: required to comment, vote and request reviews. Needs a domain of our own and an email-sending service first.
 - [ ] [medium] Tags on reviews (treatment trial, diagnostic test, genetics…), from one controlled list, with filters on the index and a page per tag.
 - [ ] [low] A "report an error" link on each review.
