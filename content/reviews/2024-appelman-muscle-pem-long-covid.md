@@ -9,7 +9,6 @@ conditions: ["Long Covid"]
 studyType: "Case-control with before-and-after exercise biopsies, n=25 patients and 21 controls, 2 weeks"
 kind: paper
 humanInput: none
-draft: true
 reviewedOn: 2026-10-17
 guideVersion: "0.8.1"
 model: "claude-opus-5-5"
