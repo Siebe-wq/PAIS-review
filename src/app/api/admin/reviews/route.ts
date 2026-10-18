@@ -77,8 +77,17 @@ export async function POST(request: Request) {
       updated = setFrontmatterField(file.content, 'draft', true);
       message = `Withdraw review: ${slug}`;
     } else {
+      // Publishing, or putting back a withdrawn review. A review goes public only with its
+      // human-input level recorded: taken from the request if given, else from the file.
+      const current = (matter(file.content).data as Record<string, unknown>).humanInput;
+      const level = input.humanInput ?? (isHumanInput(current) ? current : undefined);
+      if (input.humanInput !== undefined && !isHumanInput(input.humanInput)) {
+        return fail(`Human input must be one of ${HUMAN_INPUT_LEVELS.join(', ')}.`, 400);
+      }
+      if (!level) return fail('Choose how much human input this review had before publishing it.', 400);
       updated = setFrontmatterField(file.content, 'draft', null);
-      message = `Restore review: ${slug}`;
+      if (level !== current) updated = setFrontmatterField(updated, 'humanInput', level);
+      message = `Publish review: ${slug}`;
     }
     const data = matter(updated).data as Record<string, unknown>;
 

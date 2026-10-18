@@ -127,6 +127,16 @@ function coerce(data: Record<string, unknown>, slug: string, body: string): Revi
   };
 }
 
+/**
+ * One review from its raw file text. Used where the deployed copy may be behind — the admin
+ * preview reads a draft straight from the repository, so it shows a minute before a rebuild.
+ * Throws with a named error on bad frontmatter, the same as the build.
+ */
+export function parseReview(raw: string, slug: string): Review {
+  const { data, content } = matter(raw);
+  return { ...coerce(data, slug, content), slug, body: content.trim() };
+}
+
 export function getAllReviews(options: { includeDrafts?: boolean } = {}): Review[] {
   if (!fs.existsSync(REVIEWS_DIR)) return [];
 
@@ -151,8 +161,8 @@ export function getReviewSource(slug: string): string | undefined {
   return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : undefined;
 }
 
-export function getReview(slug: string): Review | undefined {
-  return getAllReviews().find((review) => review.slug === slug);
+export function getReview(slug: string, options: { includeDrafts?: boolean } = {}): Review | undefined {
+  return getAllReviews(options).find((review) => review.slug === slug);
 }
 
 export function getAllConditions(reviews: Review[]): string[] {

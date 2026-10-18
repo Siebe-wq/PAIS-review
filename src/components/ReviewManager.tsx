@@ -85,21 +85,23 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
   return (
     <div>
       <p className="hint">
-        Withdrawing hides a review from the site and its raw URL straight away, and can be undone.
-        The commit history keeps the text; a takedown that needs it gone from the repository too
-        is a deliberate git step, not a button.
+        A draft is not on the site. Open it to read it exactly as it will look, then set the human
+        input and publish. Withdrawing turns a public review back into a draft straight away, and
+        can be undone. The commit history keeps the text; a takedown that needs it gone from the
+        repository too is a deliberate git step, not a button.
       </p>
 
       <ul className="manage-list">
         {rows.map((row) => (
           <li key={row.slug} className={row.draft ? 'withdrawn' : ''}>
             <div className="manage-main">
-              <a href={`/reviews/${row.slug}`}>{row.title}</a>
+              {/* A draft has no public page yet; its title opens the preview instead. */}
+              <a href={row.draft ? `/admin/preview/${row.slug}` : `/reviews/${row.slug}`}>{row.title}</a>
               <span className="manage-meta">
                 {row.reviewedOn} · {row.kind}
                 {row.preprint ? ' (preprint)' : ''}
                 {row.guideVersion ? ` · guide v${row.guideVersion}` : ' · no guide version'}
-                {row.draft ? ' · withdrawn' : ''}
+                {row.draft ? ' · draft, not public' : ''}
               </span>
               <label className="manage-input">
                 Human input{' '}
@@ -120,14 +122,22 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
                 </select>
               </label>
             </div>
-            <button
-              type="button"
-              className="secondary"
-              disabled={busy === row.slug}
-              onClick={() => act(row.slug, row.draft ? 'restore' : 'withdraw')}
-            >
-              {busy === row.slug ? '…' : row.draft ? 'Restore' : 'Withdraw'}
-            </button>
+            <div className="manage-actions">
+              {row.draft && (
+                <a className="secondary small" href={`/admin/preview/${row.slug}`}>
+                  Preview
+                </a>
+              )}
+              <button
+                type="button"
+                className={row.draft ? 'primary' : 'secondary'}
+                disabled={busy === row.slug || (row.draft && !row.humanInput)}
+                title={row.draft && !row.humanInput ? 'Set the human input first' : undefined}
+                onClick={() => act(row.slug, row.draft ? 'restore' : 'withdraw')}
+              >
+                {busy === row.slug ? '…' : row.draft ? 'Publish' : 'Withdraw'}
+              </button>
+            </div>
           </li>
         ))}
       </ul>

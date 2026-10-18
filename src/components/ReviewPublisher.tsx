@@ -19,6 +19,7 @@ interface Result {
   commitUrl?: string;
   error?: string;
   exists?: boolean;
+  draft?: boolean;
 }
 
 export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
@@ -105,13 +106,17 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (ready) send(false);
+  }
+
+  async function send(asDraft: boolean) {
     setBusy(true);
     setResult(null);
     try {
       const response = await fetch('/api/admin/publish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ body, slug: slug || undefined, overwrite, humanInput }),
+        body: JSON.stringify({ body, slug: slug || undefined, overwrite, humanInput, draft: asDraft }),
       });
       if (response.status === 401) {
         onExpired();
@@ -134,7 +139,8 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
     }
   }
 
-  const ready = Boolean(parsed?.review) && humanInput !== '';
+  const draftReady = Boolean(parsed?.review);
+  const ready = draftReady && humanInput !== '';
 
   return (
     <form onSubmit={onSubmit}>
@@ -232,7 +238,7 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
             </select>
             <p className="hint">
               Published on the review as &ldquo;Human input&rdquo;. Only you know this, so the
-              model never sets it.
+              model never sets it. Needed to publish; a draft can be saved without it.
             </p>
           </div>
 
@@ -263,11 +269,26 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
         </>
       )}
 
-      <button className="primary" type="submit" disabled={busy || !ready}>
-        {busy ? 'Publishing…' : 'Publish'}
-      </button>
+      <div className="publish-actions">
+        <button className="secondary" type="button" disabled={busy || !draftReady} onClick={() => send(true)}>
+          Save as draft
+        </button>
+        <button className="primary" type="submit" disabled={busy || !ready}>
+          {busy ? 'Saving…' : 'Publish'}
+        </button>
+      </div>
+      <p className="hint">
+        A draft is not on the site. You can read it in the site design, then publish it from there.
+      </p>
 
-      {result?.ok && (
+      {result?.ok && result.draft && (
+        <div className="notice ok">
+          Saved as a draft, not public.{' '}
+          <a href={`/admin/preview/${result.slug}`}>Read it as it will look</a>, then publish it from
+          the top of that page.
+        </div>
+      )}
+      {result?.ok && !result.draft && (
         <div className="notice ok">
           {result.replaced ? 'Replaced' : 'Published'}. Vercel is rebuilding — it will be live at{' '}
           <a href={`/reviews/${result.slug}`}>/reviews/{result.slug}</a> in a minute or two.

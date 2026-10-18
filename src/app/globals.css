@@ -588,7 +588,7 @@ button.linkish:hover { color: var(--text); }
   border-top: 1px solid var(--border);
 }
 .manage-list li:last-child { border-bottom: 1px solid var(--border); }
-.manage-list li.withdrawn .manage-main a { color: var(--muted); text-decoration: line-through; }
+.manage-list li.withdrawn .manage-main a { color: var(--muted); font-style: italic; }
 .manage-main { flex: 1; min-width: 0; }
 .manage-main a { color: var(--text); text-decoration: none; display: block; font-size: 0.95rem; }
 .manage-main a:hover { text-decoration: underline; }
@@ -756,3 +756,25 @@ button.secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 #prompt, #guide, #changelog, #comments { scroll-margin-top: 72px; }
 .changelog-details { margin-top: 28px; }
 .changelog-details .prose { margin-top: 10px; }
+
+/* ---------- admin draft preview ---------- */
+
+.draft-banner {
+  margin: 20px 0 0; padding: 12px 14px; border-radius: var(--radius); font-size: 0.9rem;
+  background: var(--borderline-bg); border: 1px solid var(--borderline-br); color: var(--text);
+}
+.draft-banner p { margin: 0; }
+.draft-banner strong { color: var(--borderline-fg); }
+.draft-banner.live { background: var(--strong-bg); border-color: var(--strong-br); }
+.draft-banner.live strong { color: var(--strong-fg); }
+.draft-banner-actions { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-top: 10px; }
+.draft-banner-actions label {
+  display: flex; align-items: center; gap: 6px; font-size: 0.85rem;
+  flex: 1 1 16rem; min-width: 0; max-width: 100%;
+}
+/* A select sizes itself to its longest option; these are long, so it must be told to shrink. */
+.draft-banner-actions select { flex: 1; min-width: 0; width: 100%; }
+.draft-banner .notice { margin: 10px 0 0; }
+.preview-note { margin: 32px 0 0; font-size: 0.85rem; color: var(--muted); font-style: italic; }
+.manage-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
+.publish-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }

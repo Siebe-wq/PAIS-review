@@ -49,7 +49,15 @@ defaults are defined in `src/lib/site-text-schema.ts`. A save made from a tab th
 date is refused rather than overwriting the newer text. A broken file falls back to the
 defaults instead of breaking the site.
 
-The "Reviews" tab lists every review, drafts included, with a Withdraw / Restore button, and
+**Drafts.** "Save as draft" on the publish form, or `draft: true` from the `/review` skill,
+commits a review that is not on the site. Signed in, you read it at `/admin/preview/<slug>`,
+rendered exactly as the public page will be, apart from comments and ratings. A banner at the
+top sets the human-input level and publishes it. Anyone not signed in sees only a prompt to
+sign in. The repository itself is public, so a draft's text can be read on GitHub by anyone
+who looks there; it is kept off the site, not secret.
+
+The "Reviews" tab lists every review, drafts included, with Preview and Publish for drafts and
+Withdraw for public reviews, and
 collects the `guideNotes` that reviews have flagged for the next guide version. Withdrawing sets
 `draft: true` — the review and its raw URL vanish from the site at once and it can be put back;
 the commit history keeps the text. A takedown that needs the text gone from the repository is a

@@ -118,7 +118,7 @@ export function buildReviewFile(
   slugOverride?: string,
   fallbackGuideVersion?: string,
   /** Set from the publish form, which takes precedence over anything in the frontmatter. */
-  options: { humanInput?: HumanInput } = {},
+  options: { humanInput?: HumanInput; draft?: boolean } = {},
 ): BuiltReview {
   const source = (raw ?? '').trim();
   if (!source) throw new Error('Nothing pasted yet.');
@@ -245,6 +245,9 @@ export function buildReviewFile(
     const value = out[key];
     if (value === undefined || (Array.isArray(value) && value.length === 0)) delete out[key];
   }
+
+  // A draft is kept off the site until the editor publishes it from the preview.
+  if (options.draft) out.draft = true;
 
   const slug = slugify(slugOverride || text(data.slug) || title);
   if (!slug) throw new Error('Could not work out a filename. Set one below.');

@@ -30,6 +30,7 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 - [ ] [medium] Request a review: paste a DOI or link; the site checks whether a review already exists and whether the full text is openly available, and asks for a PDF if not. Requests go in a public queue others can upvote; needs an account; the requester is emailed when the review is up. Reviews written by a scheduled Claude Code session, rate-limited, saved as drafts for the editor. See the roadmap.
 - [ ] [medium] Accounts by email with one-time codes: required to comment, vote and request reviews. Needs a domain of our own and an email-sending service first.
 - [ ] [medium] Tags on reviews (treatment trial, diagnostic test, genetics…), from one controlled list, with filters on the index and a page per tag.
+- [ ] [medium] Preview links for site changes: move the live site to the main branch. First ask Claude to bring main up to date. Then in Vercel: Settings → Environments → Production → Branch Tracking → main; Settings → Environment Variables → GITHUB_BRANCH → main; then redeploy once.
 - [ ] [low] A "report an error" link on each review.
 - [ ] [low] Full-text search across review bodies.
 - [ ] [low] Verified scientists: a badge for accounts that confirm a professional (university or research institute) email address, with ORCID and manual approval as other routes.

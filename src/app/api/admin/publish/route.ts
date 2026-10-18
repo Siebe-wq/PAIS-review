@@ -23,14 +23,16 @@ export async function POST(request: Request) {
     );
   }
 
-  let input: { body?: string; slug?: string; overwrite?: boolean; humanInput?: string };
+  let input: { body?: string; slug?: string; overwrite?: boolean; humanInput?: string; draft?: boolean };
   try {
     input = await request.json();
   } catch {
     return fail('Could not read the request.', 400);
   }
 
-  if (!isHumanInput(input.humanInput)) {
+  const draft = input.draft === true;
+  // A draft can wait for its human-input level; it is set when the draft is published.
+  if (!draft && !isHumanInput(input.humanInput)) {
     return fail('Choose how much human input this review had before publishing.', 400);
   }
 
@@ -38,6 +40,7 @@ export async function POST(request: Request) {
   try {
     built = buildReviewFile(input.body ?? '', input.slug, currentGuideVersion(), {
       humanInput: isHumanInput(input.humanInput) ? input.humanInput : undefined,
+      draft,
     });
   } catch (error) {
     return fail(error instanceof Error ? error.message : 'Could not build the review.', 400);
@@ -61,11 +64,11 @@ export async function POST(request: Request) {
       github,
       path,
       built.markdown,
-      `${sha ? 'Update' : 'Publish'} review: ${built.review.title}`,
+      `${draft ? 'Draft' : sha ? 'Update' : 'Publish'} review: ${built.review.title}`,
       sha,
     );
 
-    return NextResponse.json({ ok: true, slug: built.slug, path, ...result });
+    return NextResponse.json({ ok: true, slug: built.slug, path, draft, ...result });
   } catch (error) {
     if (error instanceof GithubError) return fail(error.message, error.status);
     return fail('Unexpected error talking to GitHub.', 502);

@@ -240,6 +240,10 @@ hyphenated. For example `2024-lidocaine-hpbcd-post-covid.md`.
 2. Run `npm run build` to confirm the frontmatter parses, the grade line matches the score,
    and the site still builds.
 3. Show the user the verdict, score, strengths and weaknesses before committing.
-4. Ask the user how much they changed the review — none, minor, moderate or major — and set
-   `humanInput` to their answer. Never choose it yourself: only they know.
-5. Commit and push only when they say so.
+4. Save it as a draft: add `draft: true` to the frontmatter. Commit and push only when the
+   user says so. A draft is not on the site; the user reads it in the site design at
+   `/admin/preview/<filename without .md>` and publishes it from the top of that page, which
+   is also where they set the human-input level. Give them that link after pushing.
+5. Do not set `humanInput` yourself: only the user knows how much they changed. If they tell
+   you the level and ask you to publish directly, set `humanInput` to their answer and leave
+   out `draft`.
