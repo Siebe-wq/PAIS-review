@@ -24,6 +24,7 @@ interface Result {
   bumpedGuide?: boolean;
   version?: string;
   error?: string;
+  sha?: string | null;
 }
 
 export function DocEditor({ onExpired }: { onExpired: () => void }) {
@@ -32,6 +33,9 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
   const [content, setContent] = useState('');
   const [versioned, setVersioned] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<string | null>(null);
+  const [sha, setSha] = useState<string | null>(null);
+  // Bumped to load the page again: after a save, or to pick up someone else's.
+  const [loadCount, setLoadCount] = useState(0);
   const [change, setChange] = useState<ChangeKind>('patch');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(true);
@@ -42,7 +46,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
     if (name === SITE_TEXT) return;
     let cancelled = false;
     setLoading(true);
-    setResult(null);
+    if (loadCount === 0) setResult(null);
 
     fetch(`/api/admin/doc?name=${name}`)
       .then((response) => response.json())
@@ -51,6 +55,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
           content?: string;
           versioned?: boolean;
           guideVersion?: string | null;
+          sha?: string | null;
           error?: string;
         }) => {
           if (cancelled) return;
@@ -58,6 +63,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
             setContent(json.content);
             setVersioned(Boolean(json.versioned));
             setCurrentVersion(json.guideVersion ?? null);
+            setSha(json.sha ?? null);
             setChange('patch');
             setNote('');
           } else {
@@ -75,7 +81,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
     return () => {
       cancelled = true;
     };
-  }, [name]);
+  }, [name, loadCount]);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -87,6 +93,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
+          sha,
           content,
           change: versioned ? change : undefined,
           note: versioned ? note : undefined,
@@ -98,7 +105,12 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
       }
       const json = (await response.json()) as Result;
       setResult(json);
-      if (json.ok) setNote('');
+      if (json.ok) {
+        setNote('');
+        // Load the saved version back: its sha, and for the guide the stamped version and
+        // changelog, so a second save in a row is not refused as out of date.
+        setLoadCount((n) => n + 1);
+      }
     } catch {
       setResult({ error: 'Could not reach the server. Check your connection and try again.' });
     } finally {
@@ -117,6 +129,7 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
       return;
     }
     siteTextDirty.current = false;
+    setResult(null);
     setName(next);
   }
 
@@ -241,7 +254,23 @@ export function DocEditor({ onExpired }: { onExpired: () => void }) {
           )}
         </div>
       )}
-      {result?.error && <div className="notice err">{result.error}</div>}
+      {result?.error && (
+        <div className="notice err">
+          {result.error}{' '}
+          {/reload/i.test(result.error) && (
+            <button
+              type="button"
+              className="linkish"
+              onClick={() => {
+                setResult(null);
+                setLoadCount((n) => n + 1);
+              }}
+            >
+              Reload now
+            </button>
+          )}
+        </div>
+      )}
     </form>
   );
 }
