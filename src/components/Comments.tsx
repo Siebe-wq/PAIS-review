@@ -74,7 +74,7 @@ export function Comments({
     );
   }
 
-  async function castVote(commentId: number, axis: 'karma' | 'agree', value: -1 | 0 | 1) {
+  async function castVote(commentId: number, axis: 'karma' | 'agree' | 'heart', value: -1 | 0 | 1) {
     setError(null);
     const response = await fetch('/api/comments/vote', {
       method: 'POST',
@@ -191,7 +191,7 @@ function CommentItem({
   collapsed: Set<number>;
   onToggleCollapse: (id: number) => void;
   onReply: (id: number | null) => void;
-  onVote: (id: number, axis: 'karma' | 'agree', value: -1 | 0 | 1) => void;
+  onVote: (id: number, axis: 'karma' | 'agree' | 'heart', value: -1 | 0 | 1) => void;
   onModerate: (id: number, action: 'hide' | 'unhide' | 'remove') => void;
   form: (parentId: number) => React.ReactNode;
 }) {
@@ -265,6 +265,17 @@ function CommentItem({
                 Disagree {node.disagree > 0 ? node.disagree : ''}
               </button>
             </span>
+            {/* Thanks, or "this matters" — neither a quality vote nor agreement, and not karma. */}
+            <button
+              type="button"
+              className={`vote heart${node.mine.heart ? ' on' : ''}`}
+              onClick={() => onVote(node.id, 'heart', node.mine.heart ? 0 : 1)}
+              aria-label={node.mine.heart ? 'Remove your heart' : 'Heart this comment'}
+              aria-pressed={Boolean(node.mine.heart)}
+            >
+              <span aria-hidden="true">{node.mine.heart ? '♥' : '♡'}</span>
+              {node.hearts > 0 ? ` ${node.hearts}` : ''}
+            </button>
             <button type="button" className="linkish" onClick={() => onReply(replyTo === node.id ? null : node.id)}>
               Reply
             </button>

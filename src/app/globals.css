@@ -791,3 +791,5 @@ button.secondary:disabled { opacity: 0.45; cursor: not-allowed; }
   font-size: 0.85rem; color: var(--muted); overflow-wrap: anywhere;
 }
 .card-excerpt mark { background: var(--borderline-bg); color: var(--text); padding: 0 2px; border-radius: 2px; }
+.vote.heart { font-size: 0.85rem; }
+.vote.heart.on { color: var(--fatal-fg); }

@@ -20,7 +20,9 @@ export async function POST(request: Request) {
   const axis = input.axis;
   const value = Number(input.value);
   if (!Number.isInteger(commentId) || commentId <= 0) return NextResponse.json({ error: 'Bad comment.' }, { status: 400 });
-  if (axis !== 'karma' && axis !== 'agree') return NextResponse.json({ error: 'Bad axis.' }, { status: 400 });
+  if (axis !== 'karma' && axis !== 'agree' && axis !== 'heart') return NextResponse.json({ error: 'Bad axis.' }, { status: 400 });
+  // A heart is given or taken back; there is no negative heart.
+  if (axis === 'heart' && input.value === -1) return NextResponse.json({ error: 'Bad vote.' }, { status: 400 });
   if (![-1, 0, 1].includes(value)) return NextResponse.json({ error: 'Bad value.' }, { status: 400 });
 
   const voter = readVoter(request) ?? newVoter();

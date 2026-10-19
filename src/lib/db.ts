@@ -79,10 +79,23 @@ create index if not exists comments_voter_recent_idx on comments (voter, created
 create table if not exists comment_votes (
   comment_id bigint not null references comments(id) on delete cascade,
   voter      text not null,
-  axis       text not null check (axis in ('karma', 'agree')),
+  axis       text not null check (axis in ('karma', 'agree', 'heart')),
   value      smallint not null check (value in (-1, 1)),
   primary key (comment_id, voter, axis)
 );
+
+-- Databases created before hearts existed have the older two-axis check. Replace it once;
+-- on every later start the condition is false and nothing is touched.
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'comment_votes_axis_check' and pg_get_constraintdef(oid) like '%heart%'
+  ) then
+    alter table comment_votes drop constraint if exists comment_votes_axis_check;
+    alter table comment_votes add constraint comment_votes_axis_check check (axis in ('karma', 'agree', 'heart'));
+  end if;
+end $$;
 
 create table if not exists ratings (
   review_slug text not null,
