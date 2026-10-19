@@ -16,6 +16,7 @@ export function ReviewCard({
   engagement,
   now,
   preprintLabel = 'Preprint',
+  excerpt,
 }: {
   review: ReviewFrontmatter;
   href?: string;
@@ -23,6 +24,8 @@ export function ReviewCard({
   preprintLabel?: string;
   /** Left out where there is no database, and in the /admin preview. */
   engagement?: Engagement;
+  /** When a search matched inside the review, the text around the match. */
+  excerpt?: { before: string; match: string; after: string } | null;
   now?: number;
 }) {
   const citation = [abbreviateAuthors(review.authors), review.journal, review.year].filter(Boolean).join(' · ');
@@ -71,6 +74,13 @@ export function ReviewCard({
           </p>
         )}
         <p className="verdict">{review.verdict}</p>
+        {excerpt && (
+          <p className="card-excerpt">
+            {excerpt.before}
+            <mark>{excerpt.match}</mark>
+            {excerpt.after}
+          </p>
+        )}
         <div className="chip-row">
           {review.weaknesses?.slice(0, 3).map((weakness) => (
             <span className="chip weakness" key={weakness}>
