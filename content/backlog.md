@@ -7,13 +7,13 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 
 ## Weaknesses
 
-- [ ] [high] Almost no automated tests. Only the grade parser has any (`npm test`); nothing else stops a change from quietly breaking publishing.
-- [ ] [high] No check to see what the model accessed (did it see full text? graphs? supplementary data? Which other sources did the model view?)
-- [ ] [medium] Saving the About, Methods, instructions or prompt page from a tab opened before another save overwrites that save. Only the guide, site text and backlog check for this.
+- [x] [high] Almost no automated tests. Only the grade parser has any (`npm test`); nothing else stops a change from quietly breaking publishing. (done 2026-10-19)
+- [x] [high] No check to see what the model accessed (did it see full text? graphs? supplementary data? Which other sources did the model view?) (done 2026-10-19)
+- [x] [medium] Saving the About, Methods, instructions or prompt page from a tab opened before another save overwrites that save. Only the guide, site text and backlog check for this. (done 2026-10-19)
 - [ ] [medium] Human input is "Not recorded" on the reviews published before it existed. Set it in the Reviews tab.
 - [ ] [medium] No sources/citation management
 - [ ] [medium] The blind fact check only runs for reviews written with the `/review` skill in Claude Code. Reviews from the claude.ai project get none.
-- [ ] [low] Search covers the title, verdict, strengths and weaknesses, not the text of the review.
+- [x] [low] Search covers the title, verdict, strengths and weaknesses, not the text of the review. (done 2026-10-19)
 - [ ] [low] Ratings are one per browser, so clearing cookies allows another vote.
 - [ ] [low] Spam defences stop bots and repeats, not a determined person.
 - [ ] [low] Nobody is told when someone replies to their comment.
@@ -32,16 +32,16 @@ in /admin → Backlog. Longer write-ups live in `docs/roadmap.md`. Not shown on 
 - [ ] [medium] Tags on reviews (treatment trial, diagnostic test, genetics…), from one controlled list, with filters on the index and a page per tag.
 - [x] [medium] Preview links for site changes: move the live site to the main branch. First ask Claude to bring main up to date. Then in Vercel: Settings → Environments → Production → Branch Tracking → main; Settings → Environment Variables → GITHUB_BRANCH → main; then redeploy once. (done 2026-10-18)
 - [ ] [low] A "report an error" link on each review.
-- [ ] [low] Full-text search across review bodies.
+- [x] [low] Full-text search across review bodies. (done 2026-10-19)
 - [ ] [low] Verified scientists: a badge for accounts that confirm a professional (university or research institute) email address, with ORCID and manual approval as other routes.
 - [ ] [low] User karma: upvotes received on comments, shown next to the name. Agree/disagree votes do not count towards it.
-- [ ] [low] A heart reaction on comments, alongside the upvote and the agree/disagree votes.
+- [x] [low] A heart reaction on comments, alongside the upvote and the agree/disagree votes. (done 2026-10-19)
 - [ ] [low] Post new reviews to X.
 - [x] Grade last, shown first: the summary written after the analysis, ending in the grade, and shown at the top. (done 2026-10-16)
 
 ## Bugs
 
-- [ ] [low] No favicon, so every browser gets a 404 when it asks for one.
+- [x] [low] No favicon, so every browser gets a 404 when it asks for one. (done 2026-10-19)
 
 ## Ideas
 
