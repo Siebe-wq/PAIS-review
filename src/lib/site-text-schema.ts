@@ -51,7 +51,7 @@ export const FIELDS = {
   'site.footer': md(
     'Footer',
     'Bottom of every page. A blank line starts a new paragraph.',
-    'Reviews are written by Claude against a published [method](/methods), then read and published by Siebe Rozendal. They are one considered opinion, not a journal decision or a consensus view, and they can be wrong.\n\nThink a review is wrong? Say so in the comments under it — that is where it gets argued out.',
+    'Reviews are written by Claude against a published [method](/methods), then read and published by the editor. They are one considered opinion, not a journal decision or a consensus view, and they can be wrong.\n\nThink a review is wrong? Say so in the comments under it — that is where it gets argued out.',
   ),
   'site.notFound': md('Page not found', 'Shown for a link to a page that does not exist.', 'There is no page here. [Back to the reviews](/).', { max: 300 }),
 
@@ -87,7 +87,7 @@ export const FIELDS = {
   'review.provenance': md(
     'Closing note',
     'Last line of every review, after "Written by <model> against the guide".',
-    'Read and published by Siebe Rozendal. The grade is a judgement about this paper’s evidence, not a statement about the researchers.',
+    'Read and published by the editor. The grade is a judgement about this paper’s evidence, not a statement about the researchers.',
     { max: 500 },
   ),
 

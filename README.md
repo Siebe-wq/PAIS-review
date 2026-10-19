@@ -209,7 +209,7 @@ first four if you want the `/admin` publishing page:
 |---|---|
 | `ADMIN_PASSWORD` | Guards `/admin`. Make it long. It is the only thing between the internet and your repository. |
 | `GITHUB_TOKEN` | Fine-grained personal access token, scoped to this repository only, with Contents: Read and write. |
-| `GITHUB_REPO` | `Siebe-wq/PAIS-review` |
+| `GITHUB_REPO` | `owner/repository`, e.g. `your-account/PAIS-review` |
 | `GITHUB_BRANCH` | Defaults to `main`. |
 | `NEXT_PUBLIC_SITE_URL` | Only needed if the site moves off `pais-review.vercel.app`. Used for the sitemap and link previews. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Shown on the About page as the corrections address. Left unset, no address is shown. |

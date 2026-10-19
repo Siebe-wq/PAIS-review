@@ -1,8 +1,8 @@
 ---
 title: Guide to peer review in post-acute infection syndromes
-version: "0.8.1"
-updated: 2026-10-16
-authors: Siebe Rozendal (main), Claude
+version: "0.8.2"
+updated: 2026-10-19
+authors: The editor (main), Claude
 
 ---
 
@@ -215,6 +215,8 @@ Could hypovolemia affect the comparability of blood levels?
 
 ## Changelog
 
+- **0.8.2** (2026-10-19) — Authors line: the editor's name replaced with "The editor". No
+  criteria changed.
 - **0.8.1** (2026-10-16) — Instructions: reviews record the reasoning effort the model ran
   at (`effort`), shown next to the model, because the same model reviews differently at
   different efforts. No criteria changed.

@@ -52,6 +52,9 @@ export async function getFileSha(config: GithubConfig, path: string): Promise<st
 }
 
 /** Creates or updates a file. Pass `sha` when overwriting an existing one. */
+/** Who admin saves are credited to in the repository's history. */
+const COMMIT_IDENTITY = { name: 'PAIS Review admin', email: 'admin@pais-review.invalid' };
+
 export async function putFile(
   config: GithubConfig,
   path: string,
@@ -66,6 +69,11 @@ export async function putFile(
       content: Buffer.from(content, 'utf8').toString('base64'),
       branch: config.branch,
       ...(sha ? { sha } : {}),
+      // Without these, GitHub credits each save to the token's owner, with their name and
+      // email address, in the public history. The .invalid domain is reserved, so this
+      // address can never belong to anyone.
+      author: COMMIT_IDENTITY,
+      committer: COMMIT_IDENTITY,
     }),
   });
 
