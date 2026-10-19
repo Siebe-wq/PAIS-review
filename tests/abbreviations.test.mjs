@@ -19,3 +19,10 @@ test('a bracketed explanation in a quotation counts, and so does a numbered memb
   assert.deepEqual(undefinedInBody('Cluster of differentiation (CD) proteins: CD3 for T cells, CD68 for macrophages.'), []);
   assert.deepEqual(undefinedInBody('CD3 counts rose.'), ['CD3']);
 });
+
+test('a familiar compound inside a longer word passes, and a plural written out covers the singular', () => {
+  assert.deepEqual(abbreviationsIn('SARS-CoV-2-specific T cells; ME/CFS-like; COVID-19-related'), []);
+  assert.deepEqual(abbreviationsIn('PEM/ME/CFS'), ['PEM']);
+  assert.deepEqual(undefinedInBody('Peripheral blood mononuclear cells (PBMCs) were used. One PBMC sample failed.'), []);
+  assert.deepEqual(undefinedInBody('One PBMC sample. Then PBMCs.'), ['PBMC']);
+});
