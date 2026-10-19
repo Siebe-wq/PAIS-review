@@ -107,13 +107,20 @@ export function undefinedInBody(body: string): string[] {
   const missing: string[] = [];
   for (const match of prose.matchAll(TOKEN)) {
     const token = match[0];
-    const parts = flaggedParts(token).filter((part) => !seen.has(part));
+    // A numbered member of a family already written out counts as explained: once
+    // "cluster of differentiation (CD)" has appeared, CD3 and CD68 need nothing more.
+    const parts = flaggedParts(token).filter((part) => {
+      if (seen.has(part)) return false;
+      const family = /^([A-Z]{2,})\d+$/.exec(part)?.[1];
+      return !(family && seen.has(family));
+    });
     if (parts.length === 0) continue;
     const start = match.index ?? 0;
     const before = prose.slice(Math.max(0, start - 2), start);
     const after = prose.slice(start + token.length, start + token.length + 3);
     const inBrackets = /\($/.test(before) && /^[),;]/.test(after);
-    const expandedAfter = /^ ?\(/.test(after) && !/^ ?\(\d/.test(after);
+    // "PEM (post-exertional malaise)", or in a quotation the editorial "LC [long COVID]".
+    const expandedAfter = /^ ?[([]/.test(after) && !/^ ?[([]\d/.test(after);
     const named = isExplainedName(prose, start, token);
     for (const part of parts) {
       seen.add(part);
