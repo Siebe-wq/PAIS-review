@@ -23,7 +23,7 @@ strengths:
   - "Key T cell findings rechecked with a second method"
   - "Null results reported in full; raw data public"
 weaknesses:
-  - "Many tests, few marginal hits, no correction"
+  - "Few marginal hits among many uncorrected tests"
   - "Groups differ in hospital stays, sex, weight; no adjustment"
   - "'Uncoordinated' claim never directly tested"
   - "No severity, post-exertional malaise or ME/CFS status"
@@ -61,7 +61,7 @@ The design is exploratory. It can show differences between groups. It cannot sho
 
 **Case definition.** People were classed as LC if they "consistently met a case definition for LC based on the presence or absence of at least one symptom attributable to COVID-19" at both the 4-month and 8-month visits. At each visit, an interviewer asked about 32 physical symptoms that were new or worse since COVID-19. So the bar for LC is one persistent symptom. In practice the LC group had many symptoms: a median of 4.5 at month 4 and 7 at month 8 (Supplementary Table 1). The recovered group had a median of zero at both visits. The paper selected people with "clear LC and non-LC clinical trajectories", which sharpens the contrast. It also means people whose symptoms came and went were left out, so the results may not apply to them.
 
-**Infection confirmation.** Every participant had a nucleic acid-confirmed infection. That is the strongest level in the guide.
+**Infection confirmation.** LIINC enrols people with nucleic acid-confirmed infection, which is the strongest level in the guide. Two participants' samples came from a different study (CHIRP, the COVID-19 Host Immune Response Pathogenesis study), and the paper does not say how their infection was confirmed.
 
 **Duration.** About 8 months at sampling, with symptoms at both 4 and 8 months. This meets the guide's preference for more than 6 months.
 
@@ -79,11 +79,11 @@ The design is exploratory. It can show differences between groups. It cannot sho
 - Comorbidities: hypertension in 6 of 27 LC versus 1 of 16 R; lung disease in 6 of 27 versus 1 of 16; diabetes in 2 of 27 versus 1 of 16 (Extended Data Fig. 1d).
 - Median age was similar: 46 and 45.5 years.
 
-The methods say "Participants were deliberately not matched by age and sex, but we ensured that there was overlap in the groups." None of the group comparisons adjust for sex, BMI, hospitalisation or comorbidity. The only analysis that takes sex into account is the cell clustering, where it is used to split results, not to adjust them.
+The methods say "Participants were deliberately not matched by age and sex, but we ensured that there was overlap in the groups." None of the group comparisons adjust for sex, BMI, hospitalisation or comorbidity. Sex enters in two places only: the cell clustering, where it is used to split results rather than adjust them, and the single-cell study, which was restricted to women.
 
 **Controls.** People who recovered from COVID-19 are a sensible comparison for the question "what differs in those who did not recover?" There is no uninfected control group and no disease control group. So the study cannot say whether a finding is specific to long COVID, or would also appear in, for example, people with obesity, hypertension or a recent hospital stay.
 
-**Missing samples.** Not every assay was done on every participant. The methods say "No samples were excluded from the analyses", but group sizes range from 27/16 for CyTOF to 23/13 for bulk RNA sequencing. The paper does not say why samples are missing.
+**Missing samples.** Not every assay was done on every participant. The methods say "No samples were excluded from the analyses", but group sizes range from 27/16 for CyTOF to 23/13 for bulk RNA sequencing (and 8/4 for the deliberately selected single-cell set). The paper does not say why samples are missing. The peer review file explains it for flow cytometry only: it used the remaining aliquots, which existed for 25 LC and 15 R.
 
 ## Outcome measures
 
@@ -95,7 +95,7 @@ All outcomes are laboratory measures on blood. By the guide's scale they are obj
 
 **Cryopreservation.** All cells were frozen and thawed before analysis. That affects some surface markers. A reviewer asked whether CD62L recovers after thawing; this does not change the main findings, but it adds noise.
 
-**Olink.** The methods say only that the assay "was performed per manufacturer's protocol". They do not say what statistical test was used to compare groups, whether any protein passed a correction for multiple testing, or how the "top 25 differentially expressed proteins" in Fig. 5g were chosen. No p-values for individual proteins are given in the text or figures. The raw data are on Dryad, but the download needs a login, so I could not check them.
+**Olink.** The methods say only that the assay "was performed per manufacturer's protocol". They do not say what statistical test was used to compare groups, or whether any protein passed a correction for multiple testing. The data visualisation methods say the network used the "25 proteins with the lowest P values", so p-values were computed, but none for individual proteins are given in the text or figures. The raw data are on Dryad, but the download needs a login, so I could not check them.
 
 **Bulk RNA sequencing.** The methods say it was done on PBMCs. The Fig. 5a legend says "whole blood". The paper does not resolve this. It matters for the hemoglobin finding below.
 
@@ -115,7 +115,7 @@ All outcomes are laboratory measures on blood. By the guide's scale they are obj
 
 - 9 CD4+ T cell subsets, in total and SARS-CoV-2-specific cells (Fig. 1g,h).
 - The same kind of subsets for CD8+ T cells (Extended Data Fig. 3).
-- Every CyTOF marker, in four cell groups (Extended Data Figs. 4 and 5).
+- Every CyTOF marker, in four cell groups (Extended Data Figs. 4 and 5; corrected within this set).
 - Activation markers (Extended Data Fig. 6).
 - Cell clusters, overall and by sex (Extended Data Fig. 7).
 - Several pairs of chemokine receptors and checkpoint markers (Figs. 2 and 3).
@@ -123,19 +123,19 @@ All outcomes are laboratory measures on blood. By the guide's scale they are obj
 - Correlations within each group (Figs. 2e,f and 4b,c).
 - Several hundred plasma proteins.
 
-Most T cell comparisons used unadjusted two-sided t-tests. The methods say "Where appropriate, P values were corrected for multiple testing (across three pairwise comparisons)", which does not cover the bulk of the tests. The clustering analysis and the gene expression analyses did use Benjamini–Hochberg correction.
+Some families of tests were corrected. The per-marker comparisons in Extended Data Figs. 4 and 5 used "multiple correction by Sidak adjustment", and found nothing. The clustering analysis and the gene expression analyses used Benjamini–Hochberg correction. But the T cell subset comparisons and marker-pair comparisons that carry the main positive findings (Figs. 1–3) used unadjusted two-sided t-tests, with nothing to account for how many were run. The methods say only "Where appropriate, P values were corrected for multiple testing (across three pairwise comparisons)".
 
 Against that background, the positive CyTOF findings are a short list, nearly all at p < 0.05 (one star) rather than lower. Central memory T cells (TCM) were the only subset at p < 0.01. Most comparisons were null, and the authors report those nulls, which is to their credit (the editor asked for this). Total SARS-CoV-2-specific T cell frequency did not differ. Polyfunctional cells did not differ. All CD8+ T cell subsets were similar. No CyTOF marker was significantly differentially expressed. Activation markers (CD38, HLA-DR, Ki67) did not differ. Overall cluster frequencies did not differ. When most of a large set of tests is null and the positives sit just under p = 0.05, some of the positives are likely to be false.
 
-**The flow cytometry check.** The strongest support for any T cell finding is that conventional flow cytometry, on nearly the same samples, also found more CXCR4+CXCR5+, CXCR5+CCR6+ and CXCR4+CCR6+ CD4+ T cells in LC, and more PD1+CTLA4+ SARS-CoV-2-specific CD8+ T cells (Extended Data Fig. 8c,d). This was requested by the reviewers. It is a real check against a CyTOF artefact. It is not an independent cohort: the same people, the same blood draw, the same selection. So it rules out an instrument problem, not a chance difference between these 43 people.
+**The flow cytometry check.** The strongest support for any T cell finding is that conventional flow cytometry, on nearly the same samples, also found more CXCR4+CXCR5+, CXCR5+CCR6+ and CXCR4+CCR6+ cells among total CD4+ T cells in LC, and more PD1+CTLA4+ SARS-CoV-2-specific CD8+ T cells (Extended Data Fig. 8c,d). This was requested by the reviewers. It is a real check against a CyTOF artefact. It is not an independent cohort: the same people, the same blood draw, the same selection. So it rules out an instrument problem, not a chance difference between these 43 people.
 
-**Influential points.** Reviewer 2 wrote that "the majority of significant differences are driven by a few patient samples, sometimes 1-2 samples". In their reply, the authors showed that removing a single outlier participant moved one of the CXCR4+CXCR5+ CD4+ T cell results to p = 0.0589 (a related CXCR5+CCR6+ result stayed significant). They kept the outlier, which is the correct choice, since removing points by eye is not legitimate. But the exchange shows how fragile that result is. Fig. 4a (antibody levels) has two LC values far above the rest. Fig. 5a shows that the ALAS2 result rests on a few high values, two of them extreme. Student's t-tests on data like these are sensitive to single points; a rank-based test or a log transformation would have been a useful check, and none is reported.
+**Influential points.** Reviewer 2 wrote that "the majority of significant differences are driven by a few patient samples, sometimes 1-2 samples". In their reply, the authors showed that removing a single outlier participant moved one of the CXCR4+CXCR5+ CD4+ T cell results to p = 0.0589 (a related CXCR5+CCR6+ result stayed significant). They kept the outlier, which is the correct choice, since removing points by eye is not legitimate. But the exchange shows how fragile that result is. Fig. 4a (antibody levels) has two LC values far above the rest. Student's t-tests on data like these are sensitive to single points; a rank-based test or a log transformation would have been a useful check, and none is reported. Separately, Fig. 5a shows that the ALAS2 result in the bulk RNA data (tested with a different method) rests on a few high values, two of them extreme.
 
-**"Differences in significance" as evidence.** The headline claim of an "uncoordinated" adaptive response rests on correlations. In recovered people, antibody levels correlated with SARS-CoV-2-specific CD4+ T cells (r = 0.53, p = 0.042), pTFH cells (r = 0.75, p = 0.0014) and CD8+ T cells (r = 0.78, p = 0.0007). In LC people they did not (Fig. 4c). A significant correlation in one group and a non-significant one in the other is not, by itself, evidence that the correlations differ. That needs a direct test of the difference, such as an interaction term, which is not reported. The recovered correlations come from 15 people, and in Fig. 4c they look driven by a few people with the highest antibody and T cell values. The LC correlations include the two people with very high antibody levels. The same pattern of reasoning is used for the pTFH correlations in Fig. 2e,f and for the Treg correlation in Fig. 4b.
+**"Differences in significance" as evidence.** The headline claim of an "uncoordinated" adaptive response rests on correlations. In recovered people, antibody levels correlated with SARS-CoV-2-specific CD4+ T cells (r = 0.53, p = 0.042), pTFH cells (r = 0.75, p = 0.0014) and CD8+ T cells (r = 0.78, p = 0.0007). In LC people they did not (Fig. 4c). A significant correlation in one group and a non-significant one in the other is not, by itself, evidence that the correlations differ. That needs a direct test of the difference, such as an interaction term, which is not reported. The recovered correlations come from 15 people, and in Fig. 4c they look driven by a few people with the highest antibody and T cell values. The LC correlations include the two people with very high antibody levels. The same pattern of reasoning is used for most of the pTFH correlations in Fig. 2e,f (in one panel the recovered correlation is also significant) and for the Treg correlation in Fig. 4b.
 
-**Sex subgroups.** The abstract reports "sex-specific perturbations in cytolytic subsets". This comes from a cell clustering analysis where no cluster differed between LC and R overall. Splitting by sex gave four results at p between 0.023 and 0.047 (Extended Data Fig. 7b,f), in groups of 7 to 17 people. In the peer review exchange, the authors agreed that "the effects are subtle" and noted the "relatively high FDR values", where FDR is the false discovery rate. It is not clear from the published figure whether the p-values shown are raw or adjusted. Subgroup findings at this level, without an overall effect, are hypothesis-generating at most.
+**Sex subgroups.** The abstract reports "sex-specific perturbations in cytolytic subsets". This comes from a cell clustering analysis where no cluster differed between LC and R overall. Splitting by sex gave four results at p between 0.023 and 0.047 (Extended Data Fig. 7b,f), in groups of 7 to 17 people. In the peer review exchange, the authors agreed that "the effects are subtle" and noted the "relatively high FDR values", where FDR is the false discovery rate. The methods say these p-values were adjusted with the Benjamini–Hochberg method, though the figure itself does not say so. Subgroup findings at this level, without an overall effect, are hypothesis-generating at most.
 
-**scRNA-seq selection.** The single-cell study used 8 LC women, chosen because they had the highest OR7D2 or ALAS2 levels in the bulk data, and 4 randomly chosen recovered women. Choosing the LC samples for their extreme values and then comparing them with random controls makes differences more likely. With 4 controls, the comparison has very little power and the results are fragile. Only three genes passed the stricter threshold (THEMIS, NUDT2 and PPIE).
+**scRNA-seq selection.** The single-cell study used 8 LC women, chosen from among those with the highest OR7D2 or ALAS2 levels in the bulk data, and 4 randomly chosen recovered women. Choosing the LC samples for their extreme values and then comparing them with random controls makes differences more likely. With 4 controls, the comparison has very little power and the results are fragile. Only three genes passed the stricter threshold (THEMIS, NUDT2 and PPIE).
 
 **No adjustment for confounders.** None of the comparisons adjust for sex, BMI, hospitalisation or comorbidity. With 43 people, adjustment would be limited, but it was not attempted even as a sensitivity analysis, for example by dropping the 9 hospitalised people.
 
@@ -151,7 +151,7 @@ Against that background, the positive CyTOF findings are a short list, nearly al
 
 **OR7D2.** An odorant receptor gene with no clear role in blood cells. It was significant after correction, but driven by a subset of LC participants. Without replication, its meaning is unknown.
 
-**IL-6 in CD4+ T cells.** Found "only in a small subset (14%)" of LC participants, using a relaxed detection threshold the authors created for this sub-analysis. CD4+ T cells do not usually make IL-6. Reviewer 3 suggested this could be background staining and asked for confirmation by another method. The authors replied that it was not seen in controls. That is weak evidence for a result at very low frequency, found with a threshold relaxed after the main analysis.
+**IL-6 in CD4+ T cells.** Found "only in a small subset (14%)" of LC participants, using a relaxed detection threshold set for this sub-analysis. CD4+ T cells do not usually make IL-6. Reviewer 3 suggested this could be background staining and asked for confirmation by another method. The authors replied that it was not seen in controls. That is weak evidence for a result at very low frequency, found with a threshold relaxed for a sub-analysis.
 
 **Inflammation.** The title and abstract say LC "manifests with ... inflammation" and "systemic inflammation". The evidence is the Olink panel, with no reported statistics, and the T cell findings. Acute activation markers did not differ, and no standard inflammatory marker such as C-reactive protein is reported. "Systemic inflammation" is stronger than the data shown.
 
@@ -163,13 +163,13 @@ The title states three findings as facts about long COVID: "T cell dysregulation
 
 - "T cell dysregulation": a handful of subset differences at p < 0.05 among many null comparisons, mostly in the 9 CD4+ subsets and a few marker pairs.
 - "Inflammation": an Olink heatmap without reported statistics, and no difference in activation markers.
-- "Uncoordinated adaptive immune response": correlations present in 15 recovered people and absent in 27 LC people, without a test that the correlations differ.
+- "Uncoordinated adaptive immune response": correlations present in 15 recovered people and absent in 26 LC people, without a test that the correlations differ.
 
 The text overstates in several places:
 
-- The results say "Total CD4+ TCM, pTFH, TFH and Treg cell subsets were more frequent in LC". The summary says "We found higher proportions of CD4+ TCM cells, TFH cells and Treg cells". But Fig. 1g shows TFH at p = 0.066, labelled as such. This was the gate the authors adopted after review because the original gate was too loose.
+- The results say "Total CD4+ TCM, pTFH, TFH and Treg cell subsets were more frequent in LC". The summary says "We found higher proportions of CD4+ TCM cells, TFH cells and Treg cells". But Fig. 1g shows TFH at p = 0.066, labelled as such. That stricter gate was added after a reviewer called the original one too generous; the authors kept the original as pTFH for comparison with their earlier studies.
 - The text uses TN for naive T cells and TEM for effector memory T cells. It says "females with LC had relatively low frequencies of resting CD4+ and CD8+ TN cells ... and high frequencies of terminally differentiated CD4+ and CD8+ TEM cells". For CD4+ effector memory cells (cluster A4) in women, Extended Data Fig. 7b shows p = 0.20. The significant A4 result was lower frequency in LC men (p = 0.023), which is the opposite direction from the claim.
-- Fig. 2b and Fig. 3b show pooled histograms of marker levels, and the text says CXCR4, CXCR5, CCR6, PD1 and CTLA4 "were expressed higher" in LC. Yet the paper also says "no markers were significantly differentially expressed between LC and R individuals" when expression was tested per person (Extended Data Figs. 4 and 5). The histograms pool cells from different people and are not a statistical test. The supported findings are the percentages of cells with marker pairs (Figs. 2c,d and 3c).
+- Fig. 2b and Fig. 3b show pooled histograms of marker levels, and the text says CXCR4, CXCR5, CCR6, PD1 and CTLA4 "were expressed higher" in LC. Yet the paper also says "no markers were significantly differentially expressed between LC and R individuals" when expression was tested per person (Extended Data Figs. 4 and 5). The histograms appear to show cells from each group as a whole, and they are not a statistical test. The supported findings are the percentages of cells with marker pairs (Figs. 2c,d and 3c).
 - The limitations say "the rigor with which participants were characterized mitigates the limitations of the small sample size". Careful selection reduces some confounders. It does not reduce the chance of false positives from small groups and many tests.
 - Some claims were softened during review. For example, the authors removed a statement that LC was linked to hospitalisation. Reviewer 1 wrote in the first round that "the authors generously emphasize" the findings, and that "the reported differences, although intriguing, would appear to be somewhat modest". The title did not change.
 
@@ -180,7 +180,7 @@ The paper is fair in places. It reports the null findings in full, names the sma
 It shows, in this group of 43 people sampled before vaccination:
 
 - Antibodies against the spike RBD were higher in LC on average, with two very high LC values.
-- More CD4+ T cells carrying CXCR5 together with CXCR4 or CCR6, in total and SARS-CoV-2-specific cells, seen by two methods on the same samples.
+- More CD4+ T cells carrying CXCR5 together with CXCR4 or CCR6. In total CD4+ T cells this was seen by two methods on the same samples; in SARS-CoV-2-specific cells, by mass cytometry only.
 - A higher share of PD1+CTLA4+ cells among a small number of SARS-CoV-2-specific CD8+ T cells, seen by two methods.
 - Higher CD4+ TCM, pTFH and regulatory T cell (Treg) percentages, with unadjusted p-values.
 - Two genes higher in bulk RNA, one of them part of a red blood cell signature.
@@ -201,7 +201,7 @@ It does not show:
 - A sensitivity analysis without the 9 hospitalised participants, or adjusted for hospitalisation, sex and BMI.
 - A formal test of the difference between correlations (interaction test) for the "uncoordinated" claim.
 - The statistical method and adjusted p-values for the Olink proteins.
-- Correction for multiple testing across the CyTOF comparisons, or at least a count of how many tests were done.
+- Correction for multiple testing across the T cell subset and marker-pair comparisons, or at least a count of how many tests were done.
 - A minimum cell count for the SARS-CoV-2-specific CD8+ T cell analyses.
 - Severity and functional measures, and PEM, ME/CFS, POTS/OI and MCAS status.
 - Any link between immune measures and symptoms within the LC group.
@@ -222,7 +222,7 @@ This is a careful laboratory study with a well-chosen set of samples and an unus
 
 The problem is the distance between the data and the claims. Most comparisons were null. The positive ones are a handful of unadjusted results near p = 0.05, from 27 versus 16 people, in groups that differ in sex, BMI, comorbidity and hospitalisation, with no adjustment. The flagship claim of an "uncoordinated" response rests on comparing a significant correlation with a non-significant one. "Inflammation" rests on a protein panel with no reported statistics. In two places the text states a finding that its own figure does not support (TFH; CD4+ effector memory cells in women).
 
-**What prevents a higher score.** Many uncorrected tests with few, marginal positives. Unadjusted confounding by hospitalisation, sex and BMI, which is especially relevant to the antibody finding. No direct test for the "uncoordinated" claim. No Olink statistics. Small cell counts behind the exhaustion finding. No severity measures and no ME/CFS, PEM, POTS/OI or MCAS status. No replication. A title and abstract that state as findings what the data only suggest.
+**What prevents a higher score.** Many tests behind the main T cell findings, uncorrected, with few and marginal positives. Unadjusted confounding by hospitalisation, sex and BMI, which is especially relevant to the antibody finding. No direct test for the "uncoordinated" claim. No Olink statistics. Small cell counts behind the exhaustion finding. No severity measures and no ME/CFS, PEM, POTS/OI or MCAS status. No replication. A title and abstract that state as findings what the data only suggest.
 
 **What prevents a lower score.** The design is not incapable of answering its question, and the data do not contradict the claims. The sample is small but well characterised, with confirmed infection and pre-vaccination sampling. Several findings were confirmed with a second method. The antibody finding fits other studies. The authors report their nulls, name the main limitations and make the data available. As a hypothesis-generating profile, it is useful.
 
@@ -232,8 +232,8 @@ The main claim, as stated in the title, is weaker than the paper presents it. Wh
 
 This study compared blood from 27 people with long COVID and 16 people who had fully recovered, about 8 months after a first, test-confirmed COVID-19 infection. All samples were taken before vaccination or reinfection, which is a real strength. The team ran several detailed laboratory tests on the same samples, published the raw data and reported the many measures that showed no difference.
 
-The paper's title says long COVID shows "T cell dysregulation, inflammation and an uncoordinated adaptive immune response". The data support something smaller. Most comparisons found no difference. The few that did were mostly just under the usual significance line, with no correction for the large number of tests. The long COVID group had more women, higher body weight, more high blood pressure and lung disease, and twice the rate of hospital stays during the first infection. None of the analyses account for this. That matters most for the higher antibody levels, which are also expected after a more severe first infection. The claim of an "uncoordinated" response rests on links between antibodies and T cells being significant in one group but not the other, which is not the same as showing the groups differ. "Inflammation" rests on a protein panel for which no statistics are given. In two places the text states a finding that its own figure shows was not significant.
+The paper's title says long COVID shows "T cell dysregulation, inflammation and an uncoordinated adaptive immune response". The data support something smaller. Most comparisons found no difference. The few that did were mostly just under the usual significance line, and the tests behind them were not corrected for how many were run. The long COVID group had more women, higher body weight, more high blood pressure and lung disease, and twice the rate of hospital stays during the first infection. None of the analyses account for this. That matters most for the higher antibody levels, which are also expected after a more severe first infection. The claim of an "uncoordinated" response rests on links between antibodies and T cells being significant in one group but not the other, which is not the same as showing the groups differ. "Inflammation" rests on a protein panel for which no statistics are given. In two places the text states a finding that its own figure shows was not significant.
 
-The most solid findings are higher antibodies against the virus and more of certain helper T cells in long COVID, both seen with two methods on the same samples. Nothing is reported on post-exertional malaise, ME/CFS, severity or daily function. Treat this as an early, small, exploratory profile that needs testing in a larger group with better-matched controls.
+The most solid findings are higher antibodies against the virus and more of certain helper T cells in long COVID. The helper T cell finding was rechecked with a second method on the same samples. Nothing is reported on post-exertional malaise, ME/CFS, severity or daily function. Treat this as an early, small, exploratory profile that needs testing in a larger group with better-matched controls.
 
 Grade: 5 / 10.
