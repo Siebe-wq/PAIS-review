@@ -101,6 +101,19 @@ export const FIELDS = {
   'label.guideVersion': line('Guide version', 'Detail label on a review page.', 'Guide version', 40),
   'label.topic': line('Topic', 'Detail label on a review page.', 'Topic', 40),
   'label.humanInput': line('Human input', 'Detail label on a review page.', 'Human input', 40),
+  'label.access': line('What the model read', 'Detail label on a review page: full text, figures, supplement.', 'Model read', 40),
+  'access.unrecorded': line(
+    'Model read: not recorded',
+    'Shown for "Model read" on reviews that do not say what the model opened.',
+    'Not recorded',
+    60,
+  ),
+  'review.sourcesHeading': line(
+    'Other sources heading',
+    'Fold-out at the end of a review listing everything else the model consulted.',
+    'Other sources the model consulted',
+    80,
+  ),
   'label.preprint': line(
     'Preprint marker',
     'Small tag after the citation, on the index and on the review, for papers not yet peer reviewed.',
@@ -160,7 +173,7 @@ export const GROUPS: { title: string; open: boolean; keys: SiteTextKey[] }[] = [
   { title: 'Every page', open: true, keys: ['site.pilotBanner', 'site.footer', 'site.name', 'nav.reviews', 'nav.methods', 'nav.about', 'site.description', 'site.notFound'] },
   { title: 'Home page', open: true, keys: ['home.heading', 'home.intro', 'home.searchPlaceholder', 'home.empty', 'home.noMatches'] },
   { title: 'Review page', open: false, keys: ['review.weaknessesHeading', 'review.strengthsHeading', 'review.contextHeading', 'review.contextNote', 'review.guideNotesHeading', 'review.guideNotesIntro', 'review.provenance'] },
-  { title: 'Review page: detail labels', open: false, keys: ['label.type', 'label.design', 'label.confidence', 'label.importance', 'label.reviewed', 'label.writtenBy', 'label.guideVersion', 'label.topic', 'label.humanInput', 'label.preprint'] },
+  { title: 'Review page: detail labels', open: false, keys: ['label.type', 'label.design', 'label.confidence', 'label.importance', 'label.reviewed', 'label.writtenBy', 'label.guideVersion', 'label.topic', 'label.humanInput', 'label.access', 'label.preprint', 'access.unrecorded', 'review.sourcesHeading'] },
   { title: 'Human input levels', open: false, keys: ['humanInput.none', 'humanInput.minor', 'humanInput.moderate', 'humanInput.major', 'humanInput.unrecorded'] },
   { title: 'Ratings, comments and AI discussion', open: false, keys: ['rating.label', 'comments.intro', 'discuss.label', 'discuss.prompt'] },
   { title: 'Methods and About', open: false, keys: ['methods.promptSummary', 'methods.description', 'about.description'] },

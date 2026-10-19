@@ -214,6 +214,14 @@ export function ReviewPublisher({ onExpired }: { onExpired: () => void }) {
             </p>
           )}
 
+          {!parsed.review.access && (
+            <p className="hint warn">
+              The review does not say what the model read. Add <code>access</code> to the
+              frontmatter (full text, figures, supplement: yes or no); without it the review page
+              says &ldquo;Model read: not recorded&rdquo;.
+            </p>
+          )}
+
           {parsed.review.context?.some((item) => !item.source) && (
             <p className="hint warn">
               A context note has no <code>source</code>. These are published as fact about named

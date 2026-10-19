@@ -61,3 +61,11 @@ test('filenames are cut at a word boundary', () => {
   assert.ok(!slug.endsWith('-'));
   assert.match(slug, /^development-and-validation/);
 });
+
+test('what the model read is kept, and odd values are dropped', () => {
+  const built = buildReviewFile(file('kind: paper\nscore: 7\naccess:\n  fullText: yes\n  figures: false\n  colour: blue\nsources:\n  - "https://example.org/registration"'));
+  assert.deepEqual(built.review.access, { fullText: true, figures: false });
+  assert.deepEqual(built.review.sources, ['https://example.org/registration']);
+  assert.match(built.markdown, /access:\n {2}fullText: true\n {2}figures: false/);
+  assert.equal(buildReviewFile(file('kind: paper\nscore: 7')).review.access, undefined);
+});

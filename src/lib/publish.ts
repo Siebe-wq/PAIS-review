@@ -4,6 +4,7 @@ import {
   HUMAN_INPUT_LEVELS,
   REVIEW_KINDS,
   SIGNALS,
+  accessOf,
   isHumanInput,
   type ContextNote,
   type HumanInput,
@@ -237,6 +238,8 @@ export function buildReviewFile(
     guideVersion: text(data.guideVersion) ?? fallbackGuideVersion,
     model: text(data.model),
     effort: text(data.effort)?.toLowerCase(),
+    access: accessOf(data.access),
+    sources: strings(data.sources),
     humanInput: options.humanInput ?? humanInputOf(data.humanInput),
   };
 
