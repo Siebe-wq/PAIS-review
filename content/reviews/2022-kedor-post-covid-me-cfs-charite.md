@@ -15,7 +15,7 @@ model: "claude-opus-5-5"
 effort: "high"
 draft: true
 score: 5
-verdict: "Careful early evidence that some people meet strict ME/CFS criteria after mild COVID-19, but the headline blood-marker links to grip strength mix men and women and mostly disappear in women alone."
+verdict: "Careful early evidence that some people meet strict ME/CFS criteria after mild COVID-19, but the headline blood-marker links to grip strength appear to pool men and women, and most weaken or vanish in women alone."
 confidence: "moderate"
 importance: "moderate"
 strengths:
@@ -65,7 +65,7 @@ The study required a positive polymerase chain reaction (PCR) test or positive a
 
 ### Case definition and post-exertional malaise
 
-ME/CFS was diagnosed with the CCC, with one change: post-exertional malaise (PEM) had to last at least 14 hours rather than 24. The 14-hour cut-off comes from Jason and colleagues' work. PEM frequency, severity and duration were measured with the brief PEM questionnaire of Cotler et al. (2018), which is drawn from the DePaul Symptom Questionnaire. That is a reasonable choice. The guide's preferred instrument is the full DePaul Symptom Questionnaire, version 2 (DSQ-2).
+ME/CFS was diagnosed with the CCC, with one change: post-exertional malaise (PEM) had to last at least 14 hours rather than 24. The 14-hour cut-off comes from Jason and colleagues' work. PEM frequency, severity and duration were measured with the brief PEM questionnaire of Cotler et al. (2018). That is a reasonable choice, though the guide's preferred instrument is the DePaul Symptom Questionnaire, version 2 (DSQ-2). When a reviewer asked about validation, the authors replied: "The PEM score is not validated and was used descriptively."
 
 The work-up to rule out other causes was thorough by the standard of this field. Everyone had an electrocardiogram, echocardiogram, chest X-ray and lung function tests, and saw a rheumatologist. Some also saw a neurologist or cardiologist, or had a chest computed tomography (CT) scan, depending on symptoms. Anyone with reduced lung diffusion capacity was excluded. This applied work-up raises the share of true ME/CFS cases among those labelled ME/CFS. For a clinically diagnosed CCC group with this work-up, the guide's estimate of that share (f) would be well above the 0.5–0.6 it gives for a diagnosis by a general practitioner alone.
 
@@ -88,13 +88,13 @@ The non-COVID ME/CFS group is a sensible comparator for "is post-COVID ME/CFS th
 
 Most outcomes are questionnaires: the Chalder Fatigue Questionnaire (CFQ), the Bell scale, the 36-item Short Form Health Survey (SF-36), the PEM questionnaire, the Composite Autonomic Symptom Score (COMPASS-31), a 1–10 rating of each CCC symptom, the 9-item Patient Health Questionnaire and the Epworth Sleepiness Scale. For a descriptive study, that is fine. Nothing here is a treatment effect that expectation could inflate. One reviewer noted that the Bell scale has not been formally validated.
 
-**Hand grip strength.** Hand grip strength (HGS) was measured as ten maximal pulls, repeated 60 minutes later. The paper treats it as a measure of muscle fatigue: "HGS is a reliable parameter to assess muscle fatigue". The guide puts grip strength in the high-risk group for performance bias, because it depends on effort. Here the effort concern is less about expectation and more about the fact that a person who feels ill, or fears PEM, may not pull at full force. That does not make the measure useless, but it is not an objective muscle measure. The second test also comes after the effort of travel to the clinic and an hour of other assessments, and PEM status on the day was not recorded.
+**Hand grip strength.** Hand grip strength (HGS) was measured as ten maximal pulls, repeated 60 minutes later. The paper treats it as a measure of muscle fatigue: "HGS is a reliable parameter to assess muscle fatigue". The guide puts grip strength in the high-risk group for performance bias, because it depends on effort. Here the effort concern is less about expectation and more about the fact that a person who feels ill, or fears PEM, may not pull at full force. That does not make the measure useless, but it is not an objective muscle measure. Both tests come after the effort of travel to the clinic, the second one 60 minutes into the clinic visit, and PEM status on the day was not recorded.
 
 Grip results are shown only for women (13 or 14 per group), compared with cut-offs from a published reference study (Jäkel et al., 2021). No healthy people were measured in this study.
 
 **Standing test.** Heart rate and blood pressure sitting and after 0, 2, 5 and 10 minutes standing. This is an objective measure, with the usual caveat that travel to the clinic can raise resting heart rate.
 
-**Lab tests.** Standard clinical blood tests from the hospital laboratory, plus angiotensin-converting enzyme 2 (ACE2) by an enzyme-linked immunoassay (ELISA) and interleukin 8 (IL-8) measured inside red blood cells. The red-cell IL-8 test is unusual. The paper claims it shows "inflammation during the last 3–4 months", based on a small number of cited studies. No control group was measured with it in this paper, so the 37% and 48% "above normal" rests on the reference cut-off alone.
+**Lab tests.** Standard clinical blood tests from the hospital laboratory, plus angiotensin-converting enzyme 2 (ACE2) by an enzyme-linked immunoassay (ELISA) and interleukin 8 (IL-8) measured inside red blood cells. The red-cell IL-8 test is unusual. The paper claims it shows "inflammation during the last 3–4 months", based on one cited study. No control group was measured with it in this paper, so the finding that 37% and 48% were above the normal value rests on the reference cut-off alone.
 
 ## Bias
 
@@ -104,23 +104,23 @@ Grip results are shown only for women (13 or 14 per group), compared with cut-of
 
 **Funding.** A grant from the Weidenhammer-Zoebele Foundation, and the VolkswagenStiftung for the statistician. No competing interests declared.
 
-**Selective reporting.** The peer review file shows that correlations between fatigue scores and platelets and thyroid tests were dropped from the text after they did not survive correction. The authors wrote: "we decided not to mention this negative data in the revision". The table is still in the supplement (Table S7), so this is visible, but the main text only reports the correlations that survived. The text also mentions a non-significant bilirubin correlation in the non-COVID group as "similar", while not mentioning the larger non-significant IL-8 correlation in the same group (ρ = −0.61 to −0.75 in Fig. 5).
+**Selective reporting.** The peer review file shows that correlations between fatigue scores and platelets and thyroid tests were dropped from the text after they did not survive correction. The authors wrote: "we decided not to mention this negative data in the revision". Standard errors and test statistics for these correlations remain in the supplement (Table S7), so this is partly visible, but the main text only reports the correlations that survived. The text also mentions a non-significant bilirubin correlation in the non-COVID group as "similar", while not mentioning the larger non-significant IL-8 correlation in the same group (ρ = −0.61 to −0.75 in Fig. 5).
 
 ## Statistical and methodological issues
 
 ### The group comparisons
 
-The group comparisons are done with rank-based tests (Dunn-type multiple contrasts and Brunner-Munzel tests), with p values corrected across endpoints by the Benjamini-Hochberg (BH) method. This was added in revision, after reviewers pointed out that the first version did not correct for multiple testing. The supplement gives effect sizes and confidence intervals for every comparison, which is good practice. With 17–23 people per group, the study can only detect large differences. "Not significantly different" between the two ME/CFS groups is weak evidence that they are the same.
+The group comparisons are done with rank-based tests (Dunn-type multiple contrasts and Brunner-Munzel tests), with p values corrected across endpoints by the Benjamini-Hochberg (BH) method. This was added in revision, after reviewers pointed out that the first version did not correct for multiple testing. The supplement gives effect sizes and confidence intervals for every comparison, which is good practice. With 13–23 people per group, depending on the measure, the study can only detect large differences. "Not significantly different" between the two ME/CFS groups is weak evidence that they are the same.
 
 Comparing PEM between the ME/CFS and non-ME/CFS groups is partly circular, because PEM length is how they were split. The paper acknowledges this ("As expected due to the diagnostic criteria").
 
 ### The grip-strength correlations
 
-This is the part of the paper that gives it its title, and it is the weakest. The paper computes Spearman correlations between four grip measures and nine lab values, separately in each of three groups: about 100 correlations, plus the dropped fatigue correlations. It then builds a mechanism on the ones that pass BH correction.
+This is the part of the paper that gives it its title, and it is the weakest. The paper computes Spearman correlations between four grip measures and nine lab values (eight in the non-COVID group), separately in each of three groups: 104 correlations, plus the dropped fatigue correlations. It then builds a mechanism on the ones that pass BH correction.
 
 The biggest problem is sex. Each PCS group contains men and women: 15 women and 8 men in PCS/non-ME/CFS, and 14 women and 5 men in PCS/ME/CFS. Men have much higher grip strength than women. They also have higher haemoglobin, creatinine, ferritin and bilirubin, and lower N-terminal pro-B-type natriuretic peptide (NT-proBNP). The haemoglobin, ferritin, bilirubin and NT-proBNP correlations the paper highlights all go in the direction that sex alone would produce. The paper does not say whether the correlations were done within sex, and it does not adjust for sex.
 
-The source data allow a partial check. The grip data in the source file cover only the women (13 in PCS/non-ME/CFS, 14 in PCS/ME/CFS). The men are listed with lab values but no grip values. Their haemoglobin is visibly higher: 13.7–17.6 g/dl in PCS/non-ME/CFS men, against 12.2–14.4 g/dl in women with grip data. I recalculated the correlations in women only:
+The source data allow a partial check. The source data have no sex column, but the structure is clear. Each PCS group starts with a block of records with lab values and no grip values: 8 in PCS/non-ME/CFS and 5 in PCS/ME/CFS, matching the number of men in Table 1. The records with grip data (13 and 14) match the women-only numbers in Fig. 3. Two more records in PCS/non-ME/CFS, apparently women, also have no grip data. I treat the first blocks as the men. Their haemoglobin is visibly higher: 13.7–17.6 g/dl in PCS/non-ME/CFS men, against 12.2–14.4 g/dl in women with grip data. I recalculated the correlations in women only:
 
 | Correlation with grip strength | Published (Fig. 5) | Women only, from the source data |
 |---|---|---|
@@ -131,8 +131,9 @@ The source data allow a partial check. The grip data in the source file cover on
 | IL-8, PCS/non-ME/CFS | −0.44 to −0.56 | −0.27 to 0.09 |
 | C-reactive protein (CRP), PCS/non-ME/CFS | −0.43 to −0.54 | −0.41 to −0.25 |
 | NT-proBNP, PCS/ME/CFS | −0.70 to −0.79 | −0.51 to −0.73 |
+| ACE2, PCS/non-ME/CFS | 0.32 to 0.58 | 0.12 to 0.55 (n = 11) |
 
-The published values cannot be reproduced from the women alone. Their size is consistent with men being included. In women only, the haemoglobin and IL-8 associations in the PCS/non-ME/CFS group and the ferritin association in the PCS/ME/CFS group largely vanish, and the C-reactive protein and bilirubin associations weaken. The NT-proBNP association in PCS/ME/CFS largely survives, at about −0.5 to −0.7 in 13 women. That is the one finding I would call worth following up, with the caveat that it is one of about 100 correlations.
+The published values cannot be reproduced from the women alone. Their size is consistent with men being included. In women only, the haemoglobin and IL-8 associations in the PCS/non-ME/CFS group and the ferritin association in the PCS/ME/CFS group largely vanish, The haemoglobin association in PCS/ME/CFS weakens but stays moderate, and the C-reactive protein and bilirubin associations weaken. Two largely survive: NT-proBNP in PCS/ME/CFS, at about −0.5 to −0.7 in 13 women, and ACE2 in PCS/non-ME/CFS, where the one significant measure (0.58) becomes 0.45 in 11 women. These are the findings I would call worth following up, with the caveat that they are two of 104 correlations.
 
 I could not do the full analysis, because the men's grip values are not in the source data. The reanalysis is mine, not the paper's.
 
@@ -191,7 +192,7 @@ What it does not show:
 
 **For readers and clinicians:** Use this as early, careful clinical evidence that ME/CFS by strict criteria occurs after mild COVID-19. Do not use it to estimate how common that is. Do not cite the grip-strength biomarker correlations as evidence for hypoperfusion or inflammation.
 
-**For researchers:** The NT-proBNP and grip-strength association in post-COVID ME/CFS is the one correlation that survives a rough sex check. Test it with sex-stratified analysis in a larger sample and a pre-specified hypothesis. Measure perfusion directly if hypoperfusion is the claim.
+**For researchers:** The NT-proBNP and grip-strength association in post-COVID ME/CFS is the clearest correlation to survive a rough sex check, with ACE2 in the non-ME/CFS group a weaker second. Test it with sex-stratified analysis in a larger sample and a pre-specified hypothesis. Measure perfusion directly if hypoperfusion is the claim.
 
 **For the authors:** Publish the men's grip data and a sex-adjusted reanalysis of Fig. 5. Retitle or reframe the biomarker claims accordingly.
 
@@ -199,7 +200,7 @@ What it does not show:
 
 The descriptive half of the paper is solid for what it is. The case definition is strict and stated, PEM was measured with a published questionnaire, other causes were ruled out with a real clinical work-up, infection was mostly confirmed, the cohort is mostly non-hospitalised, and the time point is clear. Statistics were corrected in revision, effect sizes are given, and source data are published. That is enough to make it a useful early document that post-COVID ME/CFS exists and resembles ME/CFS after other infections.
 
-The analytic half, which the title leads with, is weak. About 100 correlations in groups of 13–21, with no sex adjustment, in groups that mix men and women, produce exactly the correlations that sex differences would predict. In women only, most vanish. The mechanistic reading built on them goes beyond the data. Grip strength is effort-dependent, and its "diminished" status rests on external cut-offs. The mental health statements are stronger than the measures allow.
+The analytic half, which the title leads with, is weak. 104 correlations in small groups, with no sex adjustment, in groups that very likely mix men and women, produce mostly the correlations that sex differences would predict. In women only, most weaken and several vanish. The mechanistic reading built on them goes beyond the data. Grip strength is effort-dependent, and its "diminished" status rests on external cut-offs. The mental health statements are stronger than the measures allow.
 
 What prevents a higher score: no controls measured with the same tests, a self-referred sample, and a biomarker analysis that is very likely confounded by sex and still drives the title and part of the abstract.
 
@@ -207,10 +208,10 @@ What prevents a lower score: the central descriptive claim, that a subset meets 
 
 ## Executive summary
 
-This early study from Berlin looked at 42 people who still had fatigue and exertion intolerance six months after COVID-19, mostly mild illness in spring 2020. 19 met strict criteria for ME/CFS after a careful medical work-up to rule out other causes. Their symptoms were broadly similar to people who got ME/CFS after other infections. The other 23 were also quite disabled and also had a worsening of symptoms after exertion, but it lasted less long.
+This early study from Berlin looked at 42 people who still had fatigue and exertion intolerance six months after COVID-19, mostly mild illness in spring 2020. 19 met strict criteria for ME/CFS after a careful medical work-up to rule out other causes. Their symptoms were broadly similar to people who got ME/CFS after other infections. The other 23 were also quite disabled and also had a worsening of symptoms after exertion, but in most it lasted less long.
 
 That descriptive part is useful and fairly careful. But the people were self-referred to a specialist ME/CFS clinic, so the study cannot say how often COVID-19 leads to ME/CFS.
 
-The title highlights "biomarkers associated with symptom severity". In fact these are about 100 correlations between grip strength and blood values in small groups. Men and women were analysed together, and the correlations the paper stresses are the ones you would expect from sex differences alone: men have stronger grip and higher haemoglobin. Using the published source data, most of them disappear when only women are analysed. One link, between a heart-strain marker in the blood (NT-proBNP) and weaker grip, partly holds up. The paper's suggestion that its blood results point to poor blood flow or inflammation is not supported. No healthy people were tested for comparison, and grip strength depends on effort.
+The title highlights "biomarkers associated with symptom severity". In fact these are about 100 correlations between grip strength and blood values in small groups. Men and women appear to have been analysed together, and the correlations the paper stresses are the ones you would expect from sex differences alone: men have stronger grip and higher haemoglobin. Using the published source data, most of them weaken or disappear when only women are analysed. One link, between a heart-strain marker in the blood (NT-proBNP) and weaker grip, largely holds up, and one other partly does. The paper's suggestion that its blood results point to poor blood flow or inflammation is not supported. No healthy people were tested for comparison, and grip strength depends on effort.
 
 Grade: 5 / 10.
