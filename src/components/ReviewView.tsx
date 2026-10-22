@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { paperLink } from '@/lib/reviews';
-import { HUMAN_INPUT_LABELS, KIND_LABELS, modelLabel, type Review } from '@/lib/types';
+import { HUMAN_INPUT_LABELS, KIND_LABELS, accessSummary, modelLabel, type Review } from '@/lib/types';
 import { extractToc } from '@/lib/toc';
 import { displayOrder } from '@/lib/hoist';
 import { TableOfContents } from '@/components/TableOfContents';
@@ -107,6 +107,12 @@ export function ReviewView({ review, banner }: { review: Review; banner?: ReactN
               <dd>v{review.guideVersion}</dd>
             </div>
           )}
+          <div className="wide">
+            <dt>{text['label.access']}</dt>
+            <dd>
+              {review.access ? accessSummary(review.access) : <span className="fact-note">{text['access.unrecorded']}</span>}
+            </dd>
+          </div>
           <div className={review.humanInput ? 'wide' : undefined}>
             <dt>{text['label.humanInput']}</dt>
             <dd>
@@ -222,6 +228,20 @@ export function ReviewView({ review, banner }: { review: Review; banner?: ReactN
           {review.guideVersion ? ` (v${review.guideVersion})` : ''}.{' '}
           <RichText text={text['review.provenance']} inline />
         </p>
+        {review.sources && review.sources.length > 0 && (
+          <details className="sources-details">
+            <summary>
+              {text['review.sourcesHeading']} ({review.sources.length})
+            </summary>
+            <ul>
+              {review.sources.map((source) => (
+                <li key={source}>
+                  <RichText text={/^https?:\/\/\S+$/.test(source) ? `<${source}>` : source} inline />
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
       </aside>
     </article>
   );

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Review } from '@/lib/types';
 import type { Engagement } from '@/lib/comments';
 import { rankScore, ratingRank } from '@/lib/ranking';
+import { excerptAround } from '@/lib/plaintext';
 import { ReviewCard } from './ReviewCard';
 
 export type ReviewSummary = Omit<Review, 'body'>;
@@ -35,6 +36,25 @@ export function ReviewIndex({
   const [now, setNow] = useState(serverNow);
   useEffect(() => setNow(Date.now()), []);
 
+  // The text of every review, fetched the first time someone searches.
+  const [bodies, setBodies] = useState<Record<string, string> | null>(null);
+  const searching = query.trim().length > 0;
+  useEffect(() => {
+    if (!searching || bodies) return;
+    let cancelled = false;
+    fetch('/search-index.json')
+      .then((response) => (response.ok ? response.json() : {}))
+      .then((json: Record<string, string>) => {
+        if (!cancelled) setBodies(json);
+      })
+      .catch(() => {
+        // Search still covers the summaries; it just cannot see inside the reviews.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [searching, bodies]);
+
   const shown = useMemo(() => {
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
     const haystack = (r: ReviewSummary) =>
@@ -48,7 +68,8 @@ export function ReviewIndex({
       if (active.length && !active.every((c) => r.conditions?.includes(c))) return false;
       if (terms.length) {
         const text = haystack(r);
-        if (!terms.every((term) => text.includes(term))) return false;
+        const body = bodies?.[r.slug]?.toLowerCase() ?? '';
+        if (!terms.every((term) => text.includes(term) || body.includes(term))) return false;
       }
       return true;
     });
@@ -84,7 +105,20 @@ export function ReviewIndex({
           return newestFirst(a, b);
       }
     });
-  }, [reviews, active, sort, query, engagement, now]);
+  }, [reviews, active, sort, query, engagement, now, bodies]);
+
+  /** For a result that matched only inside the review, the stretch of text that matched. */
+  const excerptFor = (r: ReviewSummary) => {
+    if (!bodies) return null;
+    const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+    const summary = [r.title, r.authors, r.journal, r.studyType, r.verdict, r.conditions, r.strengths, r.weaknesses]
+      .flat()
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    const inBodyOnly = terms.find((term) => !summary.includes(term));
+    return inBodyOnly ? excerptAround(bodies[r.slug] ?? '', inBodyOnly) : null;
+  };
 
   const toggle = (condition: string) =>
     setActive((current) =>
@@ -147,6 +181,7 @@ export function ReviewIndex({
                 engagement={engagement?.[review.slug]}
                 now={now}
                 preprintLabel={labels.preprint}
+                excerpt={excerptFor(review)}
               />
             </li>
           ))}

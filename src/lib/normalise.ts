@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import matter from 'gray-matter';
 import { z } from 'zod';
-import { REVIEW_KINDS, SIGNALS } from './types';
+import { REVIEW_KINDS, SIGNALS, accessOf } from './types';
 
 /**
  * The model doing the conversion, overridable with NORMALISER_MODEL.
@@ -169,6 +169,11 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
       : undefined,
     model: carriedOver('model'),
     effort: carriedOver('effort'),
+    // What the model read is provenance too: kept from the source, never inferred.
+    access: accessOf(original.access),
+    sources: Array.isArray(original.sources)
+      ? original.sources.map((s) => String(s).trim()).filter(Boolean)
+      : undefined,
     // How much the editor changed the text: theirs to say, at publishing. Kept if the
     // source already records it, never inferred.
     humanInput: carriedOver('humanInput'),

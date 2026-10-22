@@ -87,6 +87,12 @@ reviewedOn: <today, YYYY-MM-DD>
 guideVersion: "{{GUIDE_VERSION}}"
 model: "<the exact model ID writing this, e.g. claude-opus-5>"
 effort: "<the reasoning effort you ran at, e.g. high — only if you know it>"
+access:                   # what you actually opened in this conversation — see below
+  fullText: true          # the whole paper, not only the abstract
+  figures: true
+  supplement: false
+sources:                  # everything else you read: links, or a short description of a file
+  - "<url>"
 ---
 ```
 
@@ -98,6 +104,14 @@ running at. If you cannot tell, leave it out; the editor can add it.
 
 Never add `humanInput`. It records how much the editor changed your text, which only the
 editor knows, and it is set when the review is published.
+
+`access` and `sources` record what you actually opened in this conversation, not what exists
+or what you remember about the paper. `fullText: true` only if you read the whole paper, not
+just the abstract; `figures` and `supplement` likewise. A review written from the abstract
+alone reads the same as one written from the full paper, and these fields are how a reader
+tells them apart. If you could not see something that matters, say so in the review and lower
+`confidence`. List in `sources` every other document or page you read — the trial
+registration, a press release, a commentary — as a link where there is one.
 
 No abbreviations in the frontmatter, except in the title or ones as obvious as ME/CFS. Write
 "post-exertional malaise not assessed", not "PEM not assessed". The verdict, strengths and

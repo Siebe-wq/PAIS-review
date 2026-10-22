@@ -1,0 +1,21 @@
+# Runs on every pull request and every push to main: the typecheck, the tests, and the
+# abbreviation check on reviews. A red cross on a pull request means do not merge yet.
+# The abbreviation check only warns: it is a guess, and reviews are published straight to main.
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run check:abbreviations -- --warn

@@ -38,6 +38,39 @@ export function isHumanInput(value: unknown): value is HumanInput {
   return typeof value === 'string' && (HUMAN_INPUT_LEVELS as string[]).includes(value);
 }
 
+export interface Access {
+  /** The whole paper, not only the abstract. */
+  fullText?: boolean;
+  figures?: boolean;
+  supplement?: boolean;
+}
+
+export const ACCESS_PARTS = ['fullText', 'figures', 'supplement'] as const;
+
+/** Reads `access` from frontmatter: yes/no, true/false. Unknown keys and values are dropped. */
+export function accessOf(value: unknown): Access | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const out: Access = {};
+  for (const part of ACCESS_PARTS) {
+    const raw = (value as Record<string, unknown>)[part];
+    const v = typeof raw === 'string' ? raw.trim().toLowerCase() : raw;
+    if (v === true || v === 'yes' || v === 'true') out[part] = true;
+    else if (v === false || v === 'no' || v === 'false') out[part] = false;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
+/** "Full text and figures; not the supplement", for the review page. */
+export function accessSummary(access: Access): string {
+  const names: Record<(typeof ACCESS_PARTS)[number], string> = { fullText: 'full text', figures: 'figures', supplement: 'supplement' };
+  const seen = ACCESS_PARTS.filter((p) => access[p] === true).map((p) => names[p]);
+  const notSeen = ACCESS_PARTS.filter((p) => access[p] === false).map((p) => names[p]);
+  const list = (items: string[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}` : items[0]);
+  const parts = [seen.length ? list(seen) : '', notSeen.length ? `not the ${list(notSeen)}` : ''].filter(Boolean);
+  const out = parts.join('; ');
+  return out.charAt(0).toUpperCase() + out.slice(1);
+}
+
 /** The coarse ordinal used for preliminary findings. */
 export type Signal = 'promising' | 'mixed' | 'unconvincing' | 'too-early';
 
@@ -101,6 +134,13 @@ export interface ReviewFrontmatter {
    * model can review quite differently at different efforts, so it is part of who wrote it.
    */
   effort?: string;
+  /**
+   * What the model actually opened while writing — not what exists. A review written from
+   * the abstract alone reads the same as one written from the full paper; this says which.
+   */
+  access?: Access;
+  /** Everything else the model consulted: links, or short descriptions of files it was given. */
+  sources?: string[];
   /** How much the editor changed the model's text. Absent on reviews published before it was recorded. */
   humanInput?: HumanInput;
   /** Set true while drafting; excluded from the site. */

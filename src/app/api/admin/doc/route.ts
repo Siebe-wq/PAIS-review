@@ -28,14 +28,37 @@ export async function GET(request: Request) {
   const name = new URL(request.url).searchParams.get('name');
   if (!name || !EDITABLE_PAGES.has(name)) return fail('Unknown page.', 400);
 
-  const content = getDocSource(name);
+  // From the repository when publishing is set up: a page saved a minute ago then shows its
+  // new text rather than the copy from before the rebuild, and the sha lets the save refuse
+  // to overwrite a version this tab has not seen.
+  let content = getDocSource(name);
+  let sha: string | null = null;
+  let guideVersion = getDoc('guide')?.version ?? null;
+  const github = getGithubConfig();
+  if (github) {
+    try {
+      const file = await getFile(github, `content/${name}.md`);
+      if (file) {
+        content = file.content;
+        sha = file.sha;
+      }
+      if (VERSIONED_PAGES.has(name)) {
+        const guide = name === 'guide' ? file : await getFile(github, 'content/guide.md');
+        const value = guide ? (matter(guide.content).data as Record<string, unknown>).version : undefined;
+        if (value != null) guideVersion = String(value);
+      }
+    } catch {
+      // Fall back to the deployed copy; the save still checks for conflicts.
+    }
+  }
   if (content === undefined) return fail(`content/${name}.md does not exist.`, 404);
 
   return NextResponse.json({
     name,
     content,
+    sha,
     versioned: VERSIONED_PAGES.has(name),
-    guideVersion: getDoc('guide')?.version ?? null,
+    guideVersion,
   });
 }
 
@@ -50,7 +73,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let input: { name?: string; content?: string; change?: string; note?: string };
+  let input: { name?: string; content?: string; change?: string; note?: string; sha?: string | null };
   try {
     input = await request.json();
   } catch {
@@ -132,7 +155,10 @@ export async function POST(request: Request) {
   const path = `content/${name}.md`;
 
   try {
-    const sha = await getFileSha(github, path);
+    // The sha the editor loaded, so a save from an out-of-date tab is refused rather than
+    // overwriting what someone saved in between. Older clients send none; then the current
+    // one is used, as before.
+    const sha = input.sha ?? (await getFileSha(github, path));
     const message = versioned ? `Edit page: ${name} (methods v${newVersion})` : `Edit page: ${name}`;
     const result = await putFile(github, path, `${saveContent}\n`, message, sha);
 
@@ -149,6 +175,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
+      sha: result.sha ?? null,
       path,
       version: newVersion,
       bumpedGuide: Boolean(guideUpdate),

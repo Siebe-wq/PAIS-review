@@ -11,6 +11,8 @@ export const FAMILIAR = new Set([
   'ME', 'CFS', 'ME/CFS', 'PAIS', 'COVID', 'COVID-19', 'SARS-CoV-2', 'DNA', 'RNA', 'UK', 'US', 'USA', 'EU',
 ]);
 
+const COMPOUNDS = [...FAMILIAR].filter((term) => /[/-]/.test(term)).map((term) => term.replace('/', '\\/'));
+
 /**
  * A token looks like an abbreviation if it has at least two capital letters and they
  * make up at least half its letters: PEM, ICC, IgG and mtDNA count; EpiSwitch and
@@ -30,6 +32,8 @@ export function looksAbbreviated(token: string): boolean {
  */
 export function flaggedParts(token: string): string[] {
   if (FAMILIAR.has(token)) return [];
+  // A familiar compound inside a longer token stays whole: "SARS-CoV-2-specific" is fine.
+  for (const term of COMPOUNDS) token = token.replace(new RegExp(`(^|[/-])${term}(?=$|[/-])`, 'g'), '$1');
   return token
     .split(/[/-]/)
     .filter((part) => part && !FAMILIAR.has(part))
@@ -107,13 +111,21 @@ export function undefinedInBody(body: string): string[] {
   const missing: string[] = [];
   for (const match of prose.matchAll(TOKEN)) {
     const token = match[0];
-    const parts = flaggedParts(token).filter((part) => !seen.has(part));
+    // A numbered member of a family already written out counts as explained: once
+    // "cluster of differentiation (CD)" has appeared, CD3 and CD68 need nothing more.
+    const parts = flaggedParts(token).filter((part) => {
+      // "PBMCs" written out covers a later "PBMC", and the other way round.
+      if (seen.has(part) || seen.has(`${part}s`) || seen.has(part.replace(/s$/, ''))) return false;
+      const family = /^([A-Z]{2,})\d+$/.exec(part)?.[1];
+      return !(family && seen.has(family));
+    });
     if (parts.length === 0) continue;
     const start = match.index ?? 0;
     const before = prose.slice(Math.max(0, start - 2), start);
     const after = prose.slice(start + token.length, start + token.length + 3);
     const inBrackets = /\($/.test(before) && /^[),;]/.test(after);
-    const expandedAfter = /^ ?\(/.test(after) && !/^ ?\(\d/.test(after);
+    // "PEM (post-exertional malaise)", or in a quotation the editorial "LC [long COVID]".
+    const expandedAfter = /^ ?[([]/.test(after) && !/^ ?[([]\d/.test(after);
     const named = isExplainedName(prose, start, token);
     for (const part of parts) {
       seen.add(part);
