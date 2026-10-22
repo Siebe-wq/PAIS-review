@@ -9,6 +9,8 @@ import { RichText } from '@/components/RichText';
 // static. A minute of cache is plenty: nothing here is to-the-second.
 export const revalidate = 60;
 
+export const metadata = { alternates: { canonical: '/' } };
+
 export default async function HomePage() {
   const reviews = getAllReviews();
   const conditions = getAllConditions(reviews);

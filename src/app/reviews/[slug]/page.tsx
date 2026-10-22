@@ -15,7 +15,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: review.title,
     description: review.verdict,
-    openGraph: { title: review.title, description: review.verdict, type: 'article' },
+    alternates: { canonical: `/reviews/${review.slug}` },
+    openGraph: {
+      title: review.title,
+      description: review.verdict,
+      type: 'article',
+      url: `/reviews/${review.slug}`,
+      publishedTime: review.reviewedOn,
+    },
   };
 }
 

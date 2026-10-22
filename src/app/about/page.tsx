@@ -5,7 +5,7 @@ import { Markdown } from '@/components/Markdown';
 import { getSiteText } from '@/lib/site-text';
 
 export function generateMetadata(): Metadata {
-  return { title: 'About', description: getSiteText()['about.description'] };
+  return { title: 'About', description: getSiteText()['about.description'], alternates: { canonical: '/about' } };
 }
 
 export default function AboutPage() {

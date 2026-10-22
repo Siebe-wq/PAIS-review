@@ -24,7 +24,7 @@ function splitChangelog(body: string): { main: string; changelog: string | null 
 }
 
 export function generateMetadata(): Metadata {
-  return { title: 'Methods', description: getSiteText()['methods.description'] };
+  return { title: 'Methods', description: getSiteText()['methods.description'], alternates: { canonical: '/methods' } };
 }
 
 export default function MethodsPage() {

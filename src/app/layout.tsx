@@ -12,7 +12,8 @@ export function generateMetadata(): Metadata {
     metadataBase: new URL(site.url),
     title: { default: text['site.name'], template: `%s · ${text['site.name']}` },
     description: text['site.description'],
-    openGraph: { title: text['site.name'], description: text['site.description'], type: 'website' },
+    openGraph: { title: text['site.name'], description: text['site.description'], type: 'website', siteName: text['site.name'] },
+    twitter: { card: 'summary_large_image' },
   };
 }
 
