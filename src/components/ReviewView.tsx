@@ -14,6 +14,8 @@ import { Markdown } from '@/components/Markdown';
 import { site } from '@/lib/site';
 import { getSiteText } from '@/lib/site-text';
 import { RichText } from '@/components/RichText';
+import { getTags } from '@/lib/tags-store';
+import { tagsOf } from '@/lib/tags';
 
 /**
  * A review as readers see it. The public page and the admin draft preview both render this,
@@ -23,6 +25,7 @@ import { RichText } from '@/components/RichText';
  */
 export function ReviewView({ review, banner }: { review: Review; banner?: ReactNode }) {
   const text = getSiteText();
+  const own = tagsOf(review, getTags());
   const link = paperLink(review);
   // The executive summary is written last and shown first.
   const body = displayOrder(review.body);
@@ -130,6 +133,23 @@ export function ReviewView({ review, banner }: { review: Review; banner?: ReactN
             <div>
               <dt>{text['label.topic']}</dt>
               <dd>{review.conditions.join(', ')}</dd>
+            </div>
+          )}
+          {(own.design || own.topics.length > 0) && (
+            <div className="wide">
+              <dt>{text['label.tags']}</dt>
+              <dd className="tag-links">
+                {own.design && (
+                  <Link className="chip tag-design" href={`/tags/${own.design.id}`}>
+                    {own.design.label}
+                  </Link>
+                )}
+                {own.topics.map((tag) => (
+                  <Link className="chip" key={tag.id} href={`/tags/${tag.id}`}>
+                    {tag.label}
+                  </Link>
+                ))}
+              </dd>
             </div>
           )}
         </dl>

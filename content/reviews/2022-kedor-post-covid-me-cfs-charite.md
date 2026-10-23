@@ -31,6 +31,8 @@ weaknesses:
 guideNotes:
   - "Correlations in mixed-sex groups: check for sex adjustment, since sex alone drives many blood values and strength measures"
   - "Check whether a title's headline finding matches the analysis that survived correction"
+design: observational
+topics: ["diagnosis-biomarkers", "me-cfs", "course-outcomes"]
 ---
 
 ## Study design

@@ -80,6 +80,8 @@ guideVersion: '0.5'
 model: claude-opus-5-5
 preprint: true
 humanInput: moderate
+design: genetic-study
+topics: ["genetics", "me-cfs"]
 ---
 ## Executive summary
 

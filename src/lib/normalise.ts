@@ -169,6 +169,11 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
       : undefined,
     model: carriedOver('model'),
     effort: carriedOver('effort'),
+    // Tags come from the controlled list; the tidier never invents them.
+    design: carriedOver('design'),
+    topics: Array.isArray(original.topics)
+      ? original.topics.map((t) => String(t).trim()).filter(Boolean)
+      : undefined,
     // What the model read is provenance too: kept from the source, never inferred.
     access: accessOf(original.access),
     sources: Array.isArray(original.sources)

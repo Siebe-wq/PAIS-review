@@ -38,6 +38,8 @@ guideNotes:
   - "For company readouts, check the registry's version history between last patient visit and topline, not only the current record"
   - "Subgroups cut at the trial's own median: the share 'with high burden' follows from the cut-offs; ask for the interaction test and the result in the pooled high group"
   - "Counting how many correlated outcomes 'favour' the drug is not evidence; the guide could say so"
+design: randomised-trial
+topics: ["treatment", "brain-nerves"]
 ---
 
 ## What this review is based on

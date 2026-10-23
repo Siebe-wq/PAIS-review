@@ -37,6 +37,8 @@ guideNotes:
   - "Unblinded trials where the therapy aims to change symptom interpretation make self-report bias worse than usual"
   - "Check whether 'normal range' or recovery thresholds overlap with entry criteria"
   - "Check whether a post-hoc responder threshold is met by a large share of the control arm"
+design: randomised-trial
+topics: ["treatment", "rehabilitation", "exercise-pem", "me-cfs"]
 ---
 
 ## Study design

@@ -36,6 +36,8 @@ guideNotes:
   - "Claims that a relationship differs between groups need a direct test of the difference, not one significant and one non-significant correlation"
   - "Antigen-specific cell analyses: check how many cells per person each percentage rests on"
   - "Antibody or immune differences in long COVID: check whether acute severity or hospitalisation differs between groups"
+design: case-control
+topics: ["immune-system"]
 ---
 
 ## Study design

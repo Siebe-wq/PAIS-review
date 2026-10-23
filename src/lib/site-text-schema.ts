@@ -65,6 +65,11 @@ export const FIELDS = {
   ),
   'home.searchPlaceholder': line('Search box placeholder', 'Grey text inside the empty search box.', 'Search reviews', 40),
   'home.empty': line('No reviews yet', 'Shown on the home page while nothing is published.', 'No reviews published yet.', 120),
+  'home.designFilter': line('Design filter', 'Label of the design menu above the list.', 'Design', 40),
+  'home.anyDesign': line('Any design', 'First choice in the design menu.', 'Any design', 40),
+  'home.topicFilter': line('Topic filter', 'Label of the topic menu above the list.', 'Topic', 40),
+  'home.anyTopic': line('Any topic', 'First choice in the topic menu.', 'Any topic', 40),
+  'tags.allReviews': line('Back to all reviews', 'Link at the top of a tag page.', 'All reviews', 60),
   'home.noMatches': line('No search results', 'Shown when a search or filter matches nothing.', 'No reviews match those filters.', 120),
 
   // ---- review page
@@ -99,7 +104,8 @@ export const FIELDS = {
   'label.reviewed': line('Reviewed', 'Detail label on a review page.', 'Reviewed', 40),
   'label.writtenBy': line('Written by', 'Detail label on a review page.', 'Written by', 40),
   'label.guideVersion': line('Guide version', 'Detail label on a review page.', 'Guide version', 40),
-  'label.topic': line('Topic', 'Detail label on a review page.', 'Topic', 40),
+  'label.topic': line('Condition', 'Detail label on a review page: ME/CFS, Long Covid…', 'Condition', 40),
+  'label.tags': line('Tags', 'Detail label on a review page, above its design and topic links.', 'Tags', 40),
   'label.humanInput': line('Human input', 'Detail label on a review page.', 'Human input', 40),
   'label.access': line('What the model read', 'Detail label on a review page: full text, figures, supplement.', 'Model read', 40),
   'access.unrecorded': line(
@@ -171,9 +177,9 @@ export type SiteText = Record<SiteTextKey, string>;
 /** How the editor lays the fields out. Every key appears in exactly one group. */
 export const GROUPS: { title: string; open: boolean; keys: SiteTextKey[] }[] = [
   { title: 'Every page', open: true, keys: ['site.pilotBanner', 'site.footer', 'site.name', 'nav.reviews', 'nav.methods', 'nav.about', 'site.description', 'site.notFound'] },
-  { title: 'Home page', open: true, keys: ['home.heading', 'home.intro', 'home.searchPlaceholder', 'home.empty', 'home.noMatches'] },
+  { title: 'Home page', open: true, keys: ['home.heading', 'home.intro', 'home.searchPlaceholder', 'home.designFilter', 'home.anyDesign', 'home.topicFilter', 'home.anyTopic', 'home.empty', 'home.noMatches', 'tags.allReviews'] },
   { title: 'Review page', open: false, keys: ['review.weaknessesHeading', 'review.strengthsHeading', 'review.contextHeading', 'review.contextNote', 'review.guideNotesHeading', 'review.guideNotesIntro', 'review.provenance'] },
-  { title: 'Review page: detail labels', open: false, keys: ['label.type', 'label.design', 'label.confidence', 'label.importance', 'label.reviewed', 'label.writtenBy', 'label.guideVersion', 'label.topic', 'label.humanInput', 'label.access', 'label.preprint', 'access.unrecorded', 'review.sourcesHeading'] },
+  { title: 'Review page: detail labels', open: false, keys: ['label.type', 'label.design', 'label.confidence', 'label.importance', 'label.reviewed', 'label.writtenBy', 'label.guideVersion', 'label.topic', 'label.tags', 'label.humanInput', 'label.access', 'label.preprint', 'access.unrecorded', 'review.sourcesHeading'] },
   { title: 'Human input levels', open: false, keys: ['humanInput.none', 'humanInput.minor', 'humanInput.moderate', 'humanInput.major', 'humanInput.unrecorded'] },
   { title: 'Ratings, comments and AI discussion', open: false, keys: ['rating.label', 'comments.intro', 'discuss.label', 'discuss.prompt'] },
   { title: 'Methods and About', open: false, keys: ['methods.promptSummary', 'methods.description', 'about.description'] },

@@ -4,6 +4,8 @@ import { dbConfigured } from '@/lib/db';
 import { ReviewIndex } from '@/components/ReviewIndex';
 import { getSiteText } from '@/lib/site-text';
 import { RichText } from '@/components/RichText';
+import { getTags } from '@/lib/tags-store';
+import { usedTags } from '@/lib/tags';
 
 // Comment counts and ratings change between deploys, so the index cannot be fully
 // static. A minute of cache is plenty: nothing here is to-the-second.
@@ -43,11 +45,16 @@ export default async function HomePage() {
         conditions={conditions}
         engagement={engagement}
         serverNow={Date.now()}
+        tags={usedTags(reviews, getTags())}
         labels={{
           searchPlaceholder: text['home.searchPlaceholder'],
           empty: text['home.empty'],
           noMatches: text['home.noMatches'],
           preprint: text['label.preprint'],
+          designFilter: text['home.designFilter'],
+          anyDesign: text['home.anyDesign'],
+          topicFilter: text['home.topicFilter'],
+          anyTopic: text['home.anyTopic'],
         }}
       />
     </>

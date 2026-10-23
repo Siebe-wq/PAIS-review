@@ -14,3 +14,11 @@ test('adds, changes and removes one line without touching the rest', () => {
 test('refuses a file without frontmatter', () => {
   assert.throws(() => setFrontmatterField('no frontmatter', 'draft', true));
 });
+
+test('writes a list on one line, and replaces a list written one item per line', () => {
+  const listed = setFrontmatterField(src, 'topics', ['treatment', 'me-cfs']);
+  assert.match(listed, /\ntopics: \["treatment", "me-cfs"\]\n---/);
+  const blockList = '---\ntitle: T\ntopics:\n  - a\n  - b\nkind: paper\n---\n\nBody.\n';
+  assert.equal(setFrontmatterField(blockList, 'topics', ['c']), '---\ntitle: T\ntopics: ["c"]\nkind: paper\n---\n\nBody.\n');
+  assert.equal(setFrontmatterField(blockList, 'topics', null), '---\ntitle: T\nkind: paper\n---\n\nBody.\n');
+});

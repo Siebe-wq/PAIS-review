@@ -5,6 +5,8 @@ import matter from 'gray-matter';
 import { getAllReviews } from '@/lib/reviews';
 import { isSignedIn } from '@/lib/session';
 import { GithubError, getFile, getGithubConfig, putFile } from '@/lib/github';
+import { TAGS_PATH, checkReviewTags, parseTagList } from '@/lib/tags';
+import { getTags } from '@/lib/tags-store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -27,6 +29,11 @@ export async function GET() {
     guideNotes: review.guideNotes ?? [],
     humanInput: review.humanInput ?? null,
     preprint: Boolean(review.preprint),
+    design: review.design ?? null,
+    topics: review.topics ?? [],
+    score: review.score ?? null,
+    signal: review.signal ?? null,
+    verdict: review.verdict,
   }));
 
   return NextResponse.json({ reviews });
@@ -44,7 +51,13 @@ export async function POST(request: Request) {
   const github = getGithubConfig();
   if (!github) return fail('Publishing is not configured.', 503);
 
-  let input: { slug?: string; action?: 'withdraw' | 'restore' | 'humanInput'; humanInput?: string };
+  let input: {
+    slug?: string;
+    action?: 'withdraw' | 'restore' | 'humanInput' | 'tags';
+    humanInput?: string;
+    design?: unknown;
+    topics?: unknown;
+  };
   try {
     input = await request.json();
   } catch {
@@ -53,7 +66,7 @@ export async function POST(request: Request) {
 
   const slug = input.slug ?? '';
   if (!/^[a-z0-9-]+$/.test(slug)) return fail('Bad slug.', 400);
-  if (input.action !== 'withdraw' && input.action !== 'restore' && input.action !== 'humanInput') {
+  if (!['withdraw', 'restore', 'humanInput', 'tags'].includes(input.action ?? '')) {
     return fail('Unknown action.', 400);
   }
   if (input.action === 'humanInput' && !isHumanInput(input.humanInput)) {
@@ -70,7 +83,17 @@ export async function POST(request: Request) {
 
     let updated: string;
     let message: string;
-    if (input.action === 'humanInput') {
+    if (input.action === 'tags') {
+      // Check against the list in the repository, so a tag added a minute ago can be used.
+      const listFile = await getFile(github, TAGS_PATH);
+      const tags = listFile ? parseTagList(JSON.parse(listFile.content)).tags : getTags();
+      const checked = checkReviewTags(input, tags);
+      if ('error' in checked) return fail(checked.error, 400);
+      updated = setFrontmatterField(file.content, 'design', checked.design);
+      updated = setFrontmatterField(updated, 'topics', checked.topics.length ? checked.topics : null);
+      if (updated === file.content) return fail('Nothing has changed.', 400);
+      message = `Tags: ${slug}`;
+    } else if (input.action === 'humanInput') {
       updated = setFrontmatterField(file.content, 'humanInput', input.humanInput as string);
       message = `Human input ${input.humanInput}: ${slug}`;
     } else if (input.action === 'withdraw') {
@@ -98,6 +121,8 @@ export async function POST(request: Request) {
       slug,
       draft: data.draft === true,
       humanInput: data.humanInput ?? null,
+      design: data.design ?? null,
+      topics: Array.isArray(data.topics) ? data.topics : [],
       ...result,
     });
   } catch (error) {
