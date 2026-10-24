@@ -38,6 +38,8 @@ guideNotes:
   - "Before-and-after designs with an exercised control group: require the group-by-time interaction test for each claimed change"
   - "Repeat biopsies: check the time between them, whether they came from the same incision, and whether scorers were blinded to time point"
   - "Yes/no scoring of tissue samples of varying size: check whether sample size differed by group or time point"
+design: case-control
+topics: ["exercise-pem", "muscle-metabolism"]
 ---
 
 ## Study design

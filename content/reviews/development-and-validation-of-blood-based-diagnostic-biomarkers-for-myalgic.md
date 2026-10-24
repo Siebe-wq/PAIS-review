@@ -59,6 +59,8 @@ context:
 reviewedOn: '2026-09-16'
 guideVersion: '0.2'
 model: claude-opus-5
+design: case-control
+topics: ["diagnosis-biomarkers"]
 ---
 ## Executive summary
 

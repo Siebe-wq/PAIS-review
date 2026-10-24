@@ -104,6 +104,10 @@ export interface ReviewFrontmatter {
   /** Free tags, e.g. ["ME/CFS", "Long Covid"] — drive the index filters. */
   conditions?: string[];
   studyType?: string;
+  /** Tag id from the designs in content/tags.json: what kind of study it is. */
+  design?: string;
+  /** Tag ids from the topics in content/tags.json: what it is about. Any number. */
+  topics?: string[];
   kind: ReviewKind;
   /** Papers only: not yet peer reviewed. Graded like any other paper, and marked as such. */
   preprint?: boolean;

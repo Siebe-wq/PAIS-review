@@ -223,6 +223,8 @@ export function buildReviewFile(
     url: text(data.url),
     conditions: strings(data.conditions),
     studyType: text(data.studyType),
+    design: text(data.design),
+    topics: strings(data.topics),
     kind,
     ...(preprint ? { preprint: true } : {}),
     score,

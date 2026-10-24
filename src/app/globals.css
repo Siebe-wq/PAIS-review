@@ -175,6 +175,9 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 /* The index card's left column: grade, then what readers made of it. */
 .card-stats { flex: none; width: 104px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .card-stats .score, .card-stats .score-word { width: 100%; }
+/* A word verdict sized to the column, so "Unconvincing" fits at any phone font size. */
+.card-stats { container-type: inline-size; }
+.card-stats .score.score-word .num { font-size: min(0.95rem, 12.5cqi); }
 .card-engagement {
   display: flex; flex-direction: column; align-items: center; gap: 1px;
   font-size: 0.7rem; line-height: 1.4; color: var(--muted); text-align: center;
@@ -214,8 +217,11 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .score[data-tone='neutral'] .num, .score[data-tone='neutral'] .band { color: var(--muted); }
 
 /* Word verdicts need room for a word, not two digits. */
+/* Doubled class: the phone rule for .score .num below must not resize these. */
 .score-word { width: 104px; }
-.score-word .num { font-size: 0.95rem; line-height: 1.2; font-weight: 620; }
+.score.score-word .num { font-size: 0.95rem; line-height: 1.2; font-weight: 620; letter-spacing: -0.01em; white-space: nowrap; }
+/* On a review page the badge grows to fit its word rather than breaking it. */
+.verdict-box .score-word { width: auto; min-width: 104px; padding-inline: 10px; }
 .score-word .band { margin-top: 5px; }
 
 /* ---------- contents ---------- */
@@ -621,7 +627,7 @@ button.secondary {
   .card-stats { width: 88px; }
   .score { width: 70px; }
   .score-word { width: 86px; }
-  .score-word .num { font-size: 0.85rem; }
+  .score.score-word .num { font-size: 0.85rem; }
   .score .num { font-size: 1.3rem; }
   .lede h1 { font-size: 1.55rem; }
   .review-head h1 { font-size: 1.35rem; }
@@ -793,3 +799,46 @@ button.secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 .card-excerpt mark { background: var(--borderline-bg); color: var(--text); padding: 0 2px; border-radius: 2px; }
 .vote.heart { font-size: 0.85rem; }
 .vote.heart.on { color: var(--fatal-fg); }
+
+/* Admin → Reviews: drafts on top with their grade and verdict; tags folded under each row. */
+.manage-list li { flex-wrap: wrap; align-items: flex-start; }
+.manage-row { display: flex; gap: 12px; flex: 1 1 18rem; min-width: 0; }
+.manage-score .score { width: 64px; padding: 6px 4px 7px; }
+.manage-score .score .num { font-size: 1.15rem; }
+.manage-score .score .band { margin-top: 4px; }
+.manage-list li.is-draft .manage-main > a { font-weight: 600; }
+.manage-verdict { margin: 6px 0 0; font-size: 0.86rem; line-height: 1.45; }
+.manage-tags { margin-top: 8px; font-size: 0.82rem; }
+.manage-tags summary { cursor: pointer; color: var(--muted); }
+.manage-tags .chip-row { margin: 8px 0; }
+.manage-tags .manage-input { margin-top: 8px; }
+.manage-tags select { min-width: 0; max-width: 100%; }
+
+/* Design and topics on a review page: links to every review with the same tag. */
+.tag-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-links a { text-decoration: none; }
+.chip.tag-design { font-weight: 600; }
+.tag-page-count { color: var(--muted); margin: -6px 0 20px; }
+
+/* Admin → Tags */
+.tag-edit-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.tag-edit-list li { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-top: 1px solid var(--border); }
+.tag-edit-list input { flex: 1; min-width: 0; padding: 6px 8px; font: inherit; font-size: 0.9rem; }
+.tag-used { font-size: 0.75rem; color: var(--muted); white-space: nowrap; min-width: 4.5rem; text-align: right; }
+.tags-panel button.icon {
+  flex: none; width: 32px; height: 32px; padding: 0; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 0.95rem;
+}
+.tags-panel button.icon:disabled { opacity: 0.35; cursor: default; }
+.tag-add { display: flex; gap: 8px; margin-top: 8px; }
+.tag-add input { flex: 1; min-width: 0; padding: 6px 8px; font: inherit; font-size: 0.9rem; }
+.tags-save { margin-top: 24px; }
+
+/* Design and topic menus on the index. On a phone they share a row and shrink. */
+.tag-filters { display: flex; gap: 8px; flex: 1 1 18rem; min-width: 0; }
+.tag-filters select { flex: 1 1 0; min-width: 0; max-width: 100%; }
+.back-link { margin: 24px 0 8px; font-size: 0.88rem; }
+.back-link a { text-decoration: none; color: var(--muted); }
+.back-link a:hover { color: var(--text); }
+.sort-control { display: flex; align-items: center; flex: none; margin-left: auto; }
+.manage-tags-title { flex-basis: 100%; font-size: 0.8rem; color: var(--muted); }

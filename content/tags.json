@@ -1,0 +1,96 @@
+{
+  "conditions": [
+    {
+      "id": "me-cfs",
+      "label": "ME/CFS"
+    },
+    {
+      "id": "long-covid",
+      "label": "Long Covid"
+    },
+    {
+      "id": "pots-oi",
+      "label": "POTS/OI"
+    },
+    {
+      "id": "mcas",
+      "label": "MCAS"
+    }
+  ],
+  "designs": [
+    {
+      "id": "randomised-trial",
+      "label": "Randomised trial"
+    },
+    {
+      "id": "observational",
+      "label": "Observational study"
+    },
+    {
+      "id": "case-control",
+      "label": "Case-control study"
+    },
+    {
+      "id": "genetic-study",
+      "label": "Genetic study"
+    },
+    {
+      "id": "systematic-review",
+      "label": "Systematic review"
+    }
+  ],
+  "topics": [
+    {
+      "id": "treatment",
+      "label": "Treatment"
+    },
+    {
+      "id": "rehabilitation",
+      "label": "Rehabilitation and behavioural therapy"
+    },
+    {
+      "id": "exercise-pem",
+      "label": "Exercise and post-exertional malaise"
+    },
+    {
+      "id": "diagnosis-biomarkers",
+      "label": "Diagnosis and biomarkers"
+    },
+    {
+      "id": "immune-system",
+      "label": "Immune system"
+    },
+    {
+      "id": "genetics",
+      "label": "Genetics"
+    },
+    {
+      "id": "muscle-metabolism",
+      "label": "Muscle and energy metabolism"
+    },
+    {
+      "id": "heart-circulation",
+      "label": "Heart, blood vessels and circulation"
+    },
+    {
+      "id": "brain-nerves",
+      "label": "Brain and nervous system"
+    },
+    {
+      "id": "viral-persistence",
+      "label": "Viral persistence"
+    },
+    {
+      "id": "course-outcomes",
+      "label": "Course and outcomes over time"
+    },
+    {
+      "id": "epidemiology",
+      "label": "How common it is, and who gets it"
+    },
+    {
+      "id": "meta-research",
+      "label": "Meta-research"
+    }
+  ]
+}

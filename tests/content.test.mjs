@@ -6,6 +6,7 @@ import { parseReview } from '../src/lib/reviews.ts';
 import { parseBacklog, serializeBacklog } from '../src/lib/backlog.ts';
 import { parseOverrides } from '../src/lib/site-text-schema.ts';
 import { getDoc } from '../src/lib/doc.ts';
+import { parseTagList } from '../src/lib/tags.ts';
 
 test('every review file parses', () => {
   const files = fs.readdirSync('content/reviews').filter((f) => f.endsWith('.md'));
@@ -27,4 +28,18 @@ test('the backlog is in the form the admin panel writes', () => {
 test('the stored site text has no problems', () => {
   const { problems } = parseOverrides(JSON.parse(fs.readFileSync('content/site-text.json', 'utf8')));
   assert.deepEqual(problems, []);
+});
+
+test('the tag list reads cleanly, and every tag on a review is on it', () => {
+  const { tags, problems } = parseTagList(JSON.parse(fs.readFileSync('content/tags.json', 'utf8')));
+  assert.deepEqual(problems, []);
+  const conditions = new Set(tags.conditions.map((t) => t.label));
+  const designs = new Set(tags.designs.map((t) => t.id));
+  const topics = new Set(tags.topics.map((t) => t.id));
+  for (const f of fs.readdirSync('content/reviews').filter((name) => name.endsWith('.md'))) {
+    const review = parseReview(fs.readFileSync(`content/reviews/${f}`, 'utf8'), f.replace(/\.md$/, ''));
+    for (const name of review.conditions ?? []) assert.ok(conditions.has(name), `${f}: condition ${name} is not in the tag list`);
+    if (review.design) assert.ok(designs.has(review.design), `${f}: unknown design ${review.design}`);
+    for (const id of review.topics ?? []) assert.ok(topics.has(id), `${f}: unknown topic ${id}`);
+  }
 });

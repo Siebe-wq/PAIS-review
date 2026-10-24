@@ -5,11 +5,13 @@ import { ReviewPublisher } from './ReviewPublisher';
 import { DocEditor } from './DocEditor';
 import { BacklogPanel } from './BacklogPanel';
 import { ReviewManager } from './ReviewManager';
+import { TagsPanel } from './TagsPanel';
 
 const TABS = [
   { id: 'review', label: 'Publish a review' },
   { id: 'page', label: 'Edit a page' },
   { id: 'manage', label: 'Reviews' },
+  { id: 'tags', label: 'Tags' },
   { id: 'backlog', label: 'Backlog' },
 ] as const;
 
@@ -22,6 +24,7 @@ export function AdminPanel() {
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [drafts, setDrafts] = useState<number | null>(null);
 
   useEffect(() => {
     fetch('/api/admin/session')
@@ -32,6 +35,21 @@ export function AdminPanel() {
       })
       .catch(() => setSignedIn(false));
   }, []);
+
+  // Drafts waiting to be read are the usual reason to open admin, so say how many, and
+  // open on them when there are any.
+  useEffect(() => {
+    if (!signedIn) return;
+    fetch('/api/admin/reviews')
+      .then((response) => (response.ok ? response.json() : null))
+      .then((json: { reviews?: { draft: boolean }[] } | null) => {
+        if (!json?.reviews) return;
+        const count = json.reviews.filter((review) => review.draft).length;
+        setDrafts(count);
+        if (count > 0) setTab((current) => (current === 'review' ? 'manage' : current));
+      })
+      .catch(() => {});
+  }, [signedIn]);
 
   async function signIn(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -121,6 +139,7 @@ export function AdminPanel() {
             onClick={() => setTab(id)}
           >
             {label}
+            {id === 'manage' && drafts ? ` · ${drafts} draft${drafts === 1 ? '' : 's'}` : ''}
           </button>
         ))}
       </div>
@@ -128,6 +147,7 @@ export function AdminPanel() {
       {tab === 'review' && <ReviewPublisher onExpired={() => setSignedIn(false)} />}
       {tab === 'page' && <DocEditor onExpired={() => setSignedIn(false)} />}
       {tab === 'manage' && <ReviewManager onExpired={() => setSignedIn(false)} />}
+      {tab === 'tags' && <TagsPanel onExpired={() => setSignedIn(false)} />}
       {tab === 'backlog' && <BacklogPanel onExpired={() => setSignedIn(false)} />}
     </div>
   );

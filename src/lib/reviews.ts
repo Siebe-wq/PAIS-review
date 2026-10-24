@@ -107,6 +107,8 @@ function coerce(data: Record<string, unknown>, slug: string, body: string): Revi
     url: typeof data.url === 'string' && data.url ? data.url : undefined,
     conditions: strings(data.conditions),
     studyType: typeof data.studyType === 'string' ? data.studyType : undefined,
+    design: typeof data.design === 'string' && data.design.trim() ? data.design.trim() : undefined,
+    topics: strings(data.topics),
     kind,
     ...(preprint ? { preprint } : {}),
     score,

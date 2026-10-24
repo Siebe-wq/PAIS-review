@@ -22,7 +22,7 @@ const FrontmatterSchema = z.object({
   journal: z.string().describe('Journal name. Empty string if not stated.'),
   year: z.number().describe('Publication year. 0 if not stated.'),
   doi: z.string().describe('Bare DOI, no URL prefix. Empty string if not stated.'),
-  conditions: z.array(z.string()).describe('Topic tags such as "ME/CFS" or "Long Covid".'),
+  conditions: z.array(z.string()).describe('Conditions the paper is about, such as "ME/CFS" or "Long Covid". Several if it covers several.'),
   studyType: z.string().describe('e.g. "RCT, n=240" or "Mouse knockout study". Empty string if unclear.'),
   kind: z.enum(REVIEW_KINDS as [string, ...string[]]),
   preprint: z
@@ -169,6 +169,11 @@ export async function normaliseReview(raw: string): Promise<NormaliseResult> {
       : undefined,
     model: carriedOver('model'),
     effort: carriedOver('effort'),
+    // Tags come from the controlled list; the tidier never invents them.
+    design: carriedOver('design'),
+    topics: Array.isArray(original.topics)
+      ? original.topics.map((t) => String(t).trim()).filter(Boolean)
+      : undefined,
     // What the model read is provenance too: kept from the source, never inferred.
     access: accessOf(original.access),
     sources: Array.isArray(original.sources)

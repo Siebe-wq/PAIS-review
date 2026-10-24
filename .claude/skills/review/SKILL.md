@@ -133,8 +133,10 @@ journal: "<journal>"
 year: 2024
 doi: "10.xxxx/xxxxx"
 url: ""
-conditions: ["ME/CFS"]        # or ["Long Covid"], both, or another topic tag
+conditions: ["ME/CFS"]        # names from "conditions" in content/tags.json, every one that fits
 studyType: "RCT, n=240, 12 weeks"
+design: randomised-trial      # one id from "designs" in content/tags.json; leave out if none fits
+topics: ["treatment", "me-cfs"]  # ids from "topics" in content/tags.json, every one that fits
 kind: paper                   # paper | literature | preliminary
 preprint: true                # papers only, if it is a preprint; otherwise leave out
 humanInput: none              # set from the user's answer, never by you
