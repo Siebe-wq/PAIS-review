@@ -11,8 +11,9 @@ interface Row {
 }
 
 const GROUP_TEXT: Record<TagGroup, { title: string; hint: string; add: string }> = {
-  designs: { title: 'Designs', hint: 'What kind of study it is. One per review.', add: 'New design' },
-  topics: { title: 'Topics', hint: 'What it is about. As many per review as fit.', add: 'New topic' },
+  conditions: { title: 'Conditions', hint: 'Any number per review. Cannot be renamed while in use.', add: 'New condition' },
+  designs: { title: 'Designs', hint: 'One per review.', add: 'New design' },
+  topics: { title: 'Topics', hint: 'Any number per review.', add: 'New topic' },
 };
 
 /**
@@ -24,7 +25,7 @@ export function TagsPanel({ onExpired }: { onExpired: () => void }) {
   const [rows, setRows] = useState<Record<TagGroup, Row[]> | null>(null);
   const [usage, setUsage] = useState<Record<string, number>>({});
   const [sha, setSha] = useState<string | null>(null);
-  const [adding, setAdding] = useState<Record<TagGroup, string>>({ designs: '', topics: '' });
+  const [adding, setAdding] = useState<Record<TagGroup, string>>({ conditions: '', designs: '', topics: '' });
   const [status, setStatus] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -47,10 +48,11 @@ export function TagsPanel({ onExpired }: { onExpired: () => void }) {
           return;
         }
         const tags = json.tags;
-        setRows({
-          designs: tags.designs.map((tag) => ({ ...tag, key: `k${nextKey.current++}` })),
-          topics: tags.topics.map((tag) => ({ ...tag, key: `k${nextKey.current++}` })),
-        });
+        setRows(
+          Object.fromEntries(
+            TAG_GROUPS.map((group) => [group, tags[group].map((tag) => ({ ...tag, key: `k${nextKey.current++}` }))]),
+          ) as Record<TagGroup, Row[]>,
+        );
         setUsage(json.usage ?? {});
         setSha(json.sha ?? null);
         setDirty(false);
@@ -106,12 +108,6 @@ export function TagsPanel({ onExpired }: { onExpired: () => void }) {
 
   return (
     <div className="tags-panel">
-      <p className="hint">
-        Rename, reorder, add or remove tags, then save. Renaming keeps a tag on its reviews and keeps
-        its address. A tag still on a review cannot be removed. Put tags on reviews in the Reviews tab.
-        The review counts come from the live site, so a tag added to a review in the last minute or
-        two can still read “unused”.
-      </p>
 
       {TAG_GROUPS.map((group) => (
         <section key={group}>
@@ -126,6 +122,8 @@ export function TagsPanel({ onExpired }: { onExpired: () => void }) {
                     type="text"
                     value={row.label}
                     maxLength={TAG_LIMITS.label}
+                    // Reviews hold conditions by name: renaming one in use would strand them.
+                    readOnly={group === 'conditions' && used > 0}
                     aria-label={`Name of ${row.label || 'tag'}`}
                     onChange={(event) =>
                       change(group, (list) => list.map((r) => (r.key === row.key ? { ...r, label: event.target.value } : r)))

@@ -1,14 +1,17 @@
 /**
- * Tags from one controlled list, so filters and tag pages stay tidy: a design (one per
- * review: what kind of study it is) and topics (any number: what it is about).
+ * Tags from one controlled list, so filters and tag pages stay tidy: conditions (any
+ * number: ME/CFS, Long Covid…), a design (one per review: what kind of study it is) and
+ * topics (any number: what it is about).
  *
- * The list lives in content/tags.json and is edited in /admin → Tags. Reviews store tag
- * ids, so renaming a tag's label never touches the reviews or breaks a /tags/<id> link.
+ * The list lives in content/tags.json and is edited in /admin → Tags. Reviews store design
+ * and topic ids, so renaming one never touches the reviews or breaks a /tags/<id> link.
+ * Conditions are stored by name, as they always have been, so a condition cannot be
+ * renamed while a review uses it.
  * Pure functions only, so the build, the admin API and the tests share them.
  */
 
 export const TAGS_PATH = 'content/tags.json';
-export const TAG_GROUPS = ['designs', 'topics'] as const;
+export const TAG_GROUPS = ['conditions', 'designs', 'topics'] as const;
 export type TagGroup = (typeof TAG_GROUPS)[number];
 export const TAG_LIMITS = { label: 60, perGroup: 100 };
 
@@ -19,7 +22,7 @@ export interface Tag {
 
 export type TagList = Record<TagGroup, Tag[]>;
 
-export const EMPTY_TAGS: TagList = { designs: [], topics: [] };
+export const EMPTY_TAGS: TagList = { conditions: [], designs: [], topics: [] };
 
 /** "Heart, blood vessels & circulation" → "heart-blood-vessels-and-circulation". */
 export function tagId(label: string): string {
@@ -46,7 +49,7 @@ function cleanLabel(value: unknown): string {
  */
 export function parseTagList(raw: unknown): { tags: TagList; problems: string[] } {
   const problems: string[] = [];
-  const tags: TagList = { designs: [], topics: [] };
+  const tags: TagList = { conditions: [], designs: [], topics: [] };
   const seen = new Set<string>();
   const record = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
 
@@ -84,7 +87,7 @@ export function validateTagList(input: unknown): { tags: TagList } | { error: st
   const record = input && typeof input === 'object' ? (input as Record<string, unknown>) : null;
   if (!record) return { error: 'Nothing to save.' };
 
-  const tags: TagList = { designs: [], topics: [] };
+  const tags: TagList = { conditions: [], designs: [], topics: [] };
   const seen = new Map<string, string>();
   for (const group of TAG_GROUPS) {
     const entries = record[group];
@@ -118,7 +121,19 @@ export function findTag(tags: TagList, id: string): (Tag & { group: TagGroup }) 
   return undefined;
 }
 
-/** A review's own tags, in list order, leaving out ids the list no longer has. */
+/** The listed condition with this name, if any. */
+export function conditionTag(name: string, tags: TagList): Tag | undefined {
+  return tags.conditions.find((tag) => tag.label === name);
+}
+
+/** Whether a review carries this tag, whichever group it is in. */
+export function hasTag(review: { conditions?: string[]; design?: string; topics?: string[] }, tag: Tag & { group: TagGroup }): boolean {
+  if (tag.group === 'conditions') return Boolean(review.conditions?.includes(tag.label));
+  if (tag.group === 'designs') return review.design === tag.id;
+  return Boolean(review.topics?.includes(tag.id));
+}
+
+/** A review's own design and topics, in list order, leaving out ids the list no longer has. */
 export function tagsOf(review: { design?: string; topics?: string[] }, tags: TagList): { design?: Tag; topics: Tag[] } {
   return {
     design: review.design ? tags.designs.find((t) => t.id === review.design) : undefined,
@@ -131,22 +146,32 @@ export function tagsOf(review: { design?: string; topics?: string[] }, tags: Tag
  * first problem found.
  */
 export function checkReviewTags(
-  input: { design?: unknown; topics?: unknown },
+  input: { conditions?: unknown; design?: unknown; topics?: unknown },
   tags: TagList,
-): { design: string | null; topics: string[] } | { error: string } {
+): { conditions: string[]; design: string | null; topics: string[] } | { error: string } {
+  if (input.conditions !== undefined && !Array.isArray(input.conditions)) return { error: 'Conditions must be a list.' };
+  const conditionIds = new Set((input.conditions as unknown[] | undefined ?? []).map(String));
+  for (const id of conditionIds) if (!tags.conditions.some((t) => t.id === id)) return { error: `Unknown condition: ${id}` };
   const design = typeof input.design === 'string' && input.design ? input.design : null;
   if (design && !tags.designs.some((t) => t.id === design)) return { error: `Unknown design: ${design}` };
   if (input.topics !== undefined && !Array.isArray(input.topics)) return { error: 'Topics must be a list.' };
   const chosen = new Set((input.topics as unknown[] | undefined ?? []).map(String));
   for (const id of chosen) if (!tags.topics.some((t) => t.id === id)) return { error: `Unknown topic: ${id}` };
   // List order, so the file does not churn when the same topics are ticked in another order.
-  return { design, topics: tags.topics.filter((t) => chosen.has(t.id)).map((t) => t.id) };
+  return {
+    // Conditions go into the review by name.
+    conditions: tags.conditions.filter((t) => conditionIds.has(t.id)).map((t) => t.label),
+    design,
+    topics: tags.topics.filter((t) => chosen.has(t.id)).map((t) => t.id),
+  };
 }
 
 /** The list cut down to tags at least one of these reviews carries, in list order. */
-export function usedTags(reviews: { design?: string; topics?: string[] }[], tags: TagList): TagList {
+export function usedTags(reviews: { conditions?: string[]; design?: string; topics?: string[] }[], tags: TagList): TagList {
   const used = new Set(reviews.flatMap((review) => [review.design, ...(review.topics ?? [])]));
+  const names = new Set(reviews.flatMap((review) => review.conditions ?? []));
   return {
+    conditions: tags.conditions.filter((tag) => names.has(tag.label)),
     designs: tags.designs.filter((tag) => used.has(tag.id)),
     topics: tags.topics.filter((tag) => used.has(tag.id)),
   };

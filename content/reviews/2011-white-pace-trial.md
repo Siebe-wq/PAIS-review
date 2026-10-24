@@ -38,7 +38,7 @@ guideNotes:
   - "Check whether 'normal range' or recovery thresholds overlap with entry criteria"
   - "Check whether a post-hoc responder threshold is met by a large share of the control arm"
 design: randomised-trial
-topics: ["treatment", "rehabilitation", "exercise-pem", "me-cfs"]
+topics: ["treatment", "rehabilitation", "exercise-pem"]
 ---
 
 ## Study design

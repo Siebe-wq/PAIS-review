@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { isSignedIn } from '@/lib/session';
 import { GithubError, getFile, getGithubConfig, putFile } from '@/lib/github';
 import { getAllReviews } from '@/lib/reviews';
-import { TAGS_PATH, TAG_GROUPS, parseTagList, serialiseTagList, validateTagList, type TagList } from '@/lib/tags';
+import { EMPTY_TAGS, TAGS_PATH, TAG_GROUPS, conditionTag, parseTagList, serialiseTagList, validateTagList, type TagList } from '@/lib/tags';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,11 +13,12 @@ function fail(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
 }
 
-/** How many reviews, drafts included, use each tag id. */
-function usage(): Record<string, number> {
+/** How many reviews, drafts included, use each tag id. Conditions are matched by name. */
+function usage(tags: TagList): Record<string, number> {
   const counts: Record<string, number> = {};
   for (const review of getAllReviews({ includeDrafts: true })) {
-    for (const id of [review.design, ...(review.topics ?? [])]) {
+    const conditionIds = (review.conditions ?? []).map((name) => conditionTag(name, tags)?.id);
+    for (const id of [review.design, ...(review.topics ?? []), ...conditionIds]) {
       if (id) counts[id] = (counts[id] ?? 0) + 1;
     }
   }
@@ -42,7 +43,7 @@ async function readTags(): Promise<{ tags: TagList; sha: string | null; problems
   try {
     parsed = JSON.parse(raw);
   } catch {
-    return { tags: { designs: [], topics: [] }, sha, problems: [`${TAGS_PATH} is not valid JSON.`] };
+    return { tags: EMPTY_TAGS, sha, problems: [`${TAGS_PATH} is not valid JSON.`] };
   }
   return { ...parseTagList(parsed), sha };
 }
@@ -52,7 +53,7 @@ export async function GET() {
   if (!(await isSignedIn())) return fail('Sign in first.', 401);
   try {
     const { tags, sha, problems } = await readTags();
-    return NextResponse.json({ tags, sha, problems, usage: usage(), canPublish: Boolean(getGithubConfig()) });
+    return NextResponse.json({ tags, sha, problems, usage: usage(tags), canPublish: Boolean(getGithubConfig()) });
   } catch (error) {
     if (error instanceof GithubError) return fail(error.message, error.status);
     return fail('Could not read the tag list.', 502);
@@ -80,11 +81,18 @@ export async function POST(request: Request) {
     // A tag still on a review cannot go: the review would silently lose it. Take it off the
     // reviews first (Reviews tab), then remove it here.
     const kept = new Set(TAG_GROUPS.flatMap((group) => next[group].map((t) => t.id)));
-    const counts = usage();
+    const counts = usage(current.tags);
     const inUse = TAG_GROUPS.flatMap((group) => current.tags[group]).filter((t) => !kept.has(t.id) && counts[t.id]);
     if (inUse.length) {
       const names = inUse.map((t) => `"${t.label}" (${counts[t.id]})`).join(', ');
       return fail(`Still used on reviews, so not removed: ${names}. Take it off those reviews first.`, 400);
+    }
+    // Reviews hold conditions by name, so renaming one in use would leave them behind.
+    const renamed = current.tags.conditions.filter(
+      (t) => counts[t.id] && next.conditions.some((n) => n.id === t.id && n.label !== t.label),
+    );
+    if (renamed.length) {
+      return fail(`"${renamed[0].label}" is on ${counts[renamed[0].id]} review(s), so it cannot be renamed.`, 400);
     }
 
     const before = serialiseTagList(current.tags);

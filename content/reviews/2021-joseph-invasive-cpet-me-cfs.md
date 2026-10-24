@@ -32,7 +32,7 @@ guideNotes:
   - "Subgroups made by splitting a continuous variable into tertiles: ask for evidence of real clusters"
   - "Subgroups defined by one term of an equation (such as Fick) will differ on the other terms by arithmetic"
 design: observational
-topics: ["exercise-pem", "heart-circulation", "me-cfs"]
+topics: ["exercise-pem", "heart-circulation"]
 ---
 
 ## Study design

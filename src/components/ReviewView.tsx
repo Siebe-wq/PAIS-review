@@ -15,7 +15,7 @@ import { site } from '@/lib/site';
 import { getSiteText } from '@/lib/site-text';
 import { RichText } from '@/components/RichText';
 import { getTags } from '@/lib/tags-store';
-import { tagsOf } from '@/lib/tags';
+import { conditionTag, tagsOf } from '@/lib/tags';
 
 /**
  * A review as readers see it. The public page and the admin draft preview both render this,
@@ -25,7 +25,8 @@ import { tagsOf } from '@/lib/tags';
  */
 export function ReviewView({ review, banner }: { review: Review; banner?: ReactNode }) {
   const text = getSiteText();
-  const own = tagsOf(review, getTags());
+  const tagList = getTags();
+  const own = tagsOf(review, tagList);
   const link = paperLink(review);
   // The executive summary is written last and shown first.
   const body = displayOrder(review.body);
@@ -130,9 +131,22 @@ export function ReviewView({ review, banner }: { review: Review; banner?: ReactN
             </dd>
           </div>
           {review.conditions && review.conditions.length > 0 && (
-            <div>
+            <div className={review.conditions.length > 1 ? 'wide' : undefined}>
               <dt>{text['label.topic']}</dt>
-              <dd>{review.conditions.join(', ')}</dd>
+              <dd className="tag-links">
+                {review.conditions.map((name) => {
+                  const tag = conditionTag(name, tagList);
+                  return tag ? (
+                    <Link className="chip" key={name} href={`/tags/${tag.id}`}>
+                      {name}
+                    </Link>
+                  ) : (
+                    <span className="chip" key={name}>
+                      {name}
+                    </span>
+                  );
+                })}
+              </dd>
             </div>
           )}
           {(own.design || own.topics.length > 0) && (

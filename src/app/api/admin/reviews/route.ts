@@ -29,6 +29,7 @@ export async function GET() {
     guideNotes: review.guideNotes ?? [],
     humanInput: review.humanInput ?? null,
     preprint: Boolean(review.preprint),
+    conditions: review.conditions ?? [],
     design: review.design ?? null,
     topics: review.topics ?? [],
     score: review.score ?? null,
@@ -55,6 +56,7 @@ export async function POST(request: Request) {
     slug?: string;
     action?: 'withdraw' | 'restore' | 'humanInput' | 'tags';
     humanInput?: string;
+    conditions?: unknown;
     design?: unknown;
     topics?: unknown;
   };
@@ -89,7 +91,8 @@ export async function POST(request: Request) {
       const tags = listFile ? parseTagList(JSON.parse(listFile.content)).tags : getTags();
       const checked = checkReviewTags(input, tags);
       if ('error' in checked) return fail(checked.error, 400);
-      updated = setFrontmatterField(file.content, 'design', checked.design);
+      updated = setFrontmatterField(file.content, 'conditions', checked.conditions.length ? checked.conditions : null);
+      updated = setFrontmatterField(updated, 'design', checked.design);
       updated = setFrontmatterField(updated, 'topics', checked.topics.length ? checked.topics : null);
       if (updated === file.content) return fail('Nothing has changed.', 400);
       message = `Tags: ${slug}`;
@@ -121,6 +124,7 @@ export async function POST(request: Request) {
       slug,
       draft: data.draft === true,
       humanInput: data.humanInput ?? null,
+      conditions: Array.isArray(data.conditions) ? data.conditions : [],
       design: data.design ?? null,
       topics: Array.isArray(data.topics) ? data.topics : [],
       ...result,

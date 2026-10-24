@@ -15,6 +15,7 @@ interface Row {
   guideNotes: string[];
   humanInput: HumanInput | null;
   preprint: boolean;
+  conditions: string[];
   design: string | null;
   topics: string[];
   score: number | null;
@@ -26,7 +27,9 @@ type Action = 'withdraw' | 'restore' | 'humanInput' | 'tags';
 
 export function ReviewManager({ onExpired }: { onExpired: () => void }) {
   const [rows, setRows] = useState<Row[] | null>(null);
-  const [tags, setTags] = useState<TagList>(EMPTY_TAGS);
+  // Null until loaded: the tag editor reads a review's conditions against the list, so it
+  // must not start before the list is there.
+  const [tags, setTags] = useState<TagList | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,8 +51,8 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
       .catch(() => setError('Could not load reviews.'));
     // Without the list the tag editor is simply empty; the rest still works.
     load('/api/admin/tags')
-      .then((json: { tags?: TagList } | null) => json?.tags && setTags(json.tags))
-      .catch(() => {});
+      .then((json: { tags?: TagList } | null) => setTags(json?.tags ?? EMPTY_TAGS))
+      .catch(() => setTags(EMPTY_TAGS));
   }, [onExpired]);
 
   async function act(slug: string, action: Action, extra: Record<string, unknown> = {}) {
@@ -70,6 +73,7 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
         ok?: boolean;
         draft?: boolean;
         humanInput?: HumanInput | null;
+        conditions?: string[];
         design?: string | null;
         topics?: string[];
         error?: string;
@@ -83,6 +87,7 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
                       ...row,
                       draft: Boolean(json.draft),
                       humanInput: json.humanInput ?? row.humanInput,
+                      conditions: json.conditions ?? [],
                       design: json.design ?? null,
                       topics: json.topics ?? [],
                     }
@@ -140,13 +145,15 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
               ))}
             </select>
           </label>
-          <TagEditor
-            key={`${row.design}|${row.topics.join(',')}`}
-            row={row}
-            tags={tags}
-            busy={busy === row.slug}
-            onSave={(design, topics) => act(row.slug, 'tags', { design, topics })}
-          />
+          {tags && (
+            <TagEditor
+              key={`${row.conditions.join(',')}|${row.design}|${row.topics.join(',')}`}
+              row={row}
+              tags={tags}
+              busy={busy === row.slug}
+              onSave={(chosen) => act(row.slug, 'tags', chosen)}
+            />
+          )}
         </div>
       </div>
       <div className="manage-actions">
@@ -170,13 +177,6 @@ export function ReviewManager({ onExpired }: { onExpired: () => void }) {
 
   return (
     <div>
-      <p className="hint">
-        A draft is not on the site. Open it to read it exactly as it will look, then set the human
-        input and publish. Withdrawing turns a public review back into a draft straight away, and
-        can be undone. The commit history keeps the text; a takedown that needs it gone from the
-        repository too is a deliberate git step, not a button.
-      </p>
-
       {error && <div className="notice err">{error}</div>}
 
       <h2 className="manage-heading">Drafts waiting ({drafts.length})</h2>
@@ -218,20 +218,46 @@ function TagEditor({
   row: Row;
   tags: TagList;
   busy: boolean;
-  onSave: (design: string | null, topics: string[]) => void;
+  onSave: (chosen: { conditions: string[]; design: string | null; topics: string[] }) => void;
 }) {
+  // Reviews hold conditions by name; the editor works in ids like the other groups.
+  const initialConditions = tags.conditions.filter((tag) => row.conditions.includes(tag.label)).map((tag) => tag.id);
+  const [conditions, setConditions] = useState<string[]>(initialConditions);
   const [design, setDesign] = useState(row.design ?? '');
   const [topics, setTopics] = useState<string[]>(row.topics);
-  if (tags.designs.length === 0 && tags.topics.length === 0) return null;
+  if (tags.conditions.length === 0 && tags.designs.length === 0 && tags.topics.length === 0) return null;
 
   const label = (id: string | null) =>
     [...tags.designs, ...tags.topics].find((tag) => tag.id === id)?.label ?? id;
-  const summary = [row.design ? label(row.design) : null, ...row.topics.map(label)].filter(Boolean).join(' · ');
-  const changed = design !== (row.design ?? '') || topics.slice().sort().join() !== row.topics.slice().sort().join();
+  const summary = [...row.conditions, row.design ? label(row.design) : null, ...row.topics.map(label)]
+    .filter(Boolean)
+    .join(' · ');
+  const same = (a: string[], b: string[]) => a.slice().sort().join() === b.slice().sort().join();
+  const changed = design !== (row.design ?? '') || !same(topics, row.topics) || !same(conditions, initialConditions);
+  const toggle = (set: (update: (current: string[]) => string[]) => void, id: string) =>
+    set((current) => (current.includes(id) ? current.filter((x) => x !== id) : [...current, id]));
+  const chips = (title: string, list: { id: string; label: string }[], chosen: string[], set: typeof setTopics) => (
+    <div className="chip-row">
+      <span className="manage-tags-title">{title}</span>
+      {list.map((tag) => (
+        <button
+          key={tag.id}
+          type="button"
+          className="chip toggle"
+          aria-pressed={chosen.includes(tag.id)}
+          disabled={busy}
+          onClick={() => toggle(set, tag.id)}
+        >
+          {tag.label}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <details className="manage-tags">
       <summary>Tags: {summary || <em>none yet</em>}</summary>
+      {chips('Conditions', tags.conditions, conditions, setConditions)}
       <label className="manage-input">
         Design{' '}
         <select value={design} disabled={busy} onChange={(event) => setDesign(event.target.value)}>
@@ -243,25 +269,8 @@ function TagEditor({
           ))}
         </select>
       </label>
-      <div className="chip-row">
-        {tags.topics.map((tag) => (
-          <button
-            key={tag.id}
-            type="button"
-            className="chip toggle"
-            aria-pressed={topics.includes(tag.id)}
-            disabled={busy}
-            onClick={() =>
-              setTopics((current) =>
-                current.includes(tag.id) ? current.filter((id) => id !== tag.id) : [...current, tag.id],
-              )
-            }
-          >
-            {tag.label}
-          </button>
-        ))}
-      </div>
-      <button type="button" className="secondary small" disabled={busy || !changed} onClick={() => onSave(design || null, topics)}>
+      {chips('Topics', tags.topics, topics, setTopics)}
+      <button type="button" className="secondary small" disabled={busy || !changed} onClick={() => onSave({ conditions, design: design || null, topics })}>
         {busy ? 'Saving…' : 'Save tags'}
       </button>
     </details>

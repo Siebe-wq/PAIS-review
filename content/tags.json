@@ -1,4 +1,22 @@
 {
+  "conditions": [
+    {
+      "id": "me-cfs",
+      "label": "ME/CFS"
+    },
+    {
+      "id": "long-covid",
+      "label": "Long Covid"
+    },
+    {
+      "id": "pots-oi",
+      "label": "POTS/OI"
+    },
+    {
+      "id": "mcas",
+      "label": "MCAS"
+    }
+  ],
   "designs": [
     {
       "id": "randomised-trial",
@@ -57,18 +75,6 @@
     {
       "id": "brain-nerves",
       "label": "Brain and nervous system"
-    },
-    {
-      "id": "pots-oi",
-      "label": "POTS/OI"
-    },
-    {
-      "id": "mcas",
-      "label": "MCAS"
-    },
-    {
-      "id": "me-cfs",
-      "label": "ME/CFS"
     },
     {
       "id": "viral-persistence",

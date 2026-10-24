@@ -22,7 +22,7 @@ const FrontmatterSchema = z.object({
   journal: z.string().describe('Journal name. Empty string if not stated.'),
   year: z.number().describe('Publication year. 0 if not stated.'),
   doi: z.string().describe('Bare DOI, no URL prefix. Empty string if not stated.'),
-  conditions: z.array(z.string()).describe('Topic tags such as "ME/CFS" or "Long Covid".'),
+  conditions: z.array(z.string()).describe('Conditions the paper is about, such as "ME/CFS" or "Long Covid". Several if it covers several.'),
   studyType: z.string().describe('e.g. "RCT, n=240" or "Mouse knockout study". Empty string if unclear.'),
   kind: z.enum(REVIEW_KINDS as [string, ...string[]]),
   preprint: z

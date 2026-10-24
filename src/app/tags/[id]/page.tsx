@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { getAllReviews } from '@/lib/reviews';
 import { getSiteText } from '@/lib/site-text';
 import { getTags } from '@/lib/tags-store';
-import { findTag, TAG_GROUPS } from '@/lib/tags';
+import { findTag, hasTag, TAG_GROUPS, type Tag, type TagGroup } from '@/lib/tags';
 import { ReviewCard } from '@/components/ReviewCard';
 
 type Params = { params: Promise<{ id: string }> };
@@ -18,8 +18,8 @@ export function generateStaticParams() {
   return TAG_GROUPS.flatMap((group) => tags[group].map((tag) => ({ id: tag.id })));
 }
 
-function reviewsWith(id: string) {
-  return getAllReviews().filter((review) => review.design === id || review.topics?.includes(id));
+function reviewsWith(tag: Tag & { group: TagGroup }) {
+  return getAllReviews().filter((review) => hasTag(review, tag));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -32,7 +32,7 @@ export default async function TagPage({ params }: Params) {
   const tag = findTag(getTags(), (await params).id);
   if (!tag) notFound();
   const text = getSiteText();
-  const reviews = reviewsWith(tag.id);
+  const reviews = reviewsWith(tag);
 
   return (
     <>
