@@ -8,11 +8,19 @@ url: "https://www.nature.com/articles/s41467-022-32507-6"
 conditions: ["ME/CFS", "Long Covid"]
 studyType: "Observational cohort, cross-sectional at 6 months, n=42 post-COVID plus 19 ME/CFS comparison patients"
 kind: paper
-humanInput: none
 reviewedOn: 2026-10-19
 guideVersion: "0.8.1"
 model: "claude-opus-5-5"
 effort: "high"
+access:
+  fullText: true
+  figures: false
+  supplement: true
+sources:
+  - "Fig. 3 (grip strength) and Fig. 5 (correlation matrix) viewed as images; Figs 1, 2 and 4 read from captions and source data only"
+  - "Peer review file (Supplementary Information 2)"
+  - "Source data spreadsheet, used for the women-only reanalysis of Fig. 5"
+  - "https://doi.org/10.1038/s41467-022-33784-x"
 draft: true
 score: 5
 verdict: "Careful early evidence that some people meet strict ME/CFS criteria after mild COVID-19, but the headline blood-marker links to grip strength appear to pool men and women, and most weaken or vanish in women alone."
