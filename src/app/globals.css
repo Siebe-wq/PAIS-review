@@ -817,7 +817,6 @@ button.secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 /* Design and topics on a review page: links to every review with the same tag. */
 .tag-links { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag-links a { text-decoration: none; }
-.chip.tag-design { font-weight: 600; }
 .tag-page-count { color: var(--muted); margin: -6px 0 20px; }
 
 /* Admin → Tags */
@@ -842,3 +841,13 @@ button.secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 .back-link a:hover { color: var(--text); }
 .sort-control { display: flex; align-items: center; flex: none; margin-left: auto; }
 .manage-tags-title { flex-basis: 100%; font-size: 0.8rem; color: var(--muted); }
+
+/* Review header: tags as one row of chips; the rest folded away for whoever wants it. */
+.head-tags { margin: 18px 0 0; }
+.facts-fold { margin: 18px 0 0; border-top: 1px solid var(--border); padding-top: 12px; }
+.facts-fold > summary { cursor: pointer; color: var(--muted); font-size: 0.88rem; }
+.facts-fold > summary:hover { color: var(--text); }
+.facts-fold .facts { border-top: 0; margin-top: 14px; padding-top: 0; }
+.sources-details p { margin: 8px 0 0; }
+.head-design { margin: 18px 0 0; font-size: 0.92rem; color: var(--muted); }
+.head-design + .head-tags { margin-top: 10px; }
