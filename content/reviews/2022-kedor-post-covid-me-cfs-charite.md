@@ -21,7 +21,6 @@ sources:
   - "Peer review file (Supplementary Information 2)"
   - "Source data spreadsheet, used for the women-only reanalysis of Fig. 5"
   - "https://doi.org/10.1038/s41467-022-33784-x"
-draft: true
 score: 5
 verdict: "Careful early evidence that some people meet strict ME/CFS criteria after mild COVID-19, but the headline blood-marker links to grip strength appear to pool men and women, and most weaken or vanish in women alone."
 confidence: "moderate"
@@ -41,6 +40,7 @@ guideNotes:
   - "Check whether a title's headline finding matches the analysis that survived correction"
 design: observational
 topics: ["diagnosis-biomarkers", "course-outcomes"]
+humanInput: none
 ---
 
 ## Study design
